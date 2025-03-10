@@ -34,10 +34,6 @@ O foco inicial será no desenvolvimento do gerenciamento básico de tarefas, enq
 
 - **Flutter**: Framework de desenvolvimento cross-platform para criar a interface e funcionalidade.
 - **Dart**: Linguagem de programação utilizada no desenvolvimento com Flutter.
-  
-## Futuras Funcionalidades (Backlog)
-
-- **Sistema de Gamificação**: Recompensas visuais ou badges que podem ser desbloqueados com o tempo ou a conclusão de um certo número de tarefas.
 
 ## Contribuição
 
