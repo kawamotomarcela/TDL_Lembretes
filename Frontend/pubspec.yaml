@@ -1,0 +1,36 @@
+name: grupotdl
+description: "A new Flutter project."
+
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.7.2 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  curved_navigation_bar: ^1.0.6
+  phosphor_flutter: ^2.0.0
+  cupertino_icons: ^1.0.8
+  flutter_multi_formatter: ^2.5.0
+  board_datetime_picker: 2.5.0
+  table_calendar: ^3.0.9
+  intl: ^0.18.1
+  google_fonts: ^6.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/
+    - assets/logo2.png
+    - assets/tdl.png
+    - assets/giftcard.jpg
+    - assets/giftcard.jpeg
