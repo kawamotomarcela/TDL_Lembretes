@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import '../routes/app_routes.dart';
-import '../widgets/custom_text_field.dart';
-import '../widgets/custom_button.dart';
-import '../widgets/logo_widget.dart';
-import '../utils/show_snackbar.dart';
+import '../../routes/app_routes.dart';
+import 'widgets/custom_text_field.dart';
+import '../../shared/widgets/custom_button.dart';
+import '../../shared/widgets/logo_widget.dart';
+import '../../utils/show_snackbar.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});

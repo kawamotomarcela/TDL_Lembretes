@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:grupotdl/widgets/product_card.dart';
-import 'package:grupotdl/widgets/info_card.dart';
-import 'package:grupotdl/widgets/total_points_card.dart';
+import 'package:grupotdl/pages/store/widgets/product_card.dart';
+import 'package:grupotdl/pages/store/widgets/info_store.dart';
+import 'package:grupotdl/pages/store/widgets/total_points_card.dart';
 
 class LojaPage extends StatelessWidget {
   LojaPage({super.key});

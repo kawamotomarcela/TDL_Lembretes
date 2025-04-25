@@ -1,7 +1,9 @@
 class Validators {
   static String? validateEmail(String? value) {
     if (value == null || value.isEmpty) return 'Email é obrigatório';
-    final emailRegex = RegExp(r'^[\w\.-]+@[\w\.-]+\.\w+$');
+
+    final emailRegex = RegExp(r'^[\w\.-]+@[\w-]+\.[a-zA-Z]{2,}$');
+
     if (!emailRegex.hasMatch(value)) return 'Email inválido';
     return null;
   }
@@ -28,19 +30,10 @@ class Validators {
   static String? validatePhone(String? value) {
     if (value == null || value.isEmpty) return 'Telefone é obrigatório';
 
-    final digitsOnly = value.replaceAll(RegExp(r'\D'), '');
+    final phoneRegex = RegExp(r'^\(?\d{2}\)?[\s\-]?[9]?\d{4}[\s\-]?\d{4}$');
 
-    if (digitsOnly.length != 10 && digitsOnly.length != 11) {
-      return 'Telefone deve conter DDD e número válido';
-    }
-
-    final ddd = int.tryParse(digitsOnly.substring(0, 2));
-    if (ddd == null || ddd < 11 || ddd > 99) {
-      return 'DDD inválido';
-    }
-
-    if (digitsOnly.length == 11 && digitsOnly[2] != '9') {
-      return 'Número de celular deve começar com 9';
+    if (!phoneRegex.hasMatch(value)) {
+      return 'Telefone inválido. Use formato: (11) 91234-5678';
     }
 
     return null;

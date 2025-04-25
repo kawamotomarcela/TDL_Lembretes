@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
 import 'package:grupotdl/routes/app_routes.dart';
-import 'package:grupotdl/widgets/custom_text_field.dart';
-import 'package:grupotdl/widgets/custom_button.dart';
+import 'package:grupotdl/pages/login/widgets/custom_text_field.dart';
+import 'package:grupotdl/shared/widgets/custom_button.dart';
 import 'package:grupotdl/utils/show_snackbar.dart';
 import 'package:grupotdl/utils/validators.dart';
 

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:grupotdl/widgets/task_card.dart';
+import 'package:grupotdl/pages/tasks/widgets/task_card.dart';
 
 class TaskSection extends StatelessWidget {
   final String title;
@@ -33,8 +33,9 @@ class TaskSection extends StatelessWidget {
         ...tasks.map((tarefa) => TaskCard(
               title: tarefa['title'],
               subtitle: tarefa['subtitle'],
-              done: tarefa['done'],
+              status: tarefa['status'],
               dateTime: tarefa['dateTime'],
+              priority: tarefa['priority'],
               onChanged: () => onToggle(tarefa),
             )),
       ],

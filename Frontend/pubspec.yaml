@@ -17,6 +17,7 @@ dependencies:
   flutter_multi_formatter: ^2.5.0
   board_datetime_picker: 2.5.0
   table_calendar: ^3.0.9
+  fl_chart: ^0.63.0
   intl: ^0.18.1
   google_fonts: ^6.1.0
 
@@ -34,3 +35,4 @@ flutter:
     - assets/tdl.png
     - assets/giftcard.jpg
     - assets/giftcard.jpeg
+    - assets/testAgenda.png

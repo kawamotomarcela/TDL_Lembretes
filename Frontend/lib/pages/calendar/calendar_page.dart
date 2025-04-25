@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:grupotdl/widgets/calendar_widget.dart';
-import 'package:grupotdl/widgets/event_card.dart';
+import 'package:grupotdl/pages/calendar/widgets/calendar_widget.dart';
+import 'package:grupotdl/pages/calendar/widgets/event_calendar.dart';
 
 class CalendarPage extends StatefulWidget {
   const CalendarPage({super.key});
@@ -49,20 +49,23 @@ class _CalendarPageState extends State<CalendarPage> {
           ),
           const SizedBox(height: 10),
           Expanded(
-            child: events.isEmpty
-                ? const Center(child: Text("Nenhum evento para este dia."))
-                : ListView.builder(
-                    itemCount: events.length,
-                    itemBuilder: (_, index) {
-                      return EventCard(title: events[index]);
-                    },
-                  ),
+            child:
+                events.isEmpty
+                    ? const Center(child: Text("Nenhum evento para este dia."))
+                    : ListView.builder(
+                      itemCount: events.length,
+                      itemBuilder: (_, index) {
+                        return EventCard(title: events[index]);
+                      },
+                    ),
           ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: 'fab-store',
         onPressed: () {},
-        backgroundColor: Colors.indigo,
+        backgroundColor: const Color.fromARGB(255, 65, 95, 160),
+        foregroundColor: Colors.white,
         child: const Icon(Icons.add),
       ),
     );
