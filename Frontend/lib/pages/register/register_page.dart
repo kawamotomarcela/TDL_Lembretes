@@ -5,6 +5,8 @@ import 'package:grupotdl/pages/login/widgets/custom_text_field.dart';
 import 'package:grupotdl/shared/widgets/custom_button.dart';
 import 'package:grupotdl/utils/show_snackbar.dart';
 import 'package:grupotdl/utils/validators.dart';
+import '../../services/auth_service.dart';
+
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -23,47 +25,40 @@ class _RegisterPageState extends State<RegisterPage> {
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
 
-  void _register() {
-    final username = _usernameController.text;
-    final email = _emailController.text;
-    final phone = _phoneController.text.replaceAll(RegExp(r'\D'), ''); 
-    final password = _passwordController.text;
-    final confirmPassword = _confirmPasswordController.text;
+ void _register() async {
+  final username = _usernameController.text;
+  final email = _emailController.text;
+  final phone = _phoneController.text.replaceAll(RegExp(r'\D'), '');
+  final password = _passwordController.text;
+  final confirmPassword = _confirmPasswordController.text;
 
-    final usernameError = Validators.validateRequired(username, "Nome de usuário");
-    final emailError = Validators.validateEmail(email);
-    final phoneError = Validators.validatePhone(phone);
-    final passwordError = Validators.validatePassword(password);
-    final confirmPasswordError = Validators.validateConfirmPassword(password, confirmPassword);
+  final usernameError = Validators.validateRequired(username, "Nome de usuário");
+  final emailError = Validators.validateEmail(email);
+  final phoneError = Validators.validatePhone(phone);
+  final passwordError = Validators.validatePassword(password);
+  final confirmPasswordError = Validators.validateConfirmPassword(password, confirmPassword);
 
-    if (usernameError != null) {
-      showSnackBar(context, usernameError, color: Colors.red);
-      return;
-    }
+  if (usernameError != null || emailError != null || phoneError != null || passwordError != null || confirmPasswordError != null) {
+    showSnackBar(context, usernameError ?? emailError ?? phoneError ?? passwordError ?? confirmPasswordError!, color: Colors.red);
+    return;
+  }
 
-    if (emailError != null) {
-      showSnackBar(context, emailError, color: Colors.red);
-      return;
-    }
+  final token = await AuthService.register(
+    username.trim(),
+    email.trim(),
+    password.trim(),
+    phone.trim(),
+  );
 
-    if (phoneError != null) {
-      showSnackBar(context, phoneError, color: Colors.red);
-      return;
-    }
-
-    if (passwordError != null) {
-      showSnackBar(context, passwordError, color: Colors.red);
-      return;
-    }
-
-    if (confirmPasswordError != null) {
-      showSnackBar(context, confirmPasswordError, color: Colors.red);
-      return;
-    }
-
+ if (!mounted) return;
+ 
+  if (token != null) {
     showSnackBar(context, "Conta criada com sucesso!");
     Navigator.pushReplacementNamed(context, AppRoutes.login);
+  } else {
+    showSnackBar(context, "Erro ao criar conta!", color: Colors.red);
   }
+}
 
   @override
   Widget build(BuildContext context) {

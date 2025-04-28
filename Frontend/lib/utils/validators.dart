@@ -19,7 +19,10 @@ class Validators {
     return null;
   }
 
-  static String? validateConfirmPassword(String? password, String? confirmPassword) {
+  static String? validateConfirmPassword(
+    String? password,
+    String? confirmPassword,
+  ) {
     if (confirmPassword == null || confirmPassword.isEmpty) {
       return 'Confirmação de senha é obrigatória';
     }
@@ -30,13 +33,12 @@ class Validators {
   static String? validatePhone(String? value) {
     if (value == null || value.isEmpty) return 'Telefone é obrigatório';
 
-    final phoneRegex = RegExp(r'^\(?\d{2}\)?[\s\-]?[9]?\d{4}[\s\-]?\d{4}$');
+    String numbersOnly = value.replaceAll(RegExp(r'\D'), '');
 
-    if (!phoneRegex.hasMatch(value)) {
+    if (numbersOnly.length == 11 || numbersOnly.length == 13) {
+      return null; 
+    } else {
       return 'Telefone inválido. Use formato: (11) 91234-5678';
     }
-
-    return null;
   }
 }
-
