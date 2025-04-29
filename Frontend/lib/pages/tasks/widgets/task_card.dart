@@ -6,7 +6,7 @@ class TaskCard extends StatelessWidget {
   final String subtitle;
   final String status;
   final String? dateTime;
-  final String priority; 
+  final int priority; // agora é int (1 = baixa, 2 = média, 3 = alta)
   final VoidCallback onChanged;
 
   const TaskCard({
@@ -20,15 +20,26 @@ class TaskCard extends StatelessWidget {
   });
 
   Color _getPriorityColor() {
-    switch (priority.toLowerCase()) {
-      case 'alta':
+    switch (priority) {
+      case 3:
         return Colors.red;
-      case 'média':
+      case 2:
         return Colors.amber;
-      case 'baixa':
-        return Colors.green;
+      case 1:
       default:
-        return Colors.grey;
+        return Colors.green;
+    }
+  }
+
+  String _getPriorityText() {
+    switch (priority) {
+      case 3:
+        return 'Alta';
+      case 2:
+        return 'Média';
+      case 1:
+      default:
+        return 'Baixa';
     }
   }
 
@@ -107,7 +118,7 @@ class TaskCard extends StatelessWidget {
                       ),
                       const SizedBox(width: 6),
                       Text(
-                        priority[0].toUpperCase() + priority.substring(1).toLowerCase(),
+                        _getPriorityText(),
                         style: GoogleFonts.poppins(
                           fontSize: 13,
                           color: Colors.grey[800],

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:uuid/uuid.dart';
+import '../../../shared/widgets/rounded_button.dart';
+import '../../../models/task_model.dart';
 import 'date_picker_button.dart';
 import 'time_picker_button.dart';
-import '../../../shared/widgets/rounded_button.dart';
 
 class TaskForm extends StatefulWidget {
-  final Function(Map<String, dynamic>) onSubmit;
+  final Function(TaskModel) onSubmit;
 
   const TaskForm({super.key, required this.onSubmit});
 
@@ -21,30 +23,57 @@ class _TaskFormState extends State<TaskForm> {
   String _priority = 'Média';
 
   void _save() {
-    if (_titleController.text.trim().isEmpty) return;
+    final titulo = _titleController.text.trim();
 
-    final item = {
-      'title': _titleController.text.trim(),
-      'subtitle': _notesController.text.trim(),
-      'priority': _priority,
-      'done': false,
-      'dateTime': _formatDateTime(),
-    };
+    if (titulo.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Preencha o título da tarefa.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
 
-    widget.onSubmit(item);
-    Navigator.pop(context);
+    final now = DateTime.now();
+    final date = _selectedDate ?? now;
+    final time = _selectedTime != null
+        ? DateTime(date.year, date.month, date.day, _selectedTime!.hour, _selectedTime!.minute)
+        : date;
+
+    final novaTarefa = TaskModel(
+      id: const Uuid().v4(),
+      titulo: titulo,
+      data: time,
+      status: StatusTarefa.pendente,
+      categoria: _notesController.text.trim(),
+      prioridade: _prioridadeParaInt(_priority),
+    );
+
+    try {
+      widget.onSubmit(novaTarefa);
+      Navigator.pop(context);
+    } catch (e) {
+      debugPrint('Erro ao adicionar tarefa: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Erro ao adicionar tarefa.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
-  String _formatDateTime() {
-    final date = _selectedDate != null
-        ? '${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}'
-        : 'Sem data';
-
-    final time = _selectedTime != null
-        ? '${_selectedTime!.hour.toString().padLeft(2, '0')}:${_selectedTime!.minute.toString().padLeft(2, '0')}'
-        : 'Sem hora';
-
-    return '$date às $time';
+  int _prioridadeParaInt(String valor) {
+    switch (valor) {
+      case 'Alta':
+        return 3;
+      case 'Média':
+        return 2;
+      case 'Baixa':
+      default:
+        return 1;
+    }
   }
 
   @override
@@ -105,7 +134,7 @@ class _TaskFormState extends State<TaskForm> {
             controller: _notesController,
             maxLines: 3,
             decoration: InputDecoration(
-              labelText: 'Notas',
+              labelText: 'Notas (Categoria)',
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             ),
           ),
@@ -131,3 +160,4 @@ class _TaskFormState extends State<TaskForm> {
     );
   }
 }
+

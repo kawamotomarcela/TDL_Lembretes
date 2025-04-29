@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:grupotdl/pages/tasks/widgets/task_card.dart';
+import '../../../models/task_model.dart';
+import 'task_card.dart';
 
 class TaskSection extends StatelessWidget {
   final String title;
-  final List<Map<String, dynamic>> tasks;
-  final Function(Map<String, dynamic>) onToggle;
+  final List<TaskModel> tasks;
+  final Function(TaskModel) onToggle;
 
   const TaskSection({
     super.key,
@@ -12,6 +13,17 @@ class TaskSection extends StatelessWidget {
     required this.tasks,
     required this.onToggle,
   });
+
+  String _statusParaTexto(StatusTarefa status) {
+    switch (status) {
+      case StatusTarefa.pendente:
+        return 'pendente';
+      case StatusTarefa.andamento:
+        return 'em andamento';
+      case StatusTarefa.concluida:
+        return 'concluída';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,15 +42,17 @@ class TaskSection extends StatelessWidget {
             ),
           ),
         ),
-        ...tasks.map((tarefa) => TaskCard(
-              title: tarefa['title'],
-              subtitle: tarefa['subtitle'],
-              status: tarefa['status'],
-              dateTime: tarefa['dateTime'],
-              priority: tarefa['priority'],
-              onChanged: () => onToggle(tarefa),
+        ...tasks.map((task) => TaskCard(
+              title: task.titulo,
+              subtitle: task.categoria,
+              status: _statusParaTexto(task.status),
+              dateTime:
+                  '${task.data.day.toString().padLeft(2, '0')}/${task.data.month.toString().padLeft(2, '0')} às ${task.data.hour.toString().padLeft(2, '0')}:${task.data.minute.toString().padLeft(2, '0')}',
+              priority: task.prioridade,
+              onChanged: () => onToggle(task),
             )),
       ],
     );
   }
 }
+

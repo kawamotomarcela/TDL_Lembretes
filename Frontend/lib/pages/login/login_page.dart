@@ -31,7 +31,7 @@ class _LoginPageState extends State<LoginPage> {
       if (!mounted) return;
 
       if (token != null) {
-        Navigator.pushReplacementNamed(context, AppRoutes.home);
+        Navigator.pushReplacementNamed(context, AppRoutes.main);
       } else {
         showSnackBar(context, "Erro ao fazer login!", color: Colors.red);
       }

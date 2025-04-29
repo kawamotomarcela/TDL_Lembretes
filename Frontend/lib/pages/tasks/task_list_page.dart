@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
-import 'widgets/task_section.dart';
+import 'package:provider/provider.dart';
+import '../../../models/task_model.dart';
+import '../../../providers/task_provider.dart';
 import 'widgets/task_form.dart';
+import 'widgets/task_section.dart';
 
 class TaskListPage extends StatefulWidget {
   const TaskListPage({super.key});
@@ -11,31 +14,6 @@ class TaskListPage extends StatefulWidget {
 
 class _TaskListPageState extends State<TaskListPage> {
   final TextEditingController _searchController = TextEditingController();
-
-  final List<Map<String, dynamic>> _tasks = [
-    {
-      'title': 'Apresentar relatório',
-      'subtitle': 'Reunião com equipe',
-      'status': 'pendente',
-      'priority': 'Alta',
-      'dateTime': '26/04/2025 às 14:00',
-    },
-    {
-      'title': 'Enviar email de follow-up',
-      'subtitle': 'Cliente XPTO',
-      'status': 'concluída',
-      'priority': 'Média',
-      'dateTime': '25/04/2025 às 10:30',
-    },
-    {
-      'title': 'Montar proposta comercial',
-      'subtitle': 'Projeto ABC',
-      'status': 'em andamento',
-      'priority': 'Baixa',
-      'dateTime': '28/04/2025 às 09:00',
-    },
-  ];
-
   String _filter = '';
 
   @override
@@ -48,28 +26,26 @@ class _TaskListPageState extends State<TaskListPage> {
     });
   }
 
-  void _toggleTask(Map<String, dynamic> task) {
-    setState(() {
-      if (task['status'] == 'pendente') {
-        task['status'] = 'em andamento';
-      } else if (task['status'] == 'em andamento') {
-        task['status'] = 'concluída';
-      } else {
-        task['status'] = 'pendente';
-      }
-    });
+  void _adicionarTarefa(TaskModel novaTarefa) {
+    Provider.of<TaskProvider>(context, listen: false).adicionar(novaTarefa);
+  }
+
+  void _alternarStatus(TaskModel tarefa) {
+    Provider.of<TaskProvider>(context, listen: false).alternarStatus(tarefa.id);
   }
 
   @override
   Widget build(BuildContext context) {
-    final filteredTasks = _tasks.where((task) {
-      return task['title'].toLowerCase().contains(_filter) ||
-          task['subtitle'].toLowerCase().contains(_filter);
+    final tarefas = context.watch<TaskProvider>().tarefas;
+
+    final tarefasFiltradas = tarefas.where((t) {
+      return t.titulo.toLowerCase().contains(_filter) ||
+             t.categoria.toLowerCase().contains(_filter);
     }).toList();
 
-    final pending = filteredTasks.where((t) => t['status'] == 'pendente').toList();
-    final inProgress = filteredTasks.where((t) => t['status'] == 'em andamento').toList();
-    final completed = filteredTasks.where((t) => t['status'] == 'concluída').toList();
+    final pendentes = tarefasFiltradas.where((t) => t.status == StatusTarefa.pendente).toList();
+    final andamento = tarefasFiltradas.where((t) => t.status == StatusTarefa.andamento).toList();
+    final concluidas = tarefasFiltradas.where((t) => t.status == StatusTarefa.concluida).toList();
 
     return Scaffold(
       body: Column(
@@ -92,18 +68,18 @@ class _TaskListPageState extends State<TaskListPage> {
               children: [
                 TaskSection(
                   title: '📌 Pendentes',
-                  tasks: pending,
-                  onToggle: _toggleTask,
+                  tasks: pendentes,
+                  onToggle: _alternarStatus,
                 ),
                 TaskSection(
                   title: '⏳ Em Andamento',
-                  tasks: inProgress,
-                  onToggle: _toggleTask,
+                  tasks: andamento,
+                  onToggle: _alternarStatus,
                 ),
                 TaskSection(
                   title: '✅ Concluídas',
-                  tasks: completed,
-                  onToggle: _toggleTask,
+                  tasks: concluidas,
+                  onToggle: _alternarStatus,
                 ),
               ],
             ),
@@ -118,18 +94,7 @@ class _TaskListPageState extends State<TaskListPage> {
           showModalBottomSheet(
             context: context,
             isScrollControlled: true,
-            builder: (context) => TaskForm(
-              onSubmit: (task) {
-                task['status'] = 'pendente'; 
-                setState(() => _tasks.add(task));
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Tarefa adicionada!'),
-                    backgroundColor: Colors.green,
-                  ),
-                );
-              },
-            ),
+            builder: (_) => TaskForm(onSubmit: _adicionarTarefa),
           );
         },
         child: const Icon(Icons.add, color: Colors.white),
