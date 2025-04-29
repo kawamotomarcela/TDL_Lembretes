@@ -14,7 +14,7 @@ class TaskSection extends StatelessWidget {
     required this.onToggle,
   });
 
-  String _statusParaTexto(StatusTarefa status) {
+  String _statusToText(StatusTarefa status) {
     switch (status) {
       case StatusTarefa.pendente:
         return 'pendente';
@@ -45,7 +45,7 @@ class TaskSection extends StatelessWidget {
         ...tasks.map((task) => TaskCard(
               title: task.titulo,
               subtitle: task.categoria,
-              status: _statusParaTexto(task.status),
+              status: _statusToText(task.status),
               dateTime:
                   '${task.data.day.toString().padLeft(2, '0')}/${task.data.month.toString().padLeft(2, '0')} às ${task.data.hour.toString().padLeft(2, '0')}:${task.data.minute.toString().padLeft(2, '0')}',
               priority: task.prioridade,

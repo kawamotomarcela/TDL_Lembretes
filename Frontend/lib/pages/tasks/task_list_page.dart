@@ -36,17 +36,6 @@ class _TaskListPageState extends State<TaskListPage> {
 
   @override
   Widget build(BuildContext context) {
-    final tarefas = context.watch<TaskProvider>().tarefas;
-
-    final tarefasFiltradas = tarefas.where((t) {
-      return t.titulo.toLowerCase().contains(_filter) ||
-             t.categoria.toLowerCase().contains(_filter);
-    }).toList();
-
-    final pendentes = tarefasFiltradas.where((t) => t.status == StatusTarefa.pendente).toList();
-    final andamento = tarefasFiltradas.where((t) => t.status == StatusTarefa.andamento).toList();
-    final concluidas = tarefasFiltradas.where((t) => t.status == StatusTarefa.concluida).toList();
-
     return Scaffold(
       body: Column(
         children: [
@@ -64,24 +53,25 @@ class _TaskListPageState extends State<TaskListPage> {
             ),
           ),
           Expanded(
-            child: ListView(
-              children: [
-                TaskSection(
-                  title: '📌 Pendentes',
-                  tasks: pendentes,
-                  onToggle: _alternarStatus,
-                ),
-                TaskSection(
-                  title: '⏳ Em Andamento',
-                  tasks: andamento,
-                  onToggle: _alternarStatus,
-                ),
-                TaskSection(
-                  title: '✅ Concluídas',
-                  tasks: concluidas,
-                  onToggle: _alternarStatus,
-                ),
-              ],
+            child: Consumer<TaskProvider>(
+              builder: (context, provider, _) {
+                final tarefas = provider.tarefas;
+                final filtradas = tarefas.where((t) =>
+                  t.titulo.toLowerCase().contains(_filter) ||
+                  t.categoria.toLowerCase().contains(_filter)).toList();
+
+                final pendentes = filtradas.where((t) => t.status == StatusTarefa.pendente).toList();
+                final andamento = filtradas.where((t) => t.status == StatusTarefa.andamento).toList();
+                final concluidas = filtradas.where((t) => t.status == StatusTarefa.concluida).toList();
+
+                return ListView(
+                  children: [
+                    TaskSection(title: '📌 Pendentes', tasks: pendentes, onToggle: _alternarStatus),
+                    TaskSection(title: '⏳ Em Andamento', tasks: andamento, onToggle: _alternarStatus),
+                    TaskSection(title: '✅ Concluídas', tasks: concluidas, onToggle: _alternarStatus),
+                  ],
+                );
+              },
             ),
           ),
         ],
@@ -102,3 +92,4 @@ class _TaskListPageState extends State<TaskListPage> {
     );
   }
 }
+

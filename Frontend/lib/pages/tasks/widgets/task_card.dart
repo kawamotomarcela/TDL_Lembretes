@@ -6,7 +6,7 @@ class TaskCard extends StatelessWidget {
   final String subtitle;
   final String status;
   final String? dateTime;
-  final int priority; // agora é int (1 = baixa, 2 = média, 3 = alta)
+  final int priority;
   final VoidCallback onChanged;
 
   const TaskCard({
@@ -19,33 +19,22 @@ class TaskCard extends StatelessWidget {
     this.dateTime,
   });
 
-  Color _getPriorityColor() {
-    switch (priority) {
+  Color _getPriorityColor(int prioridade) {
+    switch (prioridade) {
       case 3:
         return Colors.red;
       case 2:
         return Colors.amber;
       case 1:
-      default:
         return Colors.green;
-    }
-  }
-
-  String _getPriorityText() {
-    switch (priority) {
-      case 3:
-        return 'Alta';
-      case 2:
-        return 'Média';
-      case 1:
       default:
-        return 'Baixa';
+        return Colors.grey;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final isDone = status == 'concluída';
+    final isConcluida = status == 'concluída';
 
     return Card(
       elevation: 2,
@@ -62,11 +51,11 @@ class TaskCard extends StatelessWidget {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(color: Colors.grey, width: 2),
-                  color: isDone ? Colors.green : Colors.transparent,
+                  color: isConcluida ? Colors.green : Colors.transparent,
                 ),
                 width: 24,
                 height: 24,
-                child: isDone
+                child: isConcluida
                     ? const Icon(Icons.check, size: 16, color: Colors.white)
                     : null,
               ),
@@ -81,8 +70,9 @@ class TaskCard extends StatelessWidget {
                     style: GoogleFonts.poppins(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
-                      decoration: isDone ? TextDecoration.lineThrough : null,
-                      color: isDone ? Colors.grey : Colors.black,
+                      decoration:
+                          isConcluida ? TextDecoration.lineThrough : null,
+                      color: isConcluida ? Colors.grey : Colors.black,
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -97,7 +87,8 @@ class TaskCard extends StatelessWidget {
                   Row(
                     children: [
                       if (dateTime != null) ...[
-                        const Icon(Icons.access_time, size: 16, color: Colors.red),
+                        const Icon(Icons.access_time,
+                            size: 16, color: Colors.red),
                         const SizedBox(width: 6),
                         Text(
                           dateTime!,
@@ -113,12 +104,12 @@ class TaskCard extends StatelessWidget {
                         height: 8,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: _getPriorityColor(),
+                          color: _getPriorityColor(priority),
                         ),
                       ),
                       const SizedBox(width: 6),
                       Text(
-                        _getPriorityText(),
+                        _priorityToText(priority),
                         style: GoogleFonts.poppins(
                           fontSize: 13,
                           color: Colors.grey[800],
@@ -133,5 +124,18 @@ class TaskCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _priorityToText(int prioridade) {
+    switch (prioridade) {
+      case 3:
+        return 'Alta';
+      case 2:
+        return 'Média';
+      case 1:
+        return 'Baixa';
+      default:
+        return 'Desconhecida';
+    }
   }
 }
