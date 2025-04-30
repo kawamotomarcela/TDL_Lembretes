@@ -11,12 +11,11 @@ class TaskProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void alternarStatus(String id) {
+  void concluir(String id) {
     final index = _tarefas.indexWhere((t) => t.id == id);
     if (index != -1) {
-      final statusAtual = _tarefas[index].status;
-      final proximoStatus = _proximoStatus(statusAtual);
-      _tarefas[index] = _tarefas[index].copyWith(status: proximoStatus);
+      final tarefa = _tarefas[index];
+      _tarefas[index] = tarefa.copyWith(status: tarefa.proximoStatus());
       notifyListeners();
     }
   }
@@ -24,16 +23,5 @@ class TaskProvider extends ChangeNotifier {
   void remover(String id) {
     _tarefas.removeWhere((t) => t.id == id);
     notifyListeners();
-  }
-
-  StatusTarefa _proximoStatus(StatusTarefa atual) {
-    switch (atual) {
-      case StatusTarefa.pendente:
-        return StatusTarefa.andamento;
-      case StatusTarefa.andamento:
-        return StatusTarefa.concluida;
-      case StatusTarefa.concluida:
-        return StatusTarefa.pendente;
-    }
   }
 }

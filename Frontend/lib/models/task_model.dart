@@ -38,5 +38,16 @@ class TaskModel {
       status: status ?? this.status,
     );
   }
+
+  StatusTarefa proximoStatus() {
+    switch (status) {
+      case StatusTarefa.pendente:
+        return StatusTarefa.andamento;
+      case StatusTarefa.andamento:
+        return StatusTarefa.concluida;
+      case StatusTarefa.concluida:
+        return StatusTarefa.pendente;
+    }
+  }
 }
 

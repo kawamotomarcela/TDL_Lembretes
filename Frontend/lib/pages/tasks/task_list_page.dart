@@ -31,7 +31,7 @@ class _TaskListPageState extends State<TaskListPage> {
   }
 
   void _alternarStatus(TaskModel tarefa) {
-    Provider.of<TaskProvider>(context, listen: false).alternarStatus(tarefa.id);
+    Provider.of<TaskProvider>(context, listen: false).concluir(tarefa.id);
   }
 
   @override

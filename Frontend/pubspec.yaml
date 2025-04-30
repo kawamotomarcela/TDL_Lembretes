@@ -11,6 +11,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
   curved_navigation_bar: ^1.0.6
   phosphor_flutter: ^2.0.0
   cupertino_icons: ^1.0.8
@@ -18,7 +20,7 @@ dependencies:
   board_datetime_picker: 2.5.0
   table_calendar: ^3.0.9
   fl_chart: ^0.63.0
-  intl: ^0.18.1
+  intl: ^0.19.0
   google_fonts: ^6.1.0
   http: ^1.2.0
   shared_preferences: ^2.2.2
@@ -29,7 +31,6 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
-
 
 flutter:
   uses-material-design: true
