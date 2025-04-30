@@ -24,7 +24,7 @@ class _MainPageState extends State<MainPage> {
   void initState() {
     super.initState();
     _pages = [
-      const HomePage(userName: 'Naeem'),
+      const HomePage(),
       const TaskListPage(),
       const CalendarPage(),
       LojaPage(),

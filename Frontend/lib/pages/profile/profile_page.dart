@@ -48,51 +48,66 @@ class _ProfilePageState extends State<ProfilePage> {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8F3FD),
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: Column(
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+        child: Column(
+          children: [
+            Stack(
               children: [
-                Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    CircleAvatar(
-                      radius: 50,
-                      backgroundImage: isNetwork
-                          ? NetworkImage(_imageUrl) as ImageProvider
-                          : AssetImage(_imageUrl),
-                    ),
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: GestureDetector(
-                        onTap: _changeImage,
-                        child: Container(
-                          decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.white,
-                          ),
-                          padding: const EdgeInsets.all(4),
-                          child: const Icon(Icons.edit, size: 20),
-                        ),
+                Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                TextButton(
-                  onPressed: _changeImage,
-                  child: const Text(
-                    'Selecionar nova imagem',
-                    style: TextStyle(color: Colors.indigo),
+                    ],
+                  ),
+                  child: CircleAvatar(
+                    radius: 60,
+                    backgroundImage: isNetwork
+                        ? NetworkImage(_imageUrl) as ImageProvider
+                        : AssetImage(_imageUrl),
                   ),
                 ),
-                const SizedBox(height: 20),
-                const ProfileForm(),
+                Positioned(
+                  bottom: 0,
+                  right: 4,
+                  child: GestureDetector(
+                    onTap: _changeImage,
+                    child: Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: const Color.fromARGB(255, 153, 155, 170),
+                        border: Border.all(color: Colors.white, width: 2),
+                      ),
+                      child: const Icon(
+                        Icons.edit,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ),
-          ),
+            const SizedBox(height: 12),
+            TextButton(
+              onPressed: _changeImage,
+              child: const Text(
+                'Alterar imagem de perfil',
+                style: TextStyle(
+                  color: Colors.indigo,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
+            const ProfileForm(),
+          ],
         ),
       ),
     );

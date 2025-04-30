@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:grupotdl/pages/store/widgets/product_card.dart';
 import 'package:grupotdl/pages/store/widgets/info_store.dart';
 import 'package:grupotdl/pages/store/widgets/total_points_card.dart';
+import 'package:grupotdl/providers/usuario_provider.dart';
 
 class LojaPage extends StatelessWidget {
   LojaPage({super.key});
@@ -19,10 +21,9 @@ class LojaPage extends StatelessWidget {
     },
   ];
 
-  final int totalPontos = 672;
-
   @override
   Widget build(BuildContext context) {
+    final usuario = context.watch<UsuarioProvider>().usuario;
     final screenWidth = MediaQuery.of(context).size.width;
     final crossAxisCount = screenWidth < 600 ? 2 : 3;
 
@@ -35,7 +36,10 @@ class LojaPage extends StatelessWidget {
             children: [
               const InfoCard(),
               const SizedBox(height: 12),
-              TotalPointsCard(total: totalPontos),
+
+              // 👉 Exibe pontos reais do usuário (ou 0 se null)
+              TotalPointsCard(total: usuario?.pontos ?? 0),
+
               const SizedBox(height: 20),
               GridView.builder(
                 shrinkWrap: true,

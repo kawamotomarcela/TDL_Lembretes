@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../../utils/show_snackbar.dart';
 import '../../../utils/validators.dart';
+import '../../../providers/usuario_provider.dart';
 
 class ProfileForm extends StatefulWidget {
   const ProfileForm({super.key});
@@ -11,12 +13,24 @@ class ProfileForm extends StatefulWidget {
 
 class _ProfileFormState extends State<ProfileForm> {
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController(text: "Fulano Legal");
-  final _phoneController = TextEditingController(text: "(11) 91234-5678");
-  final _emailController = TextEditingController(text: "fulanolegal@email.com");
+
+  late final TextEditingController _nameController;
+  late final TextEditingController _phoneController;
+  late final TextEditingController _emailController;
+
+  @override
+  void initState() {
+    super.initState();
+    final usuario = Provider.of<UsuarioProvider>(context, listen: false).usuario;
+
+    _nameController = TextEditingController(text: usuario?.nome ?? '');
+    _phoneController = TextEditingController(text: usuario?.telefone ?? '');
+    _emailController = TextEditingController(text: usuario?.email ?? '');
+  }
 
   void _saveProfile() {
     if (_formKey.currentState!.validate()) {
+      // Aqui você poderia chamar um serviço de atualização no banco
       showSnackBar(context, 'Perfil atualizado com sucesso!', color: Colors.green);
     }
   }

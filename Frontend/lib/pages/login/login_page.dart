@@ -22,33 +22,36 @@ class _LoginPageState extends State<LoginPage> {
   bool _obscureText = true;
   bool _rememberMe = false;
 
-void _login() async {
-  if (_emailController.text.isNotEmpty && _passwordController.text.isNotEmpty) {
-    try {
-      final response = await AuthService.login(
-        _emailController.text.trim(),
-        _passwordController.text.trim(),
-      );
+  void _login() async {
+    if (_emailController.text.isNotEmpty && _passwordController.text.isNotEmpty) {
+      try {
+        final response = await AuthService.login(
+          _emailController.text.trim(),
+          _passwordController.text.trim(),
+        );
 
-      if (!mounted) return;
+        if (!mounted) return;
 
-      if (response != null) {
-        final usuario = Usuario.fromJson(response);
-        context.read<UsuarioProvider>().setUsuario(usuario);
+        if (response != null) {
+          // Cria o objeto Usuario a partir da resposta da API
+          final usuario = Usuario.fromJson(response);
 
-        Navigator.pushReplacementNamed(context, AppRoutes.main);
-      } else {
-        showSnackBar(context, "Login inválido ou dados incorretos!", color: Colors.red);
+          // 🔥 Aqui o usuário é salvo no Provider
+          context.read<UsuarioProvider>().setUsuario(usuario);
+
+          // Redireciona para a MainPage
+          Navigator.pushReplacementNamed(context, AppRoutes.main);
+        } else {
+          showSnackBar(context, "Login inválido ou dados incorretos!", color: Colors.red);
+        }
+      } catch (e, stack) {
+        debugPrint('Erro inesperado: $e\n$stack');
+        showSnackBar(context, "Erro inesperado no login!", color: Colors.red);
       }
-    } catch (e, stack) {
-      debugPrint('Erro inesperado: $e\n$stack');
-      showSnackBar(context, "Erro inesperado no login!", color: Colors.red);
+    } else {
+      showSnackBar(context, "Preencha todos os campos!", color: Colors.red);
     }
-  } else {
-    showSnackBar(context, "Preencha todos os campos!", color: Colors.red);
   }
-}
-
 
   @override
   Widget build(BuildContext context) {
@@ -98,8 +101,7 @@ void _login() async {
                     children: [
                       Checkbox(
                         value: _rememberMe,
-                        onChanged:
-                            (value) => setState(() => _rememberMe = value!),
+                        onChanged: (value) => setState(() => _rememberMe = value!),
                         checkColor: Colors.indigo,
                         activeColor: Colors.white,
                       ),
@@ -128,8 +130,7 @@ void _login() async {
 
               const SizedBox(height: 24),
               TextButton(
-                onPressed:
-                    () => Navigator.pushNamed(context, AppRoutes.register),
+                onPressed: () => Navigator.pushNamed(context, AppRoutes.register),
                 child: const Text(
                   "Não tem uma conta? Registre-se",
                   style: TextStyle(
