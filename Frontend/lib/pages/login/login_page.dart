@@ -5,7 +5,9 @@ import '../../shared/widgets/custom_button.dart';
 import '../../shared/widgets/logo_widget.dart';
 import '../../utils/show_snackbar.dart';
 import '../../services/auth_service.dart';
-
+import 'package:provider/provider.dart';
+import '../../models/usuario_model.dart';
+import '../../providers/usuario_provider.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -20,25 +22,33 @@ class _LoginPageState extends State<LoginPage> {
   bool _obscureText = true;
   bool _rememberMe = false;
 
-  void _login() async {
-    if (_emailController.text.isNotEmpty &&
-        _passwordController.text.isNotEmpty) {
-      final token = await AuthService.login(
+void _login() async {
+  if (_emailController.text.isNotEmpty && _passwordController.text.isNotEmpty) {
+    try {
+      final response = await AuthService.login(
         _emailController.text.trim(),
         _passwordController.text.trim(),
       );
 
       if (!mounted) return;
 
-      if (token != null) {
+      if (response != null) {
+        final usuario = Usuario.fromJson(response);
+        context.read<UsuarioProvider>().setUsuario(usuario);
+
         Navigator.pushReplacementNamed(context, AppRoutes.main);
       } else {
-        showSnackBar(context, "Erro ao fazer login!", color: Colors.red);
+        showSnackBar(context, "Login inválido ou dados incorretos!", color: Colors.red);
       }
-    } else {
-      showSnackBar(context, "Preencha todos os campos!", color: Colors.red);
+    } catch (e, stack) {
+      debugPrint('Erro inesperado: $e\n$stack');
+      showSnackBar(context, "Erro inesperado no login!", color: Colors.red);
     }
+  } else {
+    showSnackBar(context, "Preencha todos os campos!", color: Colors.red);
   }
+}
+
 
   @override
   Widget build(BuildContext context) {

@@ -4,19 +4,19 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http/http.dart' as http;
 import 'dart:developer';
 
-
 class AuthService {
   static String getBaseUrl() {
     if (kIsWeb) {
       return 'https://localhost:7008/api/auth';
     } else if (Platform.isAndroid || Platform.isIOS) {
-      return 'https://192.168.1.10:7008/api/auth';
+      return 'https://192.168.1.10:7008/api/auth'; // substitua pelo IP da sua máquina
     } else {
       return 'https://localhost:7008/api/auth';
     }
   }
 
-  static Future<String?> login(String email, String senha) async {
+  // ✅ Login - retorna dados do usuário se sucesso
+  static Future<Map<String, dynamic>?> login(String email, String senha) async {
     final url = Uri.parse('${getBaseUrl()}/signIn');
 
     try {
@@ -26,10 +26,10 @@ class AuthService {
         body: jsonEncode({'email': email, 'senha': senha}),
       );
 
-      if (response.statusCode == 201) {
-        return response.body;
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
       } else {
-        log('Erro login: ${response.body}');
+        log('Erro login: ${response.statusCode} - ${response.body}');
         return null;
       }
     } catch (e) {
@@ -38,7 +38,13 @@ class AuthService {
     }
   }
 
-  static Future<String?> register(String nome, String email, String senha, String telefone) async {
+  // ✅ Registro - retorna token se sucesso
+  static Future<String?> register(
+    String nome,
+    String email,
+    String senha,
+    String telefone,
+  ) async {
     final url = Uri.parse('${getBaseUrl()}/register');
 
     try {
@@ -57,7 +63,7 @@ class AuthService {
         final body = jsonDecode(response.body);
         return body['token'];
       } else {
-        log('Erro cadastro: ${response.body}');
+        log('Erro cadastro: ${response.statusCode} - ${response.body}');
         return null;
       }
     } catch (e) {

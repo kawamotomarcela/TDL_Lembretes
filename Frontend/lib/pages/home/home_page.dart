@@ -23,7 +23,7 @@ class HomePage extends StatelessWidget {
           const SizedBox(height: 20),
           const TaskOverviewWidget(),
           const SizedBox(height: 20),
-          const PointsWidget(points: 120),
+          const PointsWidget(),
           const SizedBox(height: 20),
           const NewsSection(),
         ],

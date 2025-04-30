@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 
 import 'routes/app_routes.dart';
 import 'providers/task_provider.dart';
+import 'providers/usuario_provider.dart'; 
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,6 +15,7 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => TaskProvider()),
+        ChangeNotifierProvider(create: (_) => UsuarioProvider()),
       ],
       child: const MyApp(),
     ),
