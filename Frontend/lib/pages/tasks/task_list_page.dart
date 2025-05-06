@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../models/task_model.dart';
 import '../../../providers/task_provider.dart';
+import '../../../utils/show_snackbar.dart';
 import 'widgets/task_form.dart';
 import 'widgets/task_section.dart';
 
@@ -32,6 +33,20 @@ class _TaskListPageState extends State<TaskListPage> {
 
   void _alternarStatus(TaskModel tarefa) {
     Provider.of<TaskProvider>(context, listen: false).concluir(tarefa.id);
+  }
+
+  void _alternarAlarme(TaskModel tarefa) {
+    Provider.of<TaskProvider>(context, listen: false).alternarAlarme(tarefa.id);
+
+    final novaTarefa = Provider.of<TaskProvider>(context, listen: false)
+        .tarefas
+        .firstWhere((t) => t.id == tarefa.id);
+
+    if (!novaTarefa.alarmeAtivado) {
+      showSnackBar(context, 'Alarme desativado com sucesso', color: Colors.red);
+    } else {
+      showSnackBar(context, 'Alarme ativado com sucesso');
+    }
   }
 
   @override
@@ -66,9 +81,24 @@ class _TaskListPageState extends State<TaskListPage> {
 
                 return ListView(
                   children: [
-                    TaskSection(title: '📌 Pendentes', tasks: pendentes, onToggle: _alternarStatus),
-                    TaskSection(title: '⏳ Em Andamento', tasks: andamento, onToggle: _alternarStatus),
-                    TaskSection(title: '✅ Concluídas', tasks: concluidas, onToggle: _alternarStatus),
+                    TaskSection(
+                      title: '📌 Pendentes',
+                      tasks: pendentes,
+                      onToggle: _alternarStatus,
+                      onAlarmeToggle: _alternarAlarme,
+                    ),
+                    TaskSection(
+                      title: '⏳ Em Andamento',
+                      tasks: andamento,
+                      onToggle: _alternarStatus,
+                      onAlarmeToggle: _alternarAlarme,
+                    ),
+                    TaskSection(
+                      title: '✅ Concluídas',
+                      tasks: concluidas,
+                      onToggle: _alternarStatus,
+                      onAlarmeToggle: _alternarAlarme,
+                    ),
                   ],
                 );
               },

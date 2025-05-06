@@ -8,6 +8,8 @@ class TaskCard extends StatelessWidget {
   final String? dateTime;
   final int priority;
   final VoidCallback onChanged;
+  final bool alarmeAtivado; 
+  final ValueChanged<bool> onAlarmeChanged; 
 
   const TaskCard({
     super.key,
@@ -16,6 +18,8 @@ class TaskCard extends StatelessWidget {
     required this.status,
     required this.priority,
     required this.onChanged,
+    required this.alarmeAtivado, 
+    required this.onAlarmeChanged, 
     this.dateTime,
   });
 
@@ -43,6 +47,7 @@ class TaskCard extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(12),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             GestureDetector(
               onTap: onChanged,
@@ -120,6 +125,17 @@ class TaskCard extends StatelessWidget {
                 ],
               ),
             ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text('Alarme', style: TextStyle(fontSize: 12)),
+                Switch(
+                  value: alarmeAtivado,
+                  onChanged: onAlarmeChanged,
+                  activeColor: Colors.blue,
+                ),
+              ],
+            ),
           ],
         ),
       ),
@@ -139,3 +155,4 @@ class TaskCard extends StatelessWidget {
     }
   }
 }
+

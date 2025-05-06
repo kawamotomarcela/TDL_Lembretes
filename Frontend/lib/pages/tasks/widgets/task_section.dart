@@ -6,12 +6,14 @@ class TaskSection extends StatelessWidget {
   final String title;
   final List<TaskModel> tasks;
   final Function(TaskModel) onToggle;
+  final Function(TaskModel)? onAlarmeToggle;
 
   const TaskSection({
     super.key,
     required this.title,
     required this.tasks,
     required this.onToggle,
+    this.onAlarmeToggle,
   });
 
   String _statusToText(StatusTarefa status) {
@@ -50,6 +52,12 @@ class TaskSection extends StatelessWidget {
                   '${task.data.day.toString().padLeft(2, '0')}/${task.data.month.toString().padLeft(2, '0')} às ${task.data.hour.toString().padLeft(2, '0')}:${task.data.minute.toString().padLeft(2, '0')}',
               priority: task.prioridade,
               onChanged: () => onToggle(task),
+              alarmeAtivado: task.alarmeAtivado,
+              onAlarmeChanged: (bool newValue) {
+                if (onAlarmeToggle != null) {
+                  onAlarmeToggle!(task);
+                }
+              },
             )),
       ],
     );

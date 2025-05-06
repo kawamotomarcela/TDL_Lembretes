@@ -20,8 +20,19 @@ class TaskProvider extends ChangeNotifier {
     }
   }
 
+  void alternarAlarme(String id) {
+    final index = _tarefas.indexWhere((t) => t.id == id);
+    if (index != -1) {
+      final tarefa = _tarefas[index];
+      _tarefas[index] = tarefa.copyWith(alarmeAtivado: !tarefa.alarmeAtivado);
+      notifyListeners();
+    }
+  }
+
   void remover(String id) {
     _tarefas.removeWhere((t) => t.id == id);
     notifyListeners();
   }
 }
+
+

@@ -59,7 +59,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
+                        color: Colors.black.withAlpha((0.1 * 255).toInt()),
                         blurRadius: 10,
                         offset: const Offset(0, 4),
                       ),

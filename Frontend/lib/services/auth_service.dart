@@ -9,13 +9,12 @@ class AuthService {
     if (kIsWeb) {
       return 'https://localhost:7008/api/auth';
     } else if (Platform.isAndroid || Platform.isIOS) {
-      return 'https://192.168.1.10:7008/api/auth'; // substitua pelo IP da sua máquina
+      return 'https://192.168.1.10:7008/api/auth'; 
     } else {
       return 'https://localhost:7008/api/auth';
     }
   }
 
-  // ✅ Login - retorna dados do usuário se sucesso
   static Future<Map<String, dynamic>?> login(String email, String senha) async {
     final url = Uri.parse('${getBaseUrl()}/signIn');
 
@@ -38,7 +37,6 @@ class AuthService {
     }
   }
 
-  // ✅ Registro - retorna token se sucesso
   static Future<String?> register(
     String nome,
     String email,

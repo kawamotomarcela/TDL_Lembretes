@@ -11,6 +11,7 @@ class TaskModel {
   final String categoria;
   final int prioridade;
   final StatusTarefa status;
+  final bool alarmeAtivado;
 
   TaskModel({
     required this.id,
@@ -19,6 +20,7 @@ class TaskModel {
     required this.categoria,
     required this.prioridade,
     this.status = StatusTarefa.pendente,
+    this.alarmeAtivado = false,
   });
 
   TaskModel copyWith({
@@ -28,6 +30,7 @@ class TaskModel {
     String? categoria,
     int? prioridade,
     StatusTarefa? status,
+    bool? alarmeAtivado,
   }) {
     return TaskModel(
       id: id ?? this.id,
@@ -36,6 +39,7 @@ class TaskModel {
       categoria: categoria ?? this.categoria,
       prioridade: prioridade ?? this.prioridade,
       status: status ?? this.status,
+      alarmeAtivado: alarmeAtivado ?? this.alarmeAtivado,
     );
   }
 
@@ -49,5 +53,9 @@ class TaskModel {
         return StatusTarefa.pendente;
     }
   }
-}
 
+  @override
+  String toString() {
+    return 'TaskModel(id: $id, titulo: $titulo, status: $status, alarme: $alarmeAtivado)';
+  }
+}
