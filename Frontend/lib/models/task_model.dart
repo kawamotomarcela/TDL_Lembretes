@@ -54,6 +54,30 @@ class TaskModel {
     }
   }
 
+  factory TaskModel.fromMap(Map<String, dynamic> map) {
+    return TaskModel(
+      id: map['id'] as String,
+      titulo: map['titulo'] as String,
+      data: DateTime.parse(map['data'] as String),
+      categoria: map['categoria'] as String,
+      prioridade: map['prioridade'] as int,
+      status: StatusTarefa.values[map['status'] as int],
+      alarmeAtivado: map['alarmeAtivado'] == 1 || map['alarmeAtivado'] == true,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'titulo': titulo,
+      'data': data.toIso8601String(),
+      'categoria': categoria,
+      'prioridade': prioridade,
+      'status': status.index, 
+      'alarmeAtivado': alarmeAtivado ? 1 : 0, 
+    };
+  }
+
   @override
   String toString() {
     return 'TaskModel(id: $id, titulo: $titulo, status: $status, alarme: $alarmeAtivado)';

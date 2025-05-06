@@ -33,7 +33,8 @@ class _LoginPageState extends State<LoginPage> {
         if (!mounted) return;
 
         if (response != null) {
-          final usuario = Usuario.fromJson(response);
+          // Alterado para usar fromMap ao invés de fromJson
+          final usuario = Usuario.fromMap(response);
 
           context.read<UsuarioProvider>().setUsuario(usuario);
           
