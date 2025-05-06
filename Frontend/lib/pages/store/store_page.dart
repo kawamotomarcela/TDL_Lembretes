@@ -37,7 +37,6 @@ class LojaPage extends StatelessWidget {
               const InfoCard(),
               const SizedBox(height: 12),
 
-              // 👉 Exibe pontos reais do usuário (ou 0 se null)
               TotalPointsCard(total: usuario?.pontos ?? 0),
 
               const SizedBox(height: 20),

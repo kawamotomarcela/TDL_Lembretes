@@ -5,15 +5,17 @@ import 'package:provider/provider.dart';
 
 import 'routes/app_routes.dart';
 import 'providers/task_provider.dart';
-import 'providers/usuario_provider.dart'; 
+import 'providers/usuario_provider.dart';
+import 'providers/theme_provider.dart'; 
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await initializeDateFormatting('pt_BR', null);
+  await initializeDateFormatting('pt_BR', null); 
 
   runApp(
     MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (_) => ThemeProvider()), 
         ChangeNotifierProvider(create: (_) => TaskProvider()),
         ChangeNotifierProvider(create: (_) => UsuarioProvider()),
       ],
@@ -27,10 +29,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+
     return MaterialApp(
       title: 'TDL Lembretes',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(primarySwatch: Colors.indigo),
+      theme: ThemeData.light(),
+      darkTheme: ThemeData.dark(),
+      themeMode: themeProvider.themeMode, 
       initialRoute: AppRoutes.login,
       routes: AppRoutes.routes,
       locale: const Locale('pt', 'BR'),
@@ -46,5 +52,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
-

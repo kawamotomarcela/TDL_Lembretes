@@ -47,8 +47,8 @@ void main() {
       );
 
       provider.adicionar(tarefa);
-      provider.concluir(tarefa.id); // -> andamento
-      provider.concluir(tarefa.id); // -> concluída
+      provider.concluir(tarefa.id); 
+      provider.concluir(tarefa.id); 
 
       expect(provider.tarefas.first.status, StatusTarefa.concluida);
     });
@@ -65,7 +65,7 @@ void main() {
       );
 
       provider.adicionar(tarefa);
-      provider.concluir(tarefa.id); // -> pendente
+      provider.concluir(tarefa.id); 
 
       expect(provider.tarefas.first.status, StatusTarefa.pendente);
     });

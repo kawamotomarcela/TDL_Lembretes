@@ -2,21 +2,26 @@ import 'dart:convert';
 import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:developer';
 
 class AuthService {
-  static String getBaseUrl() {
+  static Future<String> getBaseUrl() async {
     if (kIsWeb) {
       return 'https://localhost:7008/api/auth';
-    } else if (Platform.isAndroid || Platform.isIOS) {
-      return 'https://192.168.1.10:7008/api/auth'; 
-    } else {
-      return 'https://localhost:7008/api/auth';
     }
+
+    if (Platform.isAndroid || Platform.isIOS) {
+      final prefs = await SharedPreferences.getInstance();
+      final ip = prefs.getString('ipAddress') ?? '000.000.000'; //COLOCA IP AQUI 
+      return 'http://$ip:7008/api/auth';
+    }
+
+    return 'https://localhost:7008/api/auth';
   }
 
   static Future<Map<String, dynamic>?> login(String email, String senha) async {
-    final url = Uri.parse('${getBaseUrl()}/signIn');
+    final url = Uri.parse('${await getBaseUrl()}/signIn');
 
     try {
       final response = await http.post(
@@ -43,7 +48,7 @@ class AuthService {
     String senha,
     String telefone,
   ) async {
-    final url = Uri.parse('${getBaseUrl()}/register');
+    final url = Uri.parse('${await getBaseUrl()}/register');
 
     try {
       final response = await http.post(

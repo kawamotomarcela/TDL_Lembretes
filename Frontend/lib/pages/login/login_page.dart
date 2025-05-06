@@ -33,13 +33,10 @@ class _LoginPageState extends State<LoginPage> {
         if (!mounted) return;
 
         if (response != null) {
-          // Cria o objeto Usuario a partir da resposta da API
           final usuario = Usuario.fromJson(response);
 
-          // 🔥 Aqui o usuário é salvo no Provider
           context.read<UsuarioProvider>().setUsuario(usuario);
-
-          // Redireciona para a MainPage
+          
           Navigator.pushReplacementNamed(context, AppRoutes.main);
         } else {
           showSnackBar(context, "Login inválido ou dados incorretos!", color: Colors.red);

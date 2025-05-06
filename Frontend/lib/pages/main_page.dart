@@ -4,6 +4,7 @@ import 'tasks/task_list_page.dart';
 import 'store/store_page.dart';
 import 'profile/profile_page.dart';
 import 'about/about_page.dart';
+import 'settings/settings_page.dart'; // Import da nova tela de configurações
 import '../routes/app_routes.dart';
 import 'home/home_page.dart';
 
@@ -62,19 +63,18 @@ class _MainPageState extends State<MainPage> {
   }
 
   void _onSettingsSelected(String value) {
-    if (value == 'sobre') {
+    if (value == 'config') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const SettingsPage()),
+      );
+    } else if (value == 'sobre') {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => const AboutPage()),
       );
     } else if (value == 'sair') {
       _logout();
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Funcionalidade em desenvolvimento'),
-        ),
-      );
     }
   }
 
@@ -96,6 +96,13 @@ class _MainPageState extends State<MainPage> {
             icon: const Icon(Icons.settings),
             onSelected: _onSettingsSelected,
             itemBuilder: (context) => const [
+              PopupMenuItem(
+                value: 'config',
+                child: ListTile(
+                  leading: Icon(Icons.settings),
+                  title: Text('Configurações'),
+                ),
+              ),
               PopupMenuItem(
                 value: 'sobre',
                 child: ListTile(
