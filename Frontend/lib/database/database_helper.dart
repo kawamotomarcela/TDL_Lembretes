@@ -1,5 +1,3 @@
-// lib/database/database_helper.dart
-
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
@@ -7,19 +5,13 @@ class DatabaseHelper {
   static const String _dbName = 'tasks_database.db';
   static const int _dbVersion = 1;
 
-  static DatabaseHelper? _instance;
+  static final DatabaseHelper instance = DatabaseHelper._internal();
   static Database? _database;
 
   DatabaseHelper._internal();
 
-  static DatabaseHelper get instance {
-    _instance ??= DatabaseHelper._internal();
-    return _instance!;
-  }
-
   Future<Database> get database async {
-    if (_database != null) return _database!;
-    _database = await _initDatabase();
+    _database ??= await _initDatabase();
     return _database!;
   }
 
@@ -40,11 +32,11 @@ class DatabaseHelper {
       CREATE TABLE tasks (
         id TEXT PRIMARY KEY,
         titulo TEXT NOT NULL,
-        data INTEGER NOT NULL,
+        data TEXT NOT NULL, -- ISO 8601 String (salvo como TEXT)
         categoria TEXT NOT NULL,
         prioridade INTEGER NOT NULL,
-        status TEXT NOT NULL,
-        alarmeAtivado INTEGER NOT NULL
+        status INTEGER NOT NULL, -- índice do enum StatusTarefa
+        alarmeAtivado INTEGER NOT NULL -- 0 ou 1
       )
     ''');
 
@@ -60,5 +52,12 @@ class DatabaseHelper {
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < newVersion) {
+    }
+  }
+
+  Future<void> close() async {
+    final db = await database;
+    db.close();
   }
 }

@@ -1,66 +1,62 @@
 import 'package:flutter/material.dart';
 import '../../../models/task_model.dart';
-import 'task_card.dart';
 
 class TaskSection extends StatelessWidget {
   final String title;
   final List<TaskModel> tasks;
   final Function(TaskModel) onToggle;
-  final Function(TaskModel)? onAlarmeToggle;
+  final Function(TaskModel) onAlarmeToggle;
+  final Function(TaskModel) onEditar;
+  final Function(String) onDelete; 
 
   const TaskSection({
     super.key,
     required this.title,
     required this.tasks,
     required this.onToggle,
-    this.onAlarmeToggle,
+    required this.onAlarmeToggle,
+    required this.onEditar,
+    required this.onDelete, 
   });
-
-  String _statusToText(StatusTarefa status) {
-    switch (status) {
-      case StatusTarefa.pendente:
-        return 'pendente';
-      case StatusTarefa.andamento:
-        return 'em andamento';
-      case StatusTarefa.concluida:
-        return 'concluída';
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
-    if (tasks.isEmpty) return const SizedBox();
-
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(16, 20, 16, 8),
+          padding: const EdgeInsets.symmetric(vertical: 8),
           child: Text(
             title,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-            ),
+            style:
+                Theme.of(
+                  context,
+                ).textTheme.titleLarge, 
           ),
         ),
-        ...tasks.map((task) => TaskCard(
-              title: task.titulo,
-              subtitle: task.categoria,
-              status: _statusToText(task.status),
-              dateTime:
-                  '${task.data.day.toString().padLeft(2, '0')}/${task.data.month.toString().padLeft(2, '0')} às ${task.data.hour.toString().padLeft(2, '0')}:${task.data.minute.toString().padLeft(2, '0')}',
-              priority: task.prioridade,
-              onChanged: () => onToggle(task),
-              alarmeAtivado: task.alarmeAtivado,
-              onAlarmeChanged: (bool newValue) {
-                if (onAlarmeToggle != null) {
-                  onAlarmeToggle!(task);
-                }
-              },
-            )),
+
+        ...tasks.map((tarefa) {
+          return Card(
+            margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            child: ListTile(
+              title: Text(tarefa.titulo),
+              subtitle: Text(
+                '${tarefa.data.day.toString().padLeft(2, '0')}/${tarefa.data.month.toString().padLeft(2, '0')}/${tarefa.data.year} - ${tarefa.categoria}',
+              ),
+              trailing: IconButton(
+                icon: const Icon(Icons.delete, color: Colors.red),
+                onPressed: () {
+                  onDelete(tarefa.id); // Chamando a função de excluir
+                },
+              ),
+              leading: Icon(
+                tarefa.alarmeAtivado ? Icons.alarm_on : Icons.alarm_off,
+                color: tarefa.alarmeAtivado ? Colors.red : Colors.grey,
+              ),
+              onTap: () => onEditar(tarefa),
+            ),
+          );
+        })
       ],
     );
   }
 }
-
