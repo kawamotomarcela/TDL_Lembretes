@@ -47,7 +47,7 @@ class _ProfilePageState extends State<ProfilePage> {
     final isNetwork = _imageUrl.startsWith('http');
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F3FD),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
         child: Column(

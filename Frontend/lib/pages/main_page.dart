@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:grupotdl/generated/l10n.dart';
+
 import 'calendar/calendar_page.dart';
 import 'tasks/task_list_page.dart';
 import 'store/store_page.dart';
 import 'profile/profile_page.dart';
 import 'about/about_page.dart';
-import 'settings/settings_page.dart'; 
+import 'settings/settings_page.dart';
 import '../routes/app_routes.dart';
 import 'home/home_page.dart';
 
@@ -19,7 +21,6 @@ class _MainPageState extends State<MainPage> {
   int _currentIndex = 0;
 
   late final List<Widget> _pages;
-  late final List<String> _titles;
 
   @override
   void initState() {
@@ -31,31 +32,23 @@ class _MainPageState extends State<MainPage> {
       LojaPage(),
       const ProfilePage(),
     ];
-
-    _titles = [
-      'Página Inicial',
-      'Tarefas',
-      'Calendário',
-      'Loja',
-      'Perfil',
-    ];
   }
 
   void _logout() {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text("Deseja sair?"),
+        title: Text(S.of(context).logoutConfirmation),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text("Cancelar"),
+            child: Text(S.of(context).cancel),
           ),
           TextButton(
             onPressed: () {
               Navigator.pushReplacementNamed(context, AppRoutes.login);
             },
-            child: const Text("Sair"),
+            child: Text(S.of(context).exit),
           ),
         ],
       ),
@@ -80,9 +73,19 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
+    final local = S.of(context);
+
+    final titles = [
+      local.homePageTitle,
+      local.tasksPageTitle,
+      local.calendarPageTitle,
+      local.storePageTitle,
+      local.profilePageTitle,
+    ];
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(_titles[_currentIndex]),
+        title: Text(titles[_currentIndex]),
         centerTitle: true,
         backgroundColor: Colors.blueAccent,
         leading: const Padding(
@@ -95,26 +98,26 @@ class _MainPageState extends State<MainPage> {
           PopupMenuButton<String>(
             icon: const Icon(Icons.settings),
             onSelected: _onSettingsSelected,
-            itemBuilder: (context) => const [
+            itemBuilder: (context) => [
               PopupMenuItem(
                 value: 'config',
                 child: ListTile(
-                  leading: Icon(Icons.settings),
-                  title: Text('Configurações'),
+                  leading: const Icon(Icons.settings),
+                  title: Text(local.settings),
                 ),
               ),
               PopupMenuItem(
                 value: 'sobre',
                 child: ListTile(
-                  leading: Icon(Icons.info_outline),
-                  title: Text('Sobre'),
+                  leading: const Icon(Icons.info_outline),
+                  title: Text(local.about),
                 ),
               ),
               PopupMenuItem(
                 value: 'sair',
                 child: ListTile(
-                  leading: Icon(Icons.logout),
-                  title: Text('Sair'),
+                  leading: const Icon(Icons.logout),
+                  title: Text(local.logout),
                 ),
               ),
             ],
@@ -131,27 +134,12 @@ class _MainPageState extends State<MainPage> {
         type: BottomNavigationBarType.fixed,
         selectedItemColor: const Color.fromARGB(255, 0, 92, 250),
         unselectedItemColor: const Color.fromARGB(255, 80, 80, 80),
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            label: 'Início',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.check_circle_outline),
-            label: 'Tarefas',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_today),
-            label: 'Calendário',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.storefront_outlined),
-            label: 'Loja',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Perfil',
-          ),
+        items: [
+          BottomNavigationBarItem(icon: const Icon(Icons.home_outlined), label: local.home),
+          BottomNavigationBarItem(icon: const Icon(Icons.check_circle_outline), label: local.tasks),
+          BottomNavigationBarItem(icon: const Icon(Icons.calendar_today), label: local.calendar),
+          BottomNavigationBarItem(icon: const Icon(Icons.storefront_outlined), label: local.store),
+          BottomNavigationBarItem(icon: const Icon(Icons.person), label: local.profile),
         ],
       ),
     );

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
-import '../../services/preference_service.dart';
 import 'package:provider/provider.dart';
+import 'package:grupotdl/generated/l10n.dart';
+
+import '../../services/preference_service.dart';
 import '../../providers/theme_provider.dart';
+import '../../providers/locale_provider.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -12,6 +15,7 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
   final _preferenceService = PreferenceService();
+
   String _theme = 'system';
   String _language = 'pt';
   String _ipAddress = '000.000.000'; //COLOCA IP AQUI
@@ -27,9 +31,8 @@ class _SettingsPageState extends State<SettingsPage> {
   Future<void> _loadPreferences() async {
     _theme = await _preferenceService.getThemeMode() ?? 'system';
     _language = await _preferenceService.getLanguage() ?? 'pt';
-    _ipAddress =
-        await _preferenceService.getIpAddress() ??
-        '000.000.000'; //COLOCA IP AQUI
+    _ipAddress = await _preferenceService.getIpAddress() ?? '000.000.000'; //COLOCA IP AQUI
+
     _ipController.text = _ipAddress;
     setState(() {});
   }
@@ -40,59 +43,58 @@ class _SettingsPageState extends State<SettingsPage> {
     _preferenceService.setIpAddress(_ipController.text);
 
     Provider.of<ThemeProvider>(context, listen: false).setTheme(_theme);
+    Provider.of<LocaleProvider>(context, listen: false).setLocale(_language);
 
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Preferências salvas')));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(S.of(context).preferencesSaved)),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final local = S.of(context);
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Configurações')),
+      appBar: AppBar(title: Text(local.settings)),
       body: Padding(
         padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: ListView(
           children: [
-            const Text('Tema', style: TextStyle(fontWeight: FontWeight.bold)),
+            Text(local.theme, style: const TextStyle(fontWeight: FontWeight.bold)),
             DropdownButton<String>(
               value: _theme,
               onChanged: (value) {
                 setState(() => _theme = value!);
               },
-              items: const [
-                DropdownMenuItem(value: 'light', child: Text('Claro')),
-                DropdownMenuItem(value: 'dark', child: Text('Escuro')),
-                DropdownMenuItem(value: 'system', child: Text('Sistema')),
+              items: [
+                DropdownMenuItem(value: 'light', child: Text(local.light)),
+                DropdownMenuItem(value: 'dark', child: Text(local.dark)),
+                DropdownMenuItem(value: 'system', child: Text(local.system)),
               ],
             ),
             const SizedBox(height: 16),
-            const Text('Idioma', style: TextStyle(fontWeight: FontWeight.bold)),
+            Text(local.language, style: const TextStyle(fontWeight: FontWeight.bold)),
             DropdownButton<String>(
               value: _language,
               onChanged: (value) {
                 setState(() => _language = value!);
               },
-              items: const [
-                DropdownMenuItem(value: 'pt', child: Text('Português')),
-                DropdownMenuItem(value: 'en', child: Text('Inglês')),
+              items: [
+                DropdownMenuItem(value: 'pt', child: Text(local.portuguese)),
+                DropdownMenuItem(value: 'en', child: Text(local.english)),
               ],
             ),
             const SizedBox(height: 16),
-            const Text(
-              'IP da máquina (conexão com C#)',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
+            Text(local.ipAddress, style: const TextStyle(fontWeight: FontWeight.bold)),
             TextField(
               controller: _ipController,
-              decoration: const InputDecoration(hintText: 'Ex: 192.168.0.1'),
+              decoration: InputDecoration(hintText: local.exampleIp),
               keyboardType: TextInputType.number,
             ),
             const SizedBox(height: 24),
             ElevatedButton(
               onPressed: _savePreferences,
-              child: const Text('Salvar'),
+              child: Text(local.save),
             ),
           ],
         ),
