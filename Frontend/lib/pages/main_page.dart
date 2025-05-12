@@ -4,7 +4,7 @@ import 'tasks/task_list_page.dart';
 import 'store/store_page.dart';
 import 'profile/profile_page.dart';
 import 'about/about_page.dart';
-import 'settings/settings_page.dart'; // Import da nova tela de configurações
+import 'settings/settings_page.dart'; 
 import '../routes/app_routes.dart';
 import 'home/home_page.dart';
 

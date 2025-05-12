@@ -11,6 +11,14 @@ class TaskProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void editar(TaskModel tarefaAtualizada) {
+    final index = _tarefas.indexWhere((t) => t.id == tarefaAtualizada.id);
+    if (index != -1) {
+      _tarefas[index] = tarefaAtualizada;
+      notifyListeners();
+    }
+  }
+
   void concluir(String id) {
     final index = _tarefas.indexWhere((t) => t.id == id);
     if (index != -1) {
@@ -33,6 +41,9 @@ class TaskProvider extends ChangeNotifier {
     _tarefas.removeWhere((t) => t.id == id);
     notifyListeners();
   }
+
+  void limpar() {
+    _tarefas.clear();
+    notifyListeners();
+  }
 }
-
-

@@ -73,8 +73,8 @@ class TaskModel {
       'data': data.toIso8601String(),
       'categoria': categoria,
       'prioridade': prioridade,
-      'status': status.index, 
-      'alarmeAtivado': alarmeAtivado ? 1 : 0, 
+      'status': status.index,
+      'alarmeAtivado': alarmeAtivado ? 1 : 0,
     };
   }
 
@@ -83,3 +83,4 @@ class TaskModel {
     return 'TaskModel(id: $id, titulo: $titulo, status: $status, alarme: $alarmeAtivado)';
   }
 }
+

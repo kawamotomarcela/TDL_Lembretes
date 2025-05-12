@@ -7,6 +7,7 @@ class TaskSection extends StatelessWidget {
   final List<TaskModel> tasks;
   final Function(TaskModel) onToggle;
   final Function(TaskModel)? onAlarmeToggle;
+  final Function(TaskModel)? onEditar;
 
   const TaskSection({
     super.key,
@@ -14,6 +15,7 @@ class TaskSection extends StatelessWidget {
     required this.tasks,
     required this.onToggle,
     this.onAlarmeToggle,
+    this.onEditar,
   });
 
   String _statusToText(StatusTarefa status) {
@@ -56,6 +58,11 @@ class TaskSection extends StatelessWidget {
               onAlarmeChanged: (bool newValue) {
                 if (onAlarmeToggle != null) {
                   onAlarmeToggle!(task);
+                }
+              },
+              onTap: () {
+                if (onEditar != null) {
+                  onEditar!(task);
                 }
               },
             )),

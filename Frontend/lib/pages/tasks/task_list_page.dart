@@ -31,6 +31,16 @@ class _TaskListPageState extends State<TaskListPage> {
     Provider.of<TaskProvider>(context, listen: false).adicionar(novaTarefa);
   }
 
+  void _editarTarefa(TaskModel tarefaEditada) {
+    Provider.of<TaskProvider>(context, listen: false).editar(tarefaEditada);
+  }
+
+  void _removerTarefa(String id) {
+    Provider.of<TaskProvider>(context, listen: false).remover(id);
+    Navigator.pop(context); 
+    showSnackBar(context, 'Tarefa excluída com sucesso!', color: Colors.red);
+  }
+
   void _alternarStatus(TaskModel tarefa) {
     Provider.of<TaskProvider>(context, listen: false).concluir(tarefa.id);
   }
@@ -38,15 +48,37 @@ class _TaskListPageState extends State<TaskListPage> {
   void _alternarAlarme(TaskModel tarefa) {
     Provider.of<TaskProvider>(context, listen: false).alternarAlarme(tarefa.id);
 
-    final novaTarefa = Provider.of<TaskProvider>(context, listen: false)
+    final tarefaAtualizada = Provider.of<TaskProvider>(context, listen: false)
         .tarefas
         .firstWhere((t) => t.id == tarefa.id);
 
-    if (!novaTarefa.alarmeAtivado) {
-      showSnackBar(context, 'Alarme desativado com sucesso', color: Colors.red);
-    } else {
-      showSnackBar(context, 'Alarme ativado com sucesso');
-    }
+    showSnackBar(
+      context,
+      tarefaAtualizada.alarmeAtivado
+          ? 'Alarme ativado com sucesso!'
+          : 'Alarme desativado com sucesso!',
+      color: tarefaAtualizada.alarmeAtivado ? null : Colors.red,
+    );
+  }
+
+  void _abrirFormulario([TaskModel? tarefa]) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => TaskForm(
+        tarefaEditavel: tarefa,
+        onSubmit: (task) {
+          if (tarefa == null) {
+            _adicionarTarefa(task);
+          } else {
+            _editarTarefa(task);
+          }
+        },
+        onDelete: (id) {
+          _removerTarefa(id);
+        },
+      ),
+    );
   }
 
   @override
@@ -71,13 +103,21 @@ class _TaskListPageState extends State<TaskListPage> {
             child: Consumer<TaskProvider>(
               builder: (context, provider, _) {
                 final tarefas = provider.tarefas;
-                final filtradas = tarefas.where((t) =>
-                  t.titulo.toLowerCase().contains(_filter) ||
-                  t.categoria.toLowerCase().contains(_filter)).toList();
+                final filtradas = tarefas.where((t) {
+                  final titulo = t.titulo.toLowerCase();
+                  final categoria = t.categoria.toLowerCase();
+                  return titulo.contains(_filter) || categoria.contains(_filter);
+                }).toList();
 
-                final pendentes = filtradas.where((t) => t.status == StatusTarefa.pendente).toList();
-                final andamento = filtradas.where((t) => t.status == StatusTarefa.andamento).toList();
-                final concluidas = filtradas.where((t) => t.status == StatusTarefa.concluida).toList();
+                final pendentes = filtradas
+                    .where((t) => t.status == StatusTarefa.pendente)
+                    .toList();
+                final andamento = filtradas
+                    .where((t) => t.status == StatusTarefa.andamento)
+                    .toList();
+                final concluidas = filtradas
+                    .where((t) => t.status == StatusTarefa.concluida)
+                    .toList();
 
                 return ListView(
                   children: [
@@ -86,18 +126,21 @@ class _TaskListPageState extends State<TaskListPage> {
                       tasks: pendentes,
                       onToggle: _alternarStatus,
                       onAlarmeToggle: _alternarAlarme,
+                      onEditar: _abrirFormulario,
                     ),
                     TaskSection(
                       title: '⏳ Em Andamento',
                       tasks: andamento,
                       onToggle: _alternarStatus,
                       onAlarmeToggle: _alternarAlarme,
+                      onEditar: _abrirFormulario,
                     ),
                     TaskSection(
                       title: '✅ Concluídas',
                       tasks: concluidas,
                       onToggle: _alternarStatus,
                       onAlarmeToggle: _alternarAlarme,
+                      onEditar: _abrirFormulario,
                     ),
                   ],
                 );
@@ -110,16 +153,9 @@ class _TaskListPageState extends State<TaskListPage> {
         heroTag: 'fab-task',
         backgroundColor: const Color.fromARGB(255, 38, 117, 187),
         tooltip: 'Nova Tarefa',
-        onPressed: () {
-          showModalBottomSheet(
-            context: context,
-            isScrollControlled: true,
-            builder: (_) => TaskForm(onSubmit: _adicionarTarefa),
-          );
-        },
+        onPressed: () => _abrirFormulario(),
         child: const Icon(Icons.add, color: Colors.white),
       ),
     );
   }
 }
-
