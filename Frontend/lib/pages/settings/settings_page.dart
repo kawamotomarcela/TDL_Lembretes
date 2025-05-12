@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../services/preference_service.dart';
-
+import 'package:provider/provider.dart';
+import '../../providers/theme_provider.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -13,7 +14,7 @@ class _SettingsPageState extends State<SettingsPage> {
   final _preferenceService = PreferenceService();
   String _theme = 'system';
   String _language = 'pt';
-  String _ipAddress = '000.000.000'; //COLOCA IP AQUI 
+  String _ipAddress = '000.000.000'; //COLOCA IP AQUI
 
   final _ipController = TextEditingController();
 
@@ -26,7 +27,9 @@ class _SettingsPageState extends State<SettingsPage> {
   Future<void> _loadPreferences() async {
     _theme = await _preferenceService.getThemeMode() ?? 'system';
     _language = await _preferenceService.getLanguage() ?? 'pt';
-    _ipAddress = await _preferenceService.getIpAddress() ?? '000.000.000'; //COLOCA IP AQUI 
+    _ipAddress =
+        await _preferenceService.getIpAddress() ??
+        '000.000.000'; //COLOCA IP AQUI
     _ipController.text = _ipAddress;
     setState(() {});
   }
@@ -36,9 +39,11 @@ class _SettingsPageState extends State<SettingsPage> {
     _preferenceService.setLanguage(_language);
     _preferenceService.setIpAddress(_ipController.text);
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Preferências salvas')),
-    );
+    Provider.of<ThemeProvider>(context, listen: false).setTheme(_theme);
+
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Preferências salvas')));
   }
 
   @override
@@ -75,7 +80,10 @@ class _SettingsPageState extends State<SettingsPage> {
               ],
             ),
             const SizedBox(height: 16),
-            const Text('IP da máquina (conexão com C#)', style: TextStyle(fontWeight: FontWeight.bold)),
+            const Text(
+              'IP da máquina (conexão com C#)',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
             TextField(
               controller: _ipController,
               decoration: const InputDecoration(hintText: 'Ex: 192.168.0.1'),
