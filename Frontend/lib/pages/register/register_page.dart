@@ -6,7 +6,7 @@ import 'package:grupotdl/shared/widgets/custom_button.dart';
 import 'package:grupotdl/utils/show_snackbar.dart';
 import 'package:grupotdl/utils/validators.dart';
 import '../../services/auth_service.dart';
-
+import '../../api/api_client.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -25,40 +25,44 @@ class _RegisterPageState extends State<RegisterPage> {
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
 
- void _register() async {
-  final username = _usernameController.text;
-  final email = _emailController.text;
-  final phone = _phoneController.text.replaceAll(RegExp(r'\D'), '');
-  final password = _passwordController.text;
-  final confirmPassword = _confirmPasswordController.text;
+  void _register() async {
+    final username = _usernameController.text;
+    final email = _emailController.text;
+    final phone = _phoneController.text.replaceAll(RegExp(r'\D'), '');
+    final password = _passwordController.text;
+    final confirmPassword = _confirmPasswordController.text;
 
-  final usernameError = Validators.validateRequired(username, "Nome de usuário");
-  final emailError = Validators.validateEmail(email);
-  final phoneError = Validators.validatePhone(phone);
-  final passwordError = Validators.validatePassword(password);
-  final confirmPasswordError = Validators.validateConfirmPassword(password, confirmPassword);
+    final usernameError = Validators.validateRequired(username, "Nome de usuário");
+    final emailError = Validators.validateEmail(email);
+    final phoneError = Validators.validatePhone(phone);
+    final passwordError = Validators.validatePassword(password);
+    final confirmPasswordError = Validators.validateConfirmPassword(password, confirmPassword);
 
-  if (usernameError != null || emailError != null || phoneError != null || passwordError != null || confirmPasswordError != null) {
-    showSnackBar(context, usernameError ?? emailError ?? phoneError ?? passwordError ?? confirmPasswordError!, color: Colors.red);
-    return;
+    if (usernameError != null || emailError != null || phoneError != null || passwordError != null || confirmPasswordError != null) {
+      showSnackBar(context, usernameError ?? emailError ?? phoneError ?? passwordError ?? confirmPasswordError!, color: Colors.red);
+      return;
+    }
+
+    final apiClient = ApiClient();
+    await apiClient.init();
+    final authService = AuthService(apiClient);
+
+    final token = await authService.register(
+      username.trim(),
+      email.trim(),
+      password.trim(),
+      phone.trim(),
+    );
+
+    if (!mounted) return;
+
+    if (token != null) {
+      showSnackBar(context, "Conta criada com sucesso!");
+      Navigator.pushReplacementNamed(context, AppRoutes.login);
+    } else {
+      showSnackBar(context, "Erro ao criar conta!", color: Colors.red);
+    }
   }
-
-  final token = await AuthService.register(
-    username.trim(),
-    email.trim(),
-    password.trim(),
-    phone.trim(),
-  );
-
- if (!mounted) return;
- 
-  if (token != null) {
-    showSnackBar(context, "Conta criada com sucesso!");
-    Navigator.pushReplacementNamed(context, AppRoutes.login);
-  } else {
-    showSnackBar(context, "Erro ao criar conta!", color: Colors.red);
-  }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -101,10 +105,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   icon: Icons.lock,
                   obscure: _obscurePassword,
                   suffixIcon: IconButton(
-                    icon: Icon(
-                      _obscurePassword ? Icons.visibility_off : Icons.visibility,
-                      color: Colors.white,
-                    ),
+                    icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility, color: Colors.white),
                     onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
                   ),
                 ),
@@ -115,10 +116,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   icon: Icons.lock_outline,
                   obscure: _obscureConfirmPassword,
                   suffixIcon: IconButton(
-                    icon: Icon(
-                      _obscureConfirmPassword ? Icons.visibility_off : Icons.visibility,
-                      color: Colors.white,
-                    ),
+                    icon: Icon(_obscureConfirmPassword ? Icons.visibility_off : Icons.visibility, color: Colors.white),
                     onPressed: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
                   ),
                 ),
@@ -140,4 +138,3 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 }
-

@@ -1,76 +1,40 @@
-import 'dart:convert';
-import 'dart:io' show Platform;
-import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:developer';
+import '../api/api_client.dart';
 
 class AuthService {
-  static Future<String> getBaseUrl() async {
-    if (kIsWeb) {
-      return 'https://localhost:7008/api/auth';
-    }
+  final ApiClient _api;
 
-    if (Platform.isAndroid || Platform.isIOS) {
-      final prefs = await SharedPreferences.getInstance();
-      final ip = prefs.getString('ipAddress') ?? '000.000.000'; //COLOCA IP AQUI 
-      return 'http://$ip:7008/api/auth';
-    }
+  AuthService(this._api);
 
-    return 'https://localhost:7008/api/auth';
-  }
-
-  static Future<Map<String, dynamic>?> login(String email, String senha) async {
-    final url = Uri.parse('${await getBaseUrl()}/signIn');
-
+  Future<Map<String, dynamic>?> login(String email, String senha) async {
     try {
-      final response = await http.post(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'email': email, 'senha': senha}),
-      );
-
-      if (response.statusCode == 200) {
-        return jsonDecode(response.body);
-      } else {
-        log('Erro login: ${response.statusCode} - ${response.body}');
-        return null;
-      }
-    } catch (e) {
-      log('Erro na conexão: $e');
+      final response = await _api.post('/auth/signIn', {
+        'email': email,
+        'senha': senha,
+      });
+      return response;
+    } catch (e, stackTrace) {
+      log('Erro no login', error: e, stackTrace: stackTrace);
       return null;
     }
   }
 
-  static Future<String?> register(
+  Future<String?> register(
     String nome,
     String email,
     String senha,
     String telefone,
   ) async {
-    final url = Uri.parse('${await getBaseUrl()}/register');
-
     try {
-      final response = await http.post(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'nome': nome,
-          'email': email,
-          'senha': senha,
-          'telefone': telefone,
-        }),
-      );
-
-      if (response.statusCode == 200) {
-        final body = jsonDecode(response.body);
-        return body['token'];
-      } else {
-        log('Erro cadastro: ${response.statusCode} - ${response.body}');
-        return null;
-      }
-    } catch (e) {
-      log('Erro na conexão: $e');
+      final response = await _api.post('/auth/register', {
+        'nome': nome,
+        'email': email,
+        'senha': senha,
+        'telefone': telefone,
+      });
+      return response['token'];
+    } catch (e, stackTrace) {
+      log('Erro no cadastro', error: e, stackTrace: stackTrace);
       return null;
     }
   }

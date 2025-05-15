@@ -1,5 +1,3 @@
-// lib/models/usuario_model.dart
-
 class Usuario {
   final String id;
   final String nome;
@@ -15,7 +13,6 @@ class Usuario {
     required this.pontos,
   });
 
-  // Método para criar um objeto Usuario a partir de um Map (SQLite)
   factory Usuario.fromMap(Map<String, dynamic> map) {
     return Usuario(
       id: map['id'],
@@ -26,8 +23,27 @@ class Usuario {
     );
   }
 
-  // Método para converter o Usuario em um Map (SQLite)
   Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'nome': nome,
+      'email': email,
+      'telefone': telefone,
+      'pontos': pontos,
+    };
+  }
+
+  factory Usuario.fromJson(Map<String, dynamic> json) {
+    return Usuario(
+      id: json['id'],
+      nome: json['nome'],
+      email: json['email'],
+      telefone: json['telefone'],
+      pontos: json['pontos'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
     return {
       'id': id,
       'nome': nome,

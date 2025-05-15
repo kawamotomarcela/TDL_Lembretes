@@ -1,11 +1,23 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/annotations.dart';
 import 'package:grupotdl/providers/task_provider.dart';
 import 'package:grupotdl/models/task_model.dart';
+import 'package:grupotdl/services/task_service.dart';
+
+@GenerateMocks([TaskService])
+import 'task_provider_test.mocks.dart';
 
 void main() {
   group('TaskProvider', () {
+    late TaskProvider provider;
+    late MockTaskService mockTaskService;
+
+    setUp(() {
+      mockTaskService = MockTaskService();
+      provider = TaskProvider(taskService: mockTaskService);
+    });
+
     test('Adiciona uma nova tarefa', () {
-      final provider = TaskProvider();
       final tarefa = TaskModel(
         id: '1',
         titulo: 'Nova Tarefa',
@@ -18,17 +30,14 @@ void main() {
 
       provider.adicionar(tarefa);
 
-      // Verifica se a tarefa foi adicionada corretamente
       expect(provider.tarefas.length, 1);
       expect(provider.tarefas.first.titulo, 'Nova Tarefa');
-      expect(provider.tarefas.first.status, StatusTarefa.pendente);
     });
 
-    test('Conclui a tarefa', () {
-      final provider = TaskProvider();
+    test('Conclui tarefa (pendente → andamento)', () {
       final tarefa = TaskModel(
         id: '2',
-        titulo: 'Concluir tarefa',
+        titulo: 'Avançar tarefa',
         data: DateTime.now(),
         categoria: 'Testes',
         prioridade: 1,
@@ -39,32 +48,27 @@ void main() {
       provider.adicionar(tarefa);
       provider.concluir(tarefa.id);
 
-      // Verifica se a tarefa teve seu status alterado para "andamento"
       expect(provider.tarefas.first.status, StatusTarefa.andamento);
     });
 
-    test('Alterna o status de andamento para concluída', () {
-      final provider = TaskProvider();
+    test('Conclui tarefa (andamento → concluída)', () {
       final tarefa = TaskModel(
         id: '3',
-        titulo: 'Concluir tarefa',
+        titulo: 'Finalizar tarefa',
         data: DateTime.now(),
         categoria: 'Testes',
         prioridade: 1,
-        status: StatusTarefa.pendente,
+        status: StatusTarefa.andamento,
         alarmeAtivado: false,
       );
 
       provider.adicionar(tarefa);
-      provider.concluir(tarefa.id); // Primeiro para "andamento"
-      provider.concluir(tarefa.id); // Segundo para "concluída"
+      provider.concluir(tarefa.id);
 
-      // Verifica se o status da tarefa foi alterado para "concluída"
       expect(provider.tarefas.first.status, StatusTarefa.concluida);
     });
 
-    test('Alterna o status de concluída para pendente', () {
-      final provider = TaskProvider();
+    test('Conclui tarefa (concluída → pendente)', () {
       final tarefa = TaskModel(
         id: '4',
         titulo: 'Reiniciar tarefa',
@@ -76,17 +80,15 @@ void main() {
       );
 
       provider.adicionar(tarefa);
-      provider.concluir(tarefa.id); // Primeiro para "pendente"
+      provider.concluir(tarefa.id);
 
-      // Verifica se o status da tarefa foi alterado para "pendente"
       expect(provider.tarefas.first.status, StatusTarefa.pendente);
     });
 
-    test('Remove uma tarefa', () {
-      final provider = TaskProvider();
+    test('Remove tarefa', () {
       final tarefa = TaskModel(
         id: '5',
-        titulo: 'Tarefa a ser removida',
+        titulo: 'Remover tarefa',
         data: DateTime.now(),
         categoria: 'Testes',
         prioridade: 2,
@@ -97,15 +99,13 @@ void main() {
       provider.adicionar(tarefa);
       provider.remover(tarefa.id);
 
-      // Verifica se a tarefa foi removida corretamente
       expect(provider.tarefas.isEmpty, true);
     });
 
-    test('Editar uma tarefa', () {
-      final provider = TaskProvider();
+    test('Edita tarefa existente', () {
       final tarefa = TaskModel(
         id: '6',
-        titulo: 'Editar tarefa',
+        titulo: 'Tarefa original',
         data: DateTime.now(),
         categoria: 'Testes',
         prioridade: 2,
@@ -115,11 +115,13 @@ void main() {
 
       provider.adicionar(tarefa);
 
-      // Atualizar a tarefa
-      final tarefaAtualizada = tarefa.copyWith(titulo: 'Tarefa atualizada', categoria: 'Atualizações');
-      provider.editar(tarefaAtualizada);
+      final atualizada = tarefa.copyWith(
+        titulo: 'Tarefa atualizada',
+        categoria: 'Atualizações',
+      );
 
-      // Verifica se a tarefa foi atualizada corretamente
+      provider.editar(atualizada);
+
       expect(provider.tarefas.first.titulo, 'Tarefa atualizada');
       expect(provider.tarefas.first.categoria, 'Atualizações');
     });

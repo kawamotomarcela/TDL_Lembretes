@@ -56,12 +56,12 @@ class TaskModel {
 
   factory TaskModel.fromMap(Map<String, dynamic> map) {
     return TaskModel(
-      id: map['id'] as String,
-      titulo: map['titulo'] as String,
-      data: DateTime.parse(map['data'] as String),
-      categoria: map['categoria'] as String,
-      prioridade: map['prioridade'] as int,
-      status: StatusTarefa.values[map['status'] as int],
+      id: map['id'],
+      titulo: map['titulo'],
+      data: DateTime.parse(map['data']),
+      categoria: map['categoria'],
+      prioridade: map['prioridade'],
+      status: StatusTarefa.values[map['status']],
       alarmeAtivado: map['alarmeAtivado'] == 1 || map['alarmeAtivado'] == true,
     );
   }
@@ -78,9 +78,37 @@ class TaskModel {
     };
   }
 
+  factory TaskModel.fromJson(Map<String, dynamic> json) {
+    return TaskModel(
+      id: json['id'],
+      titulo: json['titulo'],
+      data: DateTime.parse(json['data']),
+      categoria: json['categoria'],
+      prioridade: json['prioridade'],
+      status: StatusTarefa.values.firstWhere(
+        (e) => e.toString().split('.').last == json['status'],
+        orElse: () => StatusTarefa.pendente,
+      ),
+      alarmeAtivado: json['alarmeAtivado'] == true,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'titulo': titulo,
+      'data': data.toIso8601String(),
+      'categoria': categoria,
+      'prioridade': prioridade,
+      'status': status.toString().split('.').last,
+      'alarmeAtivado': alarmeAtivado,
+    };
+  }
+
   @override
   String toString() {
     return 'TaskModel(id: $id, titulo: $titulo, status: $status, alarme: $alarmeAtivado)';
   }
 }
+
 

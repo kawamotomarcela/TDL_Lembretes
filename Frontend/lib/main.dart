@@ -3,19 +3,22 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:logging/logging.dart';
+import 'package:grupotdl/api/api_client.dart';
 import 'generated/l10n.dart';
 import 'routes/app_routes.dart';
 import 'providers/task_provider.dart';
 import 'providers/usuario_provider.dart';
 import 'providers/theme_provider.dart';
 import 'providers/locale_provider.dart';
+import 'package:grupotdl/services/task_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting('pt_BR', null);
 
-  // Carregar idioma salvo
+  _setupLogging();
+
   final prefs = await SharedPreferences.getInstance();
   final langCode = prefs.getString('language') ?? 'pt';
   final initialLocale = langCode == 'pt' ? const Locale('pt', 'BR') : Locale(langCode);
@@ -24,13 +27,23 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
-        ChangeNotifierProvider(create: (_) => TaskProvider()),
+       ChangeNotifierProvider(
+  create: (_) => TaskProvider(taskService: TaskService(ApiClient())),
+),
+
         ChangeNotifierProvider(create: (_) => UsuarioProvider()),
         ChangeNotifierProvider(create: (_) => LocaleProvider(initialLocale)),
       ],
       child: const MyApp(),
     ),
   );
+}
+
+void _setupLogging() {
+  Logger.root.level = Level.ALL;
+  Logger.root.onRecord.listen((record) {
+    debugPrint('[${record.level.name}] ${record.loggerName}: ${record.message}');
+  });
 }
 
 class MyApp extends StatelessWidget {
@@ -60,3 +73,4 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+

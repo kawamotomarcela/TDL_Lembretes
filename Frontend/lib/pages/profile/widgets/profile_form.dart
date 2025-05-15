@@ -30,7 +30,6 @@ class _ProfileFormState extends State<ProfileForm> {
 
   void _saveProfile() {
     if (_formKey.currentState!.validate()) {
-      // Aqui você poderia chamar um serviço de atualização no banco
       showSnackBar(context, 'Perfil atualizado com sucesso!', color: Colors.green);
     }
   }
