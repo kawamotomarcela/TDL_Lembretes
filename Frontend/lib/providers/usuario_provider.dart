@@ -3,10 +3,13 @@ import '../models/usuario_model.dart';
 
 class UsuarioProvider with ChangeNotifier {
   Usuario? _usuario;
+  String? _erro;
 
   Usuario? get usuario => _usuario;
+  String? get erro => _erro;
 
   void setUsuario(Usuario novoUsuario) {
+    _erro = null;
     _usuario = novoUsuario;
     notifyListeners();
   }
@@ -20,6 +23,9 @@ class UsuarioProvider with ChangeNotifier {
         telefone: _usuario!.telefone,
         pontos: novosPontos,
       );
+      notifyListeners();
+    } else {
+      _erro = 'Usuário não encontrado';
       notifyListeners();
     }
   }
