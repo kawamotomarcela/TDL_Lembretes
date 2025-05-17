@@ -4,33 +4,41 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:logging/logging.dart';
-import 'package:grupotdl/api/api_client.dart';
+
+import 'api/api_client.dart';
 import 'generated/l10n.dart';
 import 'routes/app_routes.dart';
+
 import 'providers/task_provider.dart';
 import 'providers/usuario_provider.dart';
 import 'providers/theme_provider.dart';
 import 'providers/locale_provider.dart';
-import 'package:grupotdl/services/task_service.dart';
+
+import 'services/task_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   await initializeDateFormatting('pt_BR', null);
 
   _setupLogging();
 
+  final apiClient = ApiClient();
+  await apiClient.init();
+
   final prefs = await SharedPreferences.getInstance();
   final langCode = prefs.getString('language') ?? 'pt';
-  final initialLocale = langCode == 'pt' ? const Locale('pt', 'BR') : Locale(langCode);
+  final initialLocale = langCode == 'pt'
+      ? const Locale('pt', 'BR')
+      : Locale(langCode);
 
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
-       ChangeNotifierProvider(
-  create: (_) => TaskProvider(taskService: TaskService(ApiClient())),
-),
-
+        ChangeNotifierProvider(
+          create: (_) => TaskProvider(taskService: TaskService(apiClient)),
+        ),
         ChangeNotifierProvider(create: (_) => UsuarioProvider()),
         ChangeNotifierProvider(create: (_) => LocaleProvider(initialLocale)),
       ],

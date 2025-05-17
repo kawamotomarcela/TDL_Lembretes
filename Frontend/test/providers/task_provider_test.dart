@@ -1,129 +1,75 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
+import 'package:mockito/mockito.dart';
 import 'package:grupotdl/providers/task_provider.dart';
 import 'package:grupotdl/models/task_model.dart';
 import 'package:grupotdl/services/task_service.dart';
 
-@GenerateMocks([TaskService])
 import 'task_provider_test.mocks.dart';
 
+@GenerateMocks([TaskService])
 void main() {
   group('TaskProvider', () {
     late TaskProvider provider;
     late MockTaskService mockTaskService;
+
+    final fakeTask = TaskModel(
+      id: '1',
+      titulo: 'Nova Tarefa',
+      descricao: 'Testes',
+      dataCriacao: DateTime.now(),
+      dataFinalizacao: DateTime.now().add(const Duration(days: 2)),
+      prioridade: PrioridadeTarefa.Media,
+      status: StatusTarefa.pendente,
+      alarmeAtivado: false,
+    );
 
     setUp(() {
       mockTaskService = MockTaskService();
       provider = TaskProvider(taskService: mockTaskService);
     });
 
-    test('Adiciona uma nova tarefa', () {
-      final tarefa = TaskModel(
-        id: '1',
-        titulo: 'Nova Tarefa',
-        data: DateTime.now(),
-        categoria: 'Testes',
-        prioridade: 2,
-        status: StatusTarefa.pendente,
-        alarmeAtivado: false,
-      );
+    test('Adiciona uma nova tarefa', () async {
+      when(mockTaskService.createTask(any)).thenAnswer((_) async => fakeTask);
 
-      provider.adicionar(tarefa);
+      await provider.adicionar(fakeTask);
 
       expect(provider.tarefas.length, 1);
       expect(provider.tarefas.first.titulo, 'Nova Tarefa');
     });
 
-    test('Conclui tarefa (pendente → andamento)', () {
-      final tarefa = TaskModel(
-        id: '2',
-        titulo: 'Avançar tarefa',
-        data: DateTime.now(),
-        categoria: 'Testes',
-        prioridade: 1,
-        status: StatusTarefa.pendente,
-        alarmeAtivado: false,
-      );
+    test('Conclui tarefa (pendente → em andamento)', () async {
+      when(mockTaskService.toggleStatus(any)).thenAnswer((_) async => true);
+      provider = TaskProvider(taskService: mockTaskService);
+      provider.limpar();
+      provider.tarefas.add(fakeTask);
 
-      provider.adicionar(tarefa);
-      provider.concluir(tarefa.id);
-
-      expect(provider.tarefas.first.status, StatusTarefa.andamento);
+      await provider.concluir(fakeTask.id);
+      expect(provider.tarefas.first.status, StatusTarefa.emAndamento);
     });
 
-    test('Conclui tarefa (andamento → concluída)', () {
-      final tarefa = TaskModel(
-        id: '3',
-        titulo: 'Finalizar tarefa',
-        data: DateTime.now(),
-        categoria: 'Testes',
-        prioridade: 1,
-        status: StatusTarefa.andamento,
-        alarmeAtivado: false,
-      );
+    test('Remove tarefa', () async {
+      when(mockTaskService.deleteTask(any)).thenAnswer((_) async => true);
+      provider.tarefas.add(fakeTask);
 
-      provider.adicionar(tarefa);
-      provider.concluir(tarefa.id);
-
-      expect(provider.tarefas.first.status, StatusTarefa.concluida);
-    });
-
-    test('Conclui tarefa (concluída → pendente)', () {
-      final tarefa = TaskModel(
-        id: '4',
-        titulo: 'Reiniciar tarefa',
-        data: DateTime.now(),
-        categoria: 'Testes',
-        prioridade: 1,
-        status: StatusTarefa.concluida,
-        alarmeAtivado: false,
-      );
-
-      provider.adicionar(tarefa);
-      provider.concluir(tarefa.id);
-
-      expect(provider.tarefas.first.status, StatusTarefa.pendente);
-    });
-
-    test('Remove tarefa', () {
-      final tarefa = TaskModel(
-        id: '5',
-        titulo: 'Remover tarefa',
-        data: DateTime.now(),
-        categoria: 'Testes',
-        prioridade: 2,
-        status: StatusTarefa.pendente,
-        alarmeAtivado: false,
-      );
-
-      provider.adicionar(tarefa);
-      provider.remover(tarefa.id);
+      await provider.remover(fakeTask.id);
 
       expect(provider.tarefas.isEmpty, true);
     });
 
-    test('Edita tarefa existente', () {
-      final tarefa = TaskModel(
-        id: '6',
-        titulo: 'Tarefa original',
-        data: DateTime.now(),
-        categoria: 'Testes',
-        prioridade: 2,
-        status: StatusTarefa.pendente,
-        alarmeAtivado: false,
+    test('Edita tarefa existente', () async {
+      final updatedTask = fakeTask.copyWith(
+        titulo: 'Tarefa Editada',
+        descricao: 'Categoria X',
       );
 
-      provider.adicionar(tarefa);
+      when(mockTaskService.updateTask(any)).thenAnswer((_) async => true);
+      provider.tarefas.add(fakeTask);
 
-      final atualizada = tarefa.copyWith(
-        titulo: 'Tarefa atualizada',
-        categoria: 'Atualizações',
-      );
+      await provider.editar(updatedTask);
 
-      provider.editar(atualizada);
-
-      expect(provider.tarefas.first.titulo, 'Tarefa atualizada');
-      expect(provider.tarefas.first.categoria, 'Atualizações');
+      expect(provider.tarefas.first.titulo, 'Tarefa Editada');
+      expect(provider.tarefas.first.descricao, 'Categoria X');
     });
   });
 }

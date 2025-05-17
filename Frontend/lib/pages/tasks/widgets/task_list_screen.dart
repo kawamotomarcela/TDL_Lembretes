@@ -5,7 +5,7 @@ import '../../../providers/task_provider.dart';
 import 'task_form.dart';
 
 class TaskListScreen extends StatelessWidget {
-  const TaskListScreen({super.key}); 
+  const TaskListScreen({super.key});
 
   void _abrirFormulario(BuildContext context, [TaskModel? tarefa]) {
     final taskProvider = context.read<TaskProvider>();
@@ -48,14 +48,16 @@ class TaskListScreen extends StatelessWidget {
               itemCount: tarefas.length,
               itemBuilder: (_, index) {
                 final tarefa = tarefas[index];
+                final data = tarefa.dataFinalizacao;
+
                 return Card(
                   margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   child: ListTile(
                     title: Text(tarefa.titulo),
                     subtitle: Text(
-                      '${tarefa.data.day.toString().padLeft(2, '0')}/'
-                      '${tarefa.data.month.toString().padLeft(2, '0')}/'
-                      '${tarefa.data.year} - ${tarefa.categoria}',
+                      '${data.day.toString().padLeft(2, '0')}/'
+                      '${data.month.toString().padLeft(2, '0')}/'
+                      '${data.year} - ${tarefa.descricao}',
                     ),
                     trailing: PopupMenuButton<String>(
                       onSelected: (value) {
@@ -102,10 +104,12 @@ class TaskListScreen extends StatelessWidget {
     switch (status) {
       case StatusTarefa.pendente:
         return Colors.yellow[100]!;
-      case StatusTarefa.andamento:
+      case StatusTarefa.emAndamento:
         return Colors.blue[100]!;
       case StatusTarefa.concluida:
         return Colors.green[100]!;
+      case StatusTarefa.expirada:
+        return Colors.grey[300]!;
     }
   }
 }

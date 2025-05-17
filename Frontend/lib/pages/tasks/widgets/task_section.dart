@@ -22,11 +22,20 @@ class TaskSection extends StatelessWidget {
     switch (status) {
       case StatusTarefa.pendente:
         return 'pendente';
-      case StatusTarefa.andamento:
+      case StatusTarefa.emAndamento:
         return 'em andamento';
       case StatusTarefa.concluida:
         return 'concluída';
+      case StatusTarefa.expirada:
+        return 'expirada';
     }
+  }
+
+  String _formatDate(DateTime date) {
+    return '${date.day.toString().padLeft(2, '0')}/'
+        '${date.month.toString().padLeft(2, '0')} '
+        'às ${date.hour.toString().padLeft(2, '0')}:'
+        '${date.minute.toString().padLeft(2, '0')}';
   }
 
   @override
@@ -48,11 +57,10 @@ class TaskSection extends StatelessWidget {
         ),
         ...tasks.map((task) => TaskCard(
               title: task.titulo,
-              subtitle: task.categoria,
+              subtitle: task.descricao,
               status: _statusToText(task.status),
-              dateTime:
-                  '${task.data.day.toString().padLeft(2, '0')}/${task.data.month.toString().padLeft(2, '0')} às ${task.data.hour.toString().padLeft(2, '0')}:${task.data.minute.toString().padLeft(2, '0')}',
-              priority: task.prioridade,
+              dateTime: _formatDate(task.dataFinalizacao),
+              priority: task.prioridade.index,
               onChanged: () => onToggle(task),
               alarmeAtivado: task.alarmeAtivado,
               onAlarmeChanged: (bool newValue) {
@@ -70,4 +78,3 @@ class TaskSection extends StatelessWidget {
     );
   }
 }
-

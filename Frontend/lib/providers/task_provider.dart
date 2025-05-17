@@ -38,7 +38,7 @@ class TaskProvider extends ChangeNotifier {
     try {
       final novaTarefa = await taskService.createTask(tarefa);
       if (novaTarefa != null) {
-        _tarefas.add(novaTarefa);
+        await carregarTarefas(); // ✅ força recarregamento da lista do backend
       } else {
         _erro = 'Erro ao adicionar tarefa';
       }
@@ -141,3 +141,4 @@ class TaskProvider extends ChangeNotifier {
     notifyListeners();
   }
 }
+

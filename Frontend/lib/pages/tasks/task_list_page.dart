@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../models/task_model.dart';
-import '../../../providers/task_provider.dart';
-import '../../../utils/show_snackbar.dart';
+import 'package:grupotdl/models/task_model.dart';
+import 'package:grupotdl/utils/show_snackbar.dart';
+
+// 🔧 Correção: use alias "tp" para evitar conflito com TaskProvider
+import 'package:grupotdl/providers/task_provider.dart' as tp;
+
+// 🧩 Correção: importações de widgets
 import 'widgets/task_form.dart';
 import 'widgets/task_section.dart';
 
@@ -25,30 +29,35 @@ class _TaskListPageState extends State<TaskListPage> {
         _filter = _searchController.text.toLowerCase();
       });
     });
+
+    // ⏳ Carrega as tarefas ao iniciar
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<tp.TaskProvider>(context, listen: false).carregarTarefas();
+    });
   }
 
   void _adicionarTarefa(TaskModel novaTarefa) {
-    Provider.of<TaskProvider>(context, listen: false).adicionar(novaTarefa);
+    Provider.of<tp.TaskProvider>(context, listen: false).adicionar(novaTarefa);
   }
 
   void _editarTarefa(TaskModel tarefaEditada) {
-    Provider.of<TaskProvider>(context, listen: false).editar(tarefaEditada);
+    Provider.of<tp.TaskProvider>(context, listen: false).editar(tarefaEditada);
   }
 
   void _removerTarefa(String id) {
-    Provider.of<TaskProvider>(context, listen: false).remover(id);
-    Navigator.pop(context); 
+    Provider.of<tp.TaskProvider>(context, listen: false).remover(id);
+    Navigator.pop(context);
     showSnackBar(context, 'Tarefa excluída com sucesso!', color: Colors.red);
   }
 
   void _alternarStatus(TaskModel tarefa) {
-    Provider.of<TaskProvider>(context, listen: false).concluir(tarefa.id);
+    Provider.of<tp.TaskProvider>(context, listen: false).concluir(tarefa.id);
   }
 
   void _alternarAlarme(TaskModel tarefa) {
-    Provider.of<TaskProvider>(context, listen: false).alternarAlarme(tarefa.id);
+    Provider.of<tp.TaskProvider>(context, listen: false).alternarAlarme(tarefa.id);
 
-    final tarefaAtualizada = Provider.of<TaskProvider>(context, listen: false)
+    final tarefaAtualizada = Provider.of<tp.TaskProvider>(context, listen: false)
         .tarefas
         .firstWhere((t) => t.id == tarefa.id);
 
@@ -74,9 +83,7 @@ class _TaskListPageState extends State<TaskListPage> {
             _editarTarefa(task);
           }
         },
-        onDelete: (id) {
-          _removerTarefa(id);
-        },
+        onDelete: (id) => _removerTarefa(id),
       ),
     );
   }
@@ -100,20 +107,20 @@ class _TaskListPageState extends State<TaskListPage> {
             ),
           ),
           Expanded(
-            child: Consumer<TaskProvider>(
+            child: Consumer<tp.TaskProvider>(
               builder: (context, provider, _) {
                 final tarefas = provider.tarefas;
                 final filtradas = tarefas.where((t) {
                   final titulo = t.titulo.toLowerCase();
-                  final categoria = t.categoria.toLowerCase();
-                  return titulo.contains(_filter) || categoria.contains(_filter);
+                  final descricao = t.descricao.toLowerCase();
+                  return titulo.contains(_filter) || descricao.contains(_filter);
                 }).toList();
 
                 final pendentes = filtradas
                     .where((t) => t.status == StatusTarefa.pendente)
                     .toList();
                 final andamento = filtradas
-                    .where((t) => t.status == StatusTarefa.andamento)
+                    .where((t) => t.status == StatusTarefa.emAndamento)
                     .toList();
                 final concluidas = filtradas
                     .where((t) => t.status == StatusTarefa.concluida)

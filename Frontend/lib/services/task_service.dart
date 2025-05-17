@@ -9,7 +9,7 @@ class TaskService {
 
   Future<List<TaskModel>> fetchTasks() async {
     try {
-      final response = await api.get('/tasks');
+      final response = await api.get('/CriarTarefaPersonalizada');
       if (response is List) {
         return response.map((json) => TaskModel.fromMap(json)).toList();
       }
@@ -20,19 +20,39 @@ class TaskService {
     }
   }
 
-  Future<TaskModel?> createTask(TaskModel task) async {
-    try {
-      final response = await api.post('/tasks', task.toMap());
-      return TaskModel.fromMap(response);
-    } catch (e, stack) {
-      log('Erro ao criar tarefa', error: e, stackTrace: stack);
-      return null;
-    }
+Future<TaskModel?> createTask(TaskModel task) async {
+  try {
+    String capitalize(String value) =>
+        value[0].toUpperCase() + value.substring(1).toLowerCase();
+
+    final payload = {
+      'Id': task.id,
+      'Titulo': task.titulo,
+      'Descricao': task.descricao,
+      'DataCriacao': task.dataCriacao.toIso8601String(),
+      'DataFinalizacao': task.dataFinalizacao.toIso8601String(),
+      'Status': capitalize(task.status.name),
+      'Prioridade': capitalize(task.prioridade.name),
+      'AlarmeAtivado': task.alarmeAtivado,
+    };
+
+
+    final response = await api.post('/CriarTarefaPersonalizada', payload);
+
+    return TaskModel.fromMap(response);
+  } catch (e, stack) {
+    log('Erro ao criar tarefa', error: e, stackTrace: stack);
+    return null;
   }
+}
+
 
   Future<bool> updateTask(TaskModel task) async {
     try {
-      await api.put('/tasks/${task.id}', task.toMap());
+      await api.put(
+        '/CriarTarefaPersonalizada/${task.id}',
+        task.toMapForDto(),
+      );
       return true;
     } catch (e, stack) {
       log('Erro ao atualizar tarefa', error: e, stackTrace: stack);
@@ -42,7 +62,7 @@ class TaskService {
 
   Future<bool> deleteTask(String id) async {
     try {
-      await api.delete('/tasks/$id');
+      await api.delete('/CriarTarefaPersonalizada/$id');
       return true;
     } catch (e, stack) {
       log('Erro ao excluir tarefa', error: e, stackTrace: stack);
@@ -52,7 +72,7 @@ class TaskService {
 
   Future<bool> toggleStatus(String id) async {
     try {
-      await api.put('/tasks/$id/toggle', {}); 
+      await api.put('/CriarTarefaPersonalizada/$id/toggle', {});
       return true;
     } catch (e, stack) {
       log('Erro ao alternar status da tarefa', error: e, stackTrace: stack);

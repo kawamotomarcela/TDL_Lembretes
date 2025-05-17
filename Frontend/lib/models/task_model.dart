@@ -1,44 +1,46 @@
-enum StatusTarefa {
-  pendente,
-  andamento,
-  concluida,
-}
+enum StatusTarefa { pendente, emAndamento, concluida, expirada }
+
+enum PrioridadeTarefa { Baixa, Media, Alta }
 
 class TaskModel {
   final String id;
   final String titulo;
-  final DateTime data;
-  final String categoria;
-  final int prioridade;
+  final String descricao;
+  final DateTime dataCriacao;
+  final DateTime dataFinalizacao;
   final StatusTarefa status;
+  final PrioridadeTarefa prioridade;
   final bool alarmeAtivado;
 
   TaskModel({
     required this.id,
     required this.titulo,
-    required this.data,
-    required this.categoria,
-    required this.prioridade,
+    required this.descricao,
+    required this.dataCriacao,
+    required this.dataFinalizacao,
     this.status = StatusTarefa.pendente,
+    this.prioridade = PrioridadeTarefa.Baixa,
     this.alarmeAtivado = false,
   });
 
   TaskModel copyWith({
     String? id,
     String? titulo,
-    DateTime? data,
-    String? categoria,
-    int? prioridade,
+    String? descricao,
+    DateTime? dataCriacao,
+    DateTime? dataFinalizacao,
     StatusTarefa? status,
+    PrioridadeTarefa? prioridade,
     bool? alarmeAtivado,
   }) {
     return TaskModel(
       id: id ?? this.id,
       titulo: titulo ?? this.titulo,
-      data: data ?? this.data,
-      categoria: categoria ?? this.categoria,
-      prioridade: prioridade ?? this.prioridade,
+      descricao: descricao ?? this.descricao,
+      dataCriacao: dataCriacao ?? this.dataCriacao,
+      dataFinalizacao: dataFinalizacao ?? this.dataFinalizacao,
       status: status ?? this.status,
+      prioridade: prioridade ?? this.prioridade,
       alarmeAtivado: alarmeAtivado ?? this.alarmeAtivado,
     );
   }
@@ -46,23 +48,38 @@ class TaskModel {
   StatusTarefa proximoStatus() {
     switch (status) {
       case StatusTarefa.pendente:
-        return StatusTarefa.andamento;
-      case StatusTarefa.andamento:
+        return StatusTarefa.emAndamento;
+      case StatusTarefa.emAndamento:
         return StatusTarefa.concluida;
       case StatusTarefa.concluida:
+      case StatusTarefa.expirada:
         return StatusTarefa.pendente;
     }
   }
 
   factory TaskModel.fromMap(Map<String, dynamic> map) {
     return TaskModel(
-      id: map['id'],
-      titulo: map['titulo'],
-      data: DateTime.parse(map['data']),
-      categoria: map['categoria'],
-      prioridade: map['prioridade'],
-      status: StatusTarefa.values[map['status']],
-      alarmeAtivado: map['alarmeAtivado'] == 1 || map['alarmeAtivado'] == true,
+      id: map['id'] ?? map['Id'],
+      titulo: map['titulo'] ?? map['Titulo'],
+      descricao: map['descricao'] ?? map['Descricao'] ?? '',
+      dataCriacao: DateTime.parse(map['dataCriacao'] ?? map['DataCriacao']),
+      dataFinalizacao: DateTime.parse(
+        map['dataFinalizacao'] ?? map['DataFinalizacao'],
+      ),
+      status: StatusTarefa.values.firstWhere(
+        (e) =>
+            e.name.toLowerCase() ==
+            (map['status'] ?? map['Status']).toString().toLowerCase(),
+        orElse: () => StatusTarefa.pendente,
+      ),
+      prioridade: PrioridadeTarefa.values.firstWhere(
+        (e) =>
+            e.name.toLowerCase() ==
+            (map['prioridade'] ?? map['Prioridade']).toString().toLowerCase(),
+        orElse: () => PrioridadeTarefa.Baixa,
+      ),
+      alarmeAtivado:
+          map['alarmeAtivado'] ?? map['AlarmeAtivado'] == true ? true : false,
     );
   }
 
@@ -70,45 +87,39 @@ class TaskModel {
     return {
       'id': id,
       'titulo': titulo,
-      'data': data.toIso8601String(),
-      'categoria': categoria,
-      'prioridade': prioridade,
-      'status': status.index,
-      'alarmeAtivado': alarmeAtivado ? 1 : 0,
-    };
-  }
-
-  factory TaskModel.fromJson(Map<String, dynamic> json) {
-    return TaskModel(
-      id: json['id'],
-      titulo: json['titulo'],
-      data: DateTime.parse(json['data']),
-      categoria: json['categoria'],
-      prioridade: json['prioridade'],
-      status: StatusTarefa.values.firstWhere(
-        (e) => e.toString().split('.').last == json['status'],
-        orElse: () => StatusTarefa.pendente,
-      ),
-      alarmeAtivado: json['alarmeAtivado'] == true,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'titulo': titulo,
-      'data': data.toIso8601String(),
-      'categoria': categoria,
-      'prioridade': prioridade,
-      'status': status.toString().split('.').last,
+      'descricao': descricao,
+      'dataCriacao': dataCriacao.toIso8601String(),
+      'dataFinalizacao': dataFinalizacao.toIso8601String(),
+      'status': status.name,
+      'prioridade': prioridade.name,
       'alarmeAtivado': alarmeAtivado,
     };
   }
 
-  @override
-  String toString() {
-    return 'TaskModel(id: $id, titulo: $titulo, status: $status, alarme: $alarmeAtivado)';
-  }
+Map<String, dynamic> toMapForDto() {
+  String capitalize(String value) =>
+      value[0].toUpperCase() + value.substring(1).toLowerCase();
+
+  return {
+    'Id': id,
+    'Titulo': titulo,
+    'Descricao': descricao,
+    'DataCriacao': dataCriacao.toIso8601String(),
+    'DataFinalizacao': dataFinalizacao.toIso8601String(),
+    'Status': capitalize(status.name), 
+    'Prioridade': capitalize(prioridade.name), 
+    'AlarmeAtivado': alarmeAtivado,
+  };
 }
 
 
+  factory TaskModel.fromJson(Map<String, dynamic> json) =>
+      TaskModel.fromMap(json);
+
+  Map<String, dynamic> toJson() => toMap();
+
+  @override
+  String toString() {
+    return 'TaskModel(id: $id, titulo: $titulo, status: $status, prioridade: $prioridade, alarme: $alarmeAtivado)';
+  }
+}
