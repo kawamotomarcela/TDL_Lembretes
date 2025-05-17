@@ -27,11 +27,11 @@ class TaskCard extends StatelessWidget {
 
   Color _getPriorityColor(int prioridade) {
     switch (prioridade) {
-      case 3:
-        return Colors.red;
       case 2:
-        return Colors.amber;
+        return Colors.red;
       case 1:
+        return Colors.amber;
+      case 0:
         return Colors.green;
       default:
         return Colors.grey;
@@ -40,12 +40,12 @@ class TaskCard extends StatelessWidget {
 
   String _priorityToText(int prioridade) {
     switch (prioridade) {
-      case 3:
-        return 'Alta';
-      case 2:
-        return 'Média';
-      case 1:
+      case 0:
         return 'Baixa';
+      case 1:
+        return 'Media';
+      case 2:
+        return 'Alta';
       default:
         return 'Desconhecida';
     }
@@ -53,7 +53,7 @@ class TaskCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isConcluida = status == 'concluída';
+    final isConcluida = status.toLowerCase() == 'concluida';
 
     return GestureDetector(
       onTap: onTap,
@@ -70,13 +70,13 @@ class TaskCard extends StatelessWidget {
                 onTap: onChanged,
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
+                  width: 24,
+                  height: 24,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(color: Colors.grey, width: 2),
                     color: isConcluida ? Colors.green : Colors.transparent,
                   ),
-                  width: 24,
-                  height: 24,
                   child: isConcluida
                       ? const Icon(Icons.check, size: 16, color: Colors.white)
                       : null,
@@ -109,8 +109,7 @@ class TaskCard extends StatelessWidget {
                     Row(
                       children: [
                         if (dateTime != null) ...[
-                          const Icon(Icons.access_time,
-                              size: 16, color: Colors.red),
+                          const Icon(Icons.access_time, size: 16, color: Colors.red),
                           const SizedBox(width: 6),
                           Text(
                             dateTime!,
@@ -160,5 +159,3 @@ class TaskCard extends StatelessWidget {
     );
   }
 }
-
-
