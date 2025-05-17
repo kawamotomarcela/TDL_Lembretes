@@ -9,6 +9,7 @@ import '../../api/api_client.dart';
 import 'package:provider/provider.dart';
 import '../../models/usuario_model.dart';
 import '../../providers/usuario_provider.dart';
+import 'widgets/ip_config_dialog.dart'; // NOVO
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -53,16 +54,34 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  void _openIpDialog() {
+    showDialog(
+      context: context,
+      builder: (_) => const IpConfigDialog(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.indigo,
+      appBar: AppBar(
+        backgroundColor: Colors.indigo,
+        elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings_ethernet, color: Colors.white),
+            tooltip: "Configurar IP",
+            onPressed: _openIpDialog,
+          )
+        ],
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 32),
           child: Column(
             children: [
-              const SizedBox(height: 100),
+              const SizedBox(height: 50),
               const LogoWidget(title: "TDL-Lembretes"),
               const SizedBox(height: 20),
               CustomTextField(

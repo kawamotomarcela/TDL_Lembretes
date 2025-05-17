@@ -18,9 +18,6 @@ class _SettingsPageState extends State<SettingsPage> {
 
   String _theme = 'system';
   String _language = 'pt';
-  String _ipAddress = '000.000.000'; //COLOCA IP AQUI
-
-  final _ipController = TextEditingController();
 
   @override
   void initState() {
@@ -31,16 +28,13 @@ class _SettingsPageState extends State<SettingsPage> {
   Future<void> _loadPreferences() async {
     _theme = await _preferenceService.getThemeMode() ?? 'system';
     _language = await _preferenceService.getLanguage() ?? 'pt';
-    _ipAddress = await _preferenceService.getIpAddress() ?? '000.000.000'; //COLOCA IP AQUI
 
-    _ipController.text = _ipAddress;
     setState(() {});
   }
 
   void _savePreferences() {
     _preferenceService.setThemeMode(_theme);
     _preferenceService.setLanguage(_language);
-    _preferenceService.setIpAddress(_ipController.text);
 
     Provider.of<ThemeProvider>(context, listen: false).setTheme(_theme);
     Provider.of<LocaleProvider>(context, listen: false).setLocale(_language);
@@ -84,13 +78,6 @@ class _SettingsPageState extends State<SettingsPage> {
                 DropdownMenuItem(value: 'en', child: Text(local.english)),
               ],
             ),
-            const SizedBox(height: 16),
-            Text(local.ipAddress, style: const TextStyle(fontWeight: FontWeight.bold)),
-            TextField(
-              controller: _ipController,
-              decoration: InputDecoration(hintText: local.exampleIp),
-              keyboardType: TextInputType.number,
-            ),
             const SizedBox(height: 24),
             ElevatedButton(
               onPressed: _savePreferences,
@@ -102,3 +89,4 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 }
+
