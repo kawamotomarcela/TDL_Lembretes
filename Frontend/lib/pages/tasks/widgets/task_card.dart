@@ -43,7 +43,7 @@ class TaskCard extends StatelessWidget {
       case 0:
         return 'Baixa';
       case 1:
-        return 'Media';
+        return 'Média';
       case 2:
         return 'Alta';
       default:
@@ -53,7 +53,9 @@ class TaskCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isConcluida = status.toLowerCase() == 'concluida';
+    final statusLower = status.toLowerCase();
+    final isConcluida = statusLower == 'concluida';
+    final isExpirada = statusLower == 'expirada';
 
     return GestureDetector(
       onTap: onTap,
@@ -92,9 +94,12 @@ class TaskCard extends StatelessWidget {
                       style: GoogleFonts.poppins(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                        decoration:
-                            isConcluida ? TextDecoration.lineThrough : null,
-                        color: isConcluida ? Colors.grey : Colors.black,
+                        decoration: (isConcluida || isExpirada)
+                            ? TextDecoration.lineThrough
+                            : null,
+                        color: isExpirada
+                            ? Colors.red
+                            : (isConcluida ? Colors.grey : Colors.black),
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -109,7 +114,8 @@ class TaskCard extends StatelessWidget {
                     Row(
                       children: [
                         if (dateTime != null) ...[
-                          const Icon(Icons.access_time, size: 16, color: Colors.red),
+                          const Icon(Icons.access_time,
+                              size: 16, color: Colors.red),
                           const SizedBox(width: 6),
                           Text(
                             dateTime!,
