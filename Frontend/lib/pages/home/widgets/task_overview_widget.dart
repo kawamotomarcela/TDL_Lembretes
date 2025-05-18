@@ -2,7 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 class TaskOverviewWidget extends StatelessWidget {
-  const TaskOverviewWidget({super.key});
+  final int pendentes;
+  final int emAndamento;
+  final int concluidas;
+  final int expiradas;
+
+  const TaskOverviewWidget({
+    super.key,
+    required this.pendentes,
+    required this.emAndamento,
+    required this.concluidas,
+    required this.expiradas,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +26,7 @@ class TaskOverviewWidget extends StatelessWidget {
       child: Column(
         children: [
           SizedBox(
-            height: 150,
+            height: 180,
             child: PieChart(
               PieChartData(
                 sections: _buildSections(),
@@ -34,23 +45,30 @@ class TaskOverviewWidget extends StatelessWidget {
   List<PieChartSectionData> _buildSections() {
     return [
       PieChartSectionData(
-        value: 12,
+        value: pendentes.toDouble(),
         color: Colors.blue,
-        title: '12',
+        title: '$pendentes',
         radius: 40,
         titleStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
       ),
       PieChartSectionData(
-        value: 28,
-        color: Colors.purple,
-        title: '28',
+        value: emAndamento.toDouble(),
+        color: Colors.amber,
+        title: '$emAndamento',
         radius: 40,
         titleStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
       ),
       PieChartSectionData(
-        value: 20,
-        color: Colors.teal,
-        title: '20',
+        value: concluidas.toDouble(),
+        color: Colors.green,
+        title: '$concluidas',
+        radius: 40,
+        titleStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+      ),
+      PieChartSectionData(
+        value: expiradas.toDouble(),
+        color: Colors.redAccent,
+        title: '$expiradas',
         radius: 40,
         titleStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
       ),
@@ -58,16 +76,17 @@ class TaskOverviewWidget extends StatelessWidget {
   }
 
   Widget _buildLegend() {
-  return Wrap(
-    spacing: 16,
-    runSpacing: 8,
-    children: const [
-      _LegendItem(color: Colors.blue, text: 'Pendentes'),
-      _LegendItem(color: Colors.purple, text: 'em Andamento'),
-      _LegendItem(color: Colors.teal, text: 'Completadas'),
-    ],
-  );
-}
+    return Wrap(
+      spacing: 16,
+      runSpacing: 8,
+      children: const [
+        _LegendItem(color: Colors.blue, text: 'Pendentes'),
+        _LegendItem(color: Colors.amber, text: 'Em Andamento'),
+        _LegendItem(color: Colors.green, text: 'Concluídas'),
+        _LegendItem(color: Colors.redAccent, text: 'Expiradas'),
+      ],
+    );
+  }
 }
 
 class _LegendItem extends StatelessWidget {
@@ -79,6 +98,7 @@ class _LegendItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
         CircleAvatar(radius: 6, backgroundColor: color),
         const SizedBox(width: 6),
