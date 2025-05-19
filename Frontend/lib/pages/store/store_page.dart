@@ -8,15 +8,17 @@ import 'package:grupotdl/providers/usuario_provider.dart';
 class LojaPage extends StatelessWidget {
   LojaPage({super.key});
 
-  final List<Map<String, String>> produtos = [
+  final List<Map<String, dynamic>> produtos = [
     {
       'nome': 'Gift Card',
-      'preco': 'R\$ 500 Tokens',
+      'preco': '1 Tokens',
+      'custo': 1,
       'imagem': 'assets/giftcard.jpg',
     },
     {
       'nome': 'Pacote de Moedas',
-      'preco': 'R\$ 200 Tokens',
+      'preco': '1 Tokens',
+      'custo': 1,
       'imagem': 'assets/giftcard.jpg',
     },
   ];
@@ -36,9 +38,7 @@ class LojaPage extends StatelessWidget {
             children: [
               const InfoCard(),
               const SizedBox(height: 12),
-
               TotalPointsCard(total: usuario?.pontos ?? 0),
-
               const SizedBox(height: 20),
               GridView.builder(
                 shrinkWrap: true,
@@ -53,11 +53,26 @@ class LojaPage extends StatelessWidget {
                 itemBuilder: (context, index) {
                   final produto = produtos[index];
                   return ProductCard(
-                    nome: produto['nome']!,
-                    preco: produto['preco']!,
-                    imagem: produto['imagem']!,
-                    onConfirm: () {
-                      debugPrint('Produto comprado: ${produto['nome']}');
+                    nome: produto['nome'],
+                    preco: produto['preco'],
+                    imagem: produto['imagem'],
+                    onConfirm: () async {
+                      final sucesso = await context
+                          .read<UsuarioProvider>()
+                          .comprarProduto(produto['custo']);
+
+                      if (!context.mounted) return;
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            sucesso
+                                ? 'Compra confirmada: ${produto['nome']}'
+                                : 'Você não tem pontos suficientes.',
+                          ),
+                          backgroundColor: sucesso ? Colors.green : Colors.red,
+                        ),
+                      );
                     },
                   );
                 },

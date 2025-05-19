@@ -16,22 +16,19 @@ class ProductCard extends StatelessWidget {
   });
 
   void _confirmarCompra(BuildContext context) {
-    showDialog<String>(
+    showDialog(
       context: context,
       builder: (_) => AlertDialog(
         title: const Text('Confirmar Compra'),
         content: Text('Deseja realmente comprar o produto "$nome"?'),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context, 'Cancelar'),
+            onPressed: () => Navigator.pop(context),
             child: const Text('Cancelar'),
           ),
           TextButton(
             onPressed: () {
-              Navigator.pop(context, 'Confirmar');
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Compra confirmada!')),
-              );
+              Navigator.pop(context);
               onConfirm();
             },
             child: const Text('Confirmar'),
@@ -84,16 +81,18 @@ class ProductCard extends StatelessWidget {
                 SizedBox(
                   width: double.infinity,
                   height: 36,
-                  child: ElevatedButton.icon(
+                  child: ElevatedButton(
                     onPressed: () => _confirmarCompra(context),
-                    icon: const Icon(Icons.shopping_cart_outlined, size: 16),
-                    label: const Text("Comprar", style: TextStyle(fontSize: 13)),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blueAccent,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
+                    ),
+                    child: const Text(
+                      "Comprar",
+                      style: TextStyle(fontSize: 13),
                     ),
                   ),
                 ),
@@ -105,3 +104,4 @@ class ProductCard extends StatelessWidget {
     );
   }
 }
+

@@ -21,6 +21,11 @@ class UsuarioProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void limparUsuario() {
+    _usuario = null;
+    notifyListeners();
+  }
+
   void atualizarPontos(int novosPontos) {
     if (_usuario != null) {
       _usuario = _usuario!.copyWith(pontos: novosPontos);
@@ -29,11 +34,6 @@ class UsuarioProvider with ChangeNotifier {
       _erro = 'Usuário não encontrado';
       notifyListeners();
     }
-  }
-
-  void limparUsuario() {
-    _usuario = null;
-    notifyListeners();
   }
 
   Future<bool> atualizarPerfil({
@@ -70,5 +70,31 @@ class UsuarioProvider with ChangeNotifier {
       notifyListeners();
       return false;
     }
+  }
+
+  Future<bool> comprarProduto(int custo) async {
+    if (_usuario == null) return false;
+
+    if (_usuario!.pontos < custo) {
+      _erro = 'Pontos insuficientes';
+      notifyListeners();
+      return false;
+    }
+
+    final novosPontos = _usuario!.pontos - custo;
+    final atualizado = _usuario!.copyWith(pontos: novosPontos);
+
+    final sucesso = await _usuarioService.atualizarUsuario(
+      atualizado.id,
+      atualizado.toJson(),
+    );
+
+    if (sucesso) {
+      _usuario = atualizado;
+      _erro = null;
+      notifyListeners();
+    }
+
+    return sucesso;
   }
 }
