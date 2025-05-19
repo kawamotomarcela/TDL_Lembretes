@@ -39,6 +39,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "light": MessageLookupByLibrary.simpleMessage("Claro"),
     "logout": MessageLookupByLibrary.simpleMessage("Sair"),
     "logoutConfirmation": MessageLookupByLibrary.simpleMessage("Deseja sair?"),
+    "noCouponsAvailable": MessageLookupByLibrary.simpleMessage(
+      "Você ainda não comprou nenhum cupom.",
+    ),
     "portuguese": MessageLookupByLibrary.simpleMessage("Português"),
     "preferencesSaved": MessageLookupByLibrary.simpleMessage(
       "Preferências salvas",

@@ -25,6 +25,9 @@
   "calendarPageTitle": "Calendar",
   "storePageTitle": "Store",
   "profilePageTitle": "Profile",
+  "coupons": "Cupons",
+  "couponsPageTitle": "Coupons",
+  "noCouponsAvailable": "Você ainda não comprou nenhum cupom.",
   "logoutConfirmation": "Do you want to logout?",
   "cancel": "Cancel",
   "exit": "Exit"

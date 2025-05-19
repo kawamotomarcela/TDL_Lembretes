@@ -15,12 +15,12 @@ import 'providers/theme_provider.dart';
 import 'providers/locale_provider.dart';
 
 import 'services/task_service.dart';
+import 'services/usuario_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await initializeDateFormatting('pt_BR', null);
-
   _setupLogging();
 
   final apiClient = ApiClient();
@@ -28,18 +28,31 @@ void main() async {
 
   final prefs = await SharedPreferences.getInstance();
   final langCode = prefs.getString('language') ?? 'pt';
-  final initialLocale = langCode == 'pt'
-      ? const Locale('pt', 'BR')
-      : Locale(langCode);
+  final initialLocale =
+      langCode == 'pt' ? const Locale('pt', 'BR') : Locale(langCode);
 
   runApp(
     MultiProvider(
       providers: [
+        Provider<ApiClient>.value(value: apiClient),
+
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
+
         ChangeNotifierProvider(
-          create: (_) => TaskProvider(taskService: TaskService(apiClient)),
+          create:
+              (context) => TaskProvider(taskService: TaskService(apiClient)),
         ),
-        ChangeNotifierProvider(create: (_) => UsuarioProvider()),
+
+        ProxyProvider<ApiClient, UsuarioService>(
+          update: (_, api, __) => UsuarioService(api),
+        ),
+      ChangeNotifierProxyProvider<UsuarioService, UsuarioProvider>(
+  create: (_) => UsuarioProvider(),
+  update: (_, usuarioService, usuarioProvider) =>
+      usuarioProvider!..setService(usuarioService),
+),
+
+
         ChangeNotifierProvider(create: (_) => LocaleProvider(initialLocale)),
       ],
       child: const MyApp(),
@@ -50,7 +63,9 @@ void main() async {
 void _setupLogging() {
   Logger.root.level = Level.ALL;
   Logger.root.onRecord.listen((record) {
-    debugPrint('[${record.level.name}] ${record.loggerName}: ${record.message}');
+    debugPrint(
+      '[${record.level.name}] ${record.loggerName}: ${record.message}',
+    );
   });
 }
 
@@ -81,4 +96,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-

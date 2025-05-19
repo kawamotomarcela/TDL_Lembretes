@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../utils/show_snackbar.dart';
-import '../../../utils/validators.dart';
 import '../../../providers/usuario_provider.dart';
+import '../../../utils/show_snackbar.dart';
 
 class ProfileForm extends StatefulWidget {
   const ProfileForm({super.key});
@@ -14,94 +13,127 @@ class ProfileForm extends StatefulWidget {
 class _ProfileFormState extends State<ProfileForm> {
   final _formKey = GlobalKey<FormState>();
 
-  late final TextEditingController _nameController;
-  late final TextEditingController _phoneController;
-  late final TextEditingController _emailController;
+  final _nomeController = TextEditingController();
+  final _telefoneController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _senhaAtualController = TextEditingController();
+  final _novaSenhaController = TextEditingController();
 
   @override
-  void initState() {
-    super.initState();
-    final usuario = Provider.of<UsuarioProvider>(context, listen: false).usuario;
-
-    _nameController = TextEditingController(text: usuario?.nome ?? '');
-    _phoneController = TextEditingController(text: usuario?.telefone ?? '');
-    _emailController = TextEditingController(text: usuario?.email ?? '');
+  void dispose() {
+    _nomeController.dispose();
+    _telefoneController.dispose();
+    _emailController.dispose();
+    _senhaAtualController.dispose();
+    _novaSenhaController.dispose();
+    super.dispose();
   }
 
-  void _saveProfile() {
-    if (_formKey.currentState!.validate()) {
-      showSnackBar(context, 'Perfil atualizado com sucesso!', color: Colors.green);
+  Future<void> _saveProfile() async {
+    final usuarioProvider = context.read<UsuarioProvider>();
+    final usuario = usuarioProvider.usuario;
+
+    if (usuario == null) return;
+
+    final nome = _nomeController.text.trim();
+    final telefone = _telefoneController.text.trim();
+    final email = _emailController.text.trim();
+    final senhaAtual = _senhaAtualController.text.trim();
+    final novaSenha = _novaSenhaController.text.trim();
+
+    String? senhaParaEnviar;
+    if (senhaAtual.isNotEmpty && novaSenha.isNotEmpty) {
+      senhaParaEnviar = novaSenha;
+    }
+
+    final sucesso = await usuarioProvider.atualizarPerfil(
+      nome: nome,
+      telefone: telefone,
+      email: email,
+      senha: senhaParaEnviar,
+    );
+
+    if (!mounted) return;
+
+    if (sucesso) {
+      showSnackBar(context, 'Perfil atualizado com sucesso');
+    } else {
+      showSnackBar(context, 'Erro ao atualizar perfil', color: Colors.red);
     }
   }
 
-  OutlineInputBorder get blackBorder => const OutlineInputBorder(
-        borderSide: BorderSide(color: Colors.black),
-      );
-
   @override
   Widget build(BuildContext context) {
-    return Form(
-      key: _formKey,
-      child: Column(
-        children: [
-          TextFormField(
-            controller: _nameController,
-            decoration: InputDecoration(
-              labelText: 'Nome',
-              prefixIcon: const Icon(Icons.person_outline),
-              border: blackBorder,
-              enabledBorder: blackBorder,
-              focusedBorder: blackBorder,
-            ),
-            validator: (value) => Validators.validateRequired(value, 'Nome'),
-          ),
-          const SizedBox(height: 16),
+    final usuario = context.watch<UsuarioProvider>().usuario;
 
-          TextFormField(
-            controller: _phoneController,
-            keyboardType: TextInputType.phone,
-            decoration: InputDecoration(
-              labelText: 'Telefone',
-              prefixIcon: const Icon(Icons.phone_outlined),
-              border: blackBorder,
-              enabledBorder: blackBorder,
-              focusedBorder: blackBorder,
-            ),
-            validator: Validators.validatePhone,
-          ),
-          const SizedBox(height: 16),
+    _nomeController.text = usuario?.nome ?? '';
+    _telefoneController.text = usuario?.telefone ?? '';
+    _emailController.text = usuario?.email ?? '';
 
-          TextFormField(
-            controller: _emailController,
-            keyboardType: TextInputType.emailAddress,
-            decoration: InputDecoration(
-              labelText: 'Email',
-              prefixIcon: const Icon(Icons.email_outlined),
-              border: blackBorder,
-              enabledBorder: blackBorder,
-              focusedBorder: blackBorder,
-            ),
-            validator: Validators.validateEmail,
-          ),
-          const SizedBox(height: 24),
+    InputDecoration inputDecoration(String label) {
+      return InputDecoration(
+        labelText: label,
+        border: const OutlineInputBorder(),
+      );
+    }
 
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: _saveProfile,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          children: [
+            TextFormField(
+              controller: _nomeController,
+              decoration: inputDecoration('Nome'),
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _emailController,
+              decoration: inputDecoration('E-mail'),
+              keyboardType: TextInputType.emailAddress,
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _telefoneController,
+              decoration: inputDecoration('Telefone'),
+              keyboardType: TextInputType.phone,
+            ),
+            const SizedBox(height: 24),
+            TextFormField(
+              controller: _senhaAtualController,
+              decoration: inputDecoration('Senha atual'),
+              obscureText: true,
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _novaSenhaController,
+              decoration: inputDecoration('Nova senha (opcional)'),
+              obscureText: true,
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _saveProfile,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                ),
+                child: const Text(
+                  'Salvar',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
-              child: const Text('Salvar', style: TextStyle(fontSize: 16)),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 }
+

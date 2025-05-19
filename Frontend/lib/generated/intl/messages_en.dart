@@ -26,6 +26,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "calendar": MessageLookupByLibrary.simpleMessage("Calendar"),
     "calendarPageTitle": MessageLookupByLibrary.simpleMessage("Calendar"),
     "cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
+    "coupons": MessageLookupByLibrary.simpleMessage("Cupons"),
     "dark": MessageLookupByLibrary.simpleMessage("Dark"),
     "english": MessageLookupByLibrary.simpleMessage("English"),
     "exampleIp": MessageLookupByLibrary.simpleMessage("Ex: 192.168.0.1"),
@@ -40,6 +41,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "logout": MessageLookupByLibrary.simpleMessage("Logout"),
     "logoutConfirmation": MessageLookupByLibrary.simpleMessage(
       "Do you want to logout?",
+    ),
+    "noCouponsAvailable": MessageLookupByLibrary.simpleMessage(
+      "Você ainda não comprou nenhum cupom.",
     ),
     "portuguese": MessageLookupByLibrary.simpleMessage("Portuguese"),
     "preferencesSaved": MessageLookupByLibrary.simpleMessage(

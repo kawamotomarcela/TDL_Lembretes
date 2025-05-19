@@ -200,6 +200,31 @@ class S {
     );
   }
 
+  /// `Cupons`
+  String get coupons {
+    return Intl.message('Cupons', name: 'coupons', desc: '', args: []);
+  }
+
+  /// `Coupons`
+  String get couponsPageTitle {
+    return Intl.message(
+      'Coupons',
+      name: 'couponsPageTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Você ainda não comprou nenhum cupom.`
+  String get noCouponsAvailable {
+    return Intl.message(
+      'Você ainda não comprou nenhum cupom.',
+      name: 'noCouponsAvailable',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Do you want to logout?`
   String get logoutConfirmation {
     return Intl.message(

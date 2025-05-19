@@ -13,6 +13,22 @@ class Usuario {
     required this.pontos,
   });
 
+  Usuario copyWith({
+    String? id,
+    String? nome,
+    String? email,
+    String? telefone,
+    int? pontos,
+  }) {
+    return Usuario(
+      id: id ?? this.id,
+      nome: nome ?? this.nome,
+      email: email ?? this.email,
+      telefone: telefone ?? this.telefone,
+      pontos: pontos ?? this.pontos,
+    );
+  }
+
   factory Usuario.fromMap(Map<String, dynamic> map) {
     return Usuario(
       id: map['id'],

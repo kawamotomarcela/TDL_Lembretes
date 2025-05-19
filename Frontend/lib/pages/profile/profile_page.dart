@@ -47,9 +47,17 @@ class _ProfilePageState extends State<ProfilePage> {
     final isNetwork = _imageUrl.startsWith('http');
 
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Meu Perfil'),
+        centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
         child: Column(
           children: [
             Stack(
@@ -59,14 +67,14 @@ class _ProfilePageState extends State<ProfilePage> {
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withAlpha((0.1 * 255).toInt()),
-                        blurRadius: 10,
+                      color: Colors.black.withAlpha(25),
+                        blurRadius: 8,
                         offset: const Offset(0, 4),
                       ),
                     ],
                   ),
                   child: CircleAvatar(
-                    radius: 60,
+                    radius: 40, 
                     backgroundImage: isNetwork
                         ? NetworkImage(_imageUrl) as ImageProvider
                         : AssetImage(_imageUrl),
@@ -78,7 +86,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   child: GestureDetector(
                     onTap: _changeImage,
                     child: Container(
-                      padding: const EdgeInsets.all(6),
+                      padding: const EdgeInsets.all(5),
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         color: const Color.fromARGB(255, 153, 155, 170),
@@ -87,14 +95,14 @@ class _ProfilePageState extends State<ProfilePage> {
                       child: const Icon(
                         Icons.edit,
                         color: Colors.white,
-                        size: 20,
+                        size: 18,
                       ),
                     ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 8), 
             TextButton(
               onPressed: _changeImage,
               child: const Text(
@@ -105,7 +113,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 16), 
             const ProfileForm(),
           ],
         ),
@@ -113,3 +121,4 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 }
+

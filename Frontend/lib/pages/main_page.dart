@@ -7,6 +7,7 @@ import 'store/store_page.dart';
 import 'profile/profile_page.dart';
 import 'about/about_page.dart';
 import 'settings/settings_page.dart';
+import 'coupons/coupons_page.dart';
 import '../routes/app_routes.dart';
 import 'home/home_page.dart';
 
@@ -30,7 +31,7 @@ class _MainPageState extends State<MainPage> {
       const TaskListPage(),
       const CalendarPage(),
       LojaPage(),
-      const ProfilePage(),
+      const CouponsPage(), // Nova página de Cupons
     ];
   }
 
@@ -56,7 +57,12 @@ class _MainPageState extends State<MainPage> {
   }
 
   void _onSettingsSelected(String value) {
-    if (value == 'config') {
+    if (value == 'meu_perfil') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const ProfilePage()),
+      );
+    } else if (value == 'config') {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => const SettingsPage()),
@@ -80,7 +86,7 @@ class _MainPageState extends State<MainPage> {
       local.tasksPageTitle,
       local.calendarPageTitle,
       local.storePageTitle,
-      local.profilePageTitle,
+      local.couponsPageTitle, // Novo título para Cupons (adicione no arquivo .arb se necessário)
     ];
 
     return Scaffold(
@@ -99,6 +105,13 @@ class _MainPageState extends State<MainPage> {
             icon: const Icon(Icons.settings),
             onSelected: _onSettingsSelected,
             itemBuilder: (context) => [
+              PopupMenuItem(
+                value: 'meu_perfil',
+                child: ListTile(
+                  leading: const Icon(Icons.account_circle),
+                  title: Text(local.profile),
+                ),
+              ),
               PopupMenuItem(
                 value: 'config',
                 child: ListTile(
@@ -139,7 +152,7 @@ class _MainPageState extends State<MainPage> {
           BottomNavigationBarItem(icon: const Icon(Icons.check_circle_outline), label: local.tasks),
           BottomNavigationBarItem(icon: const Icon(Icons.calendar_today), label: local.calendar),
           BottomNavigationBarItem(icon: const Icon(Icons.storefront_outlined), label: local.store),
-          BottomNavigationBarItem(icon: const Icon(Icons.person), label: local.profile),
+          BottomNavigationBarItem(icon: const Icon(Icons.card_giftcard), label: local.coupons), // Ícone de cupons
         ],
       ),
     );
