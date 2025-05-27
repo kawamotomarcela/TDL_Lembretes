@@ -19,8 +19,8 @@ void main() {
       descricao: 'Testes',
       dataCriacao: DateTime.now(),
       dataFinalizacao: DateTime.now().add(const Duration(days: 2)),
-      prioridade: PrioridadeTarefa.Media,
-      status: StatusTarefa.pendente,
+      prioridade: PrioridadeTarefa.media,
+      status: StatusTarefa.emAndamento,
       alarmeAtivado: false,
     );
 
@@ -38,15 +38,6 @@ void main() {
       expect(provider.tarefas.first.titulo, 'Nova Tarefa');
     });
 
-    test('Conclui tarefa (pendente → em andamento)', () async {
-      when(mockTaskService.toggleStatus(any)).thenAnswer((_) async => true);
-      provider = TaskProvider(taskService: mockTaskService);
-      provider.limpar();
-      provider.tarefas.add(fakeTask);
-
-      await provider.concluir(fakeTask.id);
-      expect(provider.tarefas.first.status, StatusTarefa.emAndamento);
-    });
 
     test('Remove tarefa', () async {
       when(mockTaskService.deleteTask(any)).thenAnswer((_) async => true);

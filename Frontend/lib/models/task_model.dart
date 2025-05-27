@@ -1,6 +1,5 @@
-enum StatusTarefa { pendente, emAndamento, concluida, expirada }
-
-enum PrioridadeTarefa { Baixa, Media, Alta }
+enum StatusTarefa { emAndamento, concluida, expirada }
+enum PrioridadeTarefa { baixa, media, alta }
 
 class TaskModel {
   final String id;
@@ -18,8 +17,8 @@ class TaskModel {
     required this.descricao,
     required this.dataCriacao,
     required this.dataFinalizacao,
-    this.status = StatusTarefa.pendente,
-    this.prioridade = PrioridadeTarefa.Baixa,
+    this.status = StatusTarefa.emAndamento,
+    this.prioridade = PrioridadeTarefa.baixa,
     this.alarmeAtivado = false,
   });
 
@@ -47,13 +46,11 @@ class TaskModel {
 
   StatusTarefa proximoStatus() {
     switch (status) {
-      case StatusTarefa.pendente:
-        return StatusTarefa.emAndamento;
       case StatusTarefa.emAndamento:
         return StatusTarefa.concluida;
       case StatusTarefa.concluida:
       case StatusTarefa.expirada:
-        return StatusTarefa.pendente;
+        return StatusTarefa.emAndamento;
     }
   }
 
@@ -63,23 +60,16 @@ class TaskModel {
       titulo: map['titulo'] ?? map['Titulo'],
       descricao: map['descricao'] ?? map['Descricao'] ?? '',
       dataCriacao: DateTime.parse(map['dataCriacao'] ?? map['DataCriacao']),
-      dataFinalizacao: DateTime.parse(
-        map['dataFinalizacao'] ?? map['DataFinalizacao'],
-      ),
+      dataFinalizacao: DateTime.parse(map['dataFinalizacao'] ?? map['DataFinalizacao']),
       status: StatusTarefa.values.firstWhere(
-        (e) =>
-            e.name.toLowerCase() ==
-            (map['status'] ?? map['Status']).toString().toLowerCase(),
-        orElse: () => StatusTarefa.pendente,
+        (e) => e.name.toLowerCase() == (map['status'] ?? map['Status']).toString().toLowerCase(),
+        orElse: () => StatusTarefa.emAndamento,
       ),
       prioridade: PrioridadeTarefa.values.firstWhere(
-        (e) =>
-            e.name.toLowerCase() ==
-            (map['prioridade'] ?? map['Prioridade']).toString().toLowerCase(),
-        orElse: () => PrioridadeTarefa.Baixa,
+        (e) => e.name.toLowerCase() == (map['prioridade'] ?? map['Prioridade']).toString().toLowerCase(),
+        orElse: () => PrioridadeTarefa.baixa,
       ),
-      alarmeAtivado:
-          map['alarmeAtivado'] ?? map['AlarmeAtivado'] == true ? true : false,
+      alarmeAtivado: (map['alarmeAtivado'] ?? map['AlarmeAtivado']) == true,
     );
   }
 
@@ -96,25 +86,23 @@ class TaskModel {
     };
   }
 
-Map<String, dynamic> toMapForDto() {
-  String capitalize(String value) =>
-      value[0].toUpperCase() + value.substring(1).toLowerCase();
+  Map<String, dynamic> toMapForDto() {
+    String capitalize(String value) =>
+        value[0].toUpperCase() + value.substring(1).toLowerCase();
 
-  return {
-    'Id': id,
-    'Titulo': titulo,
-    'Descricao': descricao,
-    'DataCriacao': dataCriacao.toIso8601String(),
-    'DataFinalizacao': dataFinalizacao.toIso8601String(),
-    'Status': capitalize(status.name), 
-    'Prioridade': capitalize(prioridade.name), 
-    'AlarmeAtivado': alarmeAtivado,
-  };
-}
+    return {
+      'Id': id,
+      'Titulo': titulo,
+      'Descricao': descricao,
+      'DataCriacao': dataCriacao.toIso8601String(),
+      'DataFinalizacao': dataFinalizacao.toUtc().toIso8601String(),
+      'Status': capitalize(status.name),
+      'Prioridade': capitalize(prioridade.name),
+      'AlarmeAtivado': alarmeAtivado,
+    };
+  }
 
-
-  factory TaskModel.fromJson(Map<String, dynamic> json) =>
-      TaskModel.fromMap(json);
+  factory TaskModel.fromJson(Map<String, dynamic> json) => TaskModel.fromMap(json);
 
   Map<String, dynamic> toJson() => toMap();
 

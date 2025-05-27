@@ -2,14 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 class TaskOverviewWidget extends StatelessWidget {
-  final int pendentes;
   final int emAndamento;
   final int concluidas;
   final int expiradas;
 
   const TaskOverviewWidget({
     super.key,
-    required this.pendentes,
     required this.emAndamento,
     required this.concluidas,
     required this.expiradas,
@@ -45,13 +43,6 @@ class TaskOverviewWidget extends StatelessWidget {
   List<PieChartSectionData> _buildSections() {
     return [
       PieChartSectionData(
-        value: pendentes.toDouble(),
-        color: Colors.blue,
-        title: '$pendentes',
-        radius: 40,
-        titleStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-      ),
-      PieChartSectionData(
         value: emAndamento.toDouble(),
         color: Colors.amber,
         title: '$emAndamento',
@@ -80,7 +71,6 @@ class TaskOverviewWidget extends StatelessWidget {
       spacing: 16,
       runSpacing: 8,
       children: const [
-        _LegendItem(color: Colors.blue, text: 'Pendentes'),
         _LegendItem(color: Colors.amber, text: 'Em Andamento'),
         _LegendItem(color: Colors.green, text: 'Concluídas'),
         _LegendItem(color: Colors.redAccent, text: 'Expiradas'),

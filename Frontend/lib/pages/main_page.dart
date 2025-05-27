@@ -86,7 +86,7 @@ class _MainPageState extends State<MainPage> {
       local.tasksPageTitle,
       local.calendarPageTitle,
       local.storePageTitle,
-      local.couponsPageTitle, // Novo título para Cupons (adicione no arquivo .arb se necessário)
+      local.couponsPageTitle, 
     ];
 
     return Scaffold(
@@ -152,7 +152,7 @@ class _MainPageState extends State<MainPage> {
           BottomNavigationBarItem(icon: const Icon(Icons.check_circle_outline), label: local.tasks),
           BottomNavigationBarItem(icon: const Icon(Icons.calendar_today), label: local.calendar),
           BottomNavigationBarItem(icon: const Icon(Icons.storefront_outlined), label: local.store),
-          BottomNavigationBarItem(icon: const Icon(Icons.card_giftcard), label: local.coupons), // Ícone de cupons
+          BottomNavigationBarItem(icon: const Icon(Icons.card_giftcard), label: local.coupons), 
         ],
       ),
     );

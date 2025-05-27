@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../routes/app_routes.dart';
 import 'widgets/custom_text_field.dart';
 import '../../shared/widgets/custom_button.dart';
@@ -6,10 +7,9 @@ import '../../shared/widgets/logo_widget.dart';
 import '../../utils/show_snackbar.dart';
 import '../../services/auth_service.dart';
 import '../../api/api_client.dart';
-import 'package:provider/provider.dart';
 import '../../models/usuario_model.dart';
 import '../../providers/usuario_provider.dart';
-import 'widgets/ip_config_dialog.dart'; // NOVO
+import 'widgets/ip_config_dialog.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -29,6 +29,7 @@ class _LoginPageState extends State<LoginPage> {
       try {
         final apiClient = ApiClient();
         await apiClient.init();
+
         final authService = AuthService(apiClient);
 
         final response = await authService.login(
@@ -39,8 +40,9 @@ class _LoginPageState extends State<LoginPage> {
         if (!mounted) return;
 
         if (response != null) {
-          final usuario = Usuario.fromMap(response);
+          final usuario = Usuario.fromMap(response); 
           context.read<UsuarioProvider>().setUsuario(usuario);
+
           Navigator.pushReplacementNamed(context, AppRoutes.main);
         } else {
           showSnackBar(context, "Login inválido ou dados incorretos!", color: Colors.red);
@@ -100,9 +102,7 @@ class _LoginPageState extends State<LoginPage> {
                     _obscureText ? Icons.visibility_off : Icons.visibility,
                     color: Colors.white,
                   ),
-                  onPressed: () {
-                    setState(() => _obscureText = !_obscureText);
-                  },
+                  onPressed: () => setState(() => _obscureText = !_obscureText),
                 ),
               ),
               const SizedBox(height: 8),

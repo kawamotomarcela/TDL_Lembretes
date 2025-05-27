@@ -102,8 +102,6 @@ class TaskListScreen extends StatelessWidget {
 
   Color _getStatusColor(StatusTarefa status) {
     switch (status) {
-      case StatusTarefa.pendente:
-        return Colors.yellow[100]!;
       case StatusTarefa.emAndamento:
         return Colors.blue[100]!;
       case StatusTarefa.concluida:

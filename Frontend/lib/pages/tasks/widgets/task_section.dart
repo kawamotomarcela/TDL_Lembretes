@@ -20,8 +20,6 @@ class TaskSection extends StatelessWidget {
 
   String _statusToText(StatusTarefa status) {
     switch (status) {
-      case StatusTarefa.pendente:
-        return 'pendente';
       case StatusTarefa.emAndamento:
         return 'em andamento';
       case StatusTarefa.concluida:

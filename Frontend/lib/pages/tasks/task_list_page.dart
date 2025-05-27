@@ -47,11 +47,7 @@ class _TaskListPageState extends State<TaskListPage> {
 
   void _alternarStatus(TaskModel tarefa) {
     if (tarefa.status == StatusTarefa.expirada) {
-      showSnackBar(
-        context,
-        'Tarefa expirada não pode ser alterada.',
-        color: Colors.red,
-      );
+      showSnackBar(context, 'Tarefa expirada não pode ser alterada.', color: Colors.red);
       return;
     }
 
@@ -59,41 +55,46 @@ class _TaskListPageState extends State<TaskListPage> {
   }
 
   void _alternarAlarme(TaskModel tarefa) {
-    Provider.of<tp.TaskProvider>(
-      context,
-      listen: false,
-    ).alternarAlarme(tarefa.id);
+    if (tarefa.status == StatusTarefa.expirada) {
+      showSnackBar(context, 'Tarefa expirada não pode ter alarme alterado.', color: Colors.red);
+      return;
+    }
 
-    final tarefaAtualizada = Provider.of<tp.TaskProvider>(
-      context,
-      listen: false,
-    ).tarefas.firstWhere((t) => t.id == tarefa.id);
+    Provider.of<tp.TaskProvider>(context, listen: false).alternarAlarme(tarefa.id);
+
+    final tarefaAtualizada = Provider.of<tp.TaskProvider>(context, listen: false)
+        .tarefas
+        .firstWhere((t) => t.id == tarefa.id);
 
     showSnackBar(
       context,
       tarefaAtualizada.alarmeAtivado
-          ? 'Alarme desativado com sucesso!'
-          : 'Alarme ativado com sucesso!',
-      color: tarefaAtualizada.alarmeAtivado ? Colors.red : Colors.green,
+          ? 'Alarme ativado com sucesso!'
+          : 'Alarme desativado com sucesso!',
+      color: tarefaAtualizada.alarmeAtivado ? Colors.green : Colors.red,
     );
   }
 
   void _abrirFormulario([TaskModel? tarefa]) {
+    if (tarefa != null && tarefa.status == StatusTarefa.expirada) {
+      showSnackBar(context, 'Tarefa expirada não pode ser editada.', color: Colors.red);
+      return;
+    }
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder:
-          (_) => TaskForm(
-            tarefaEditavel: tarefa,
-            onSubmit: (task) {
-              if (tarefa == null) {
-                _adicionarTarefa(task);
-              } else {
-                _editarTarefa(task);
-              }
-            },
-            onDelete: (id) => _removerTarefa(id),
-          ),
+      builder: (_) => TaskForm(
+        tarefaEditavel: tarefa,
+        onSubmit: (task) {
+          if (tarefa == null) {
+            _adicionarTarefa(task);
+          } else {
+            _editarTarefa(task);
+          }
+        },
+        onDelete: (id) => _removerTarefa(id),
+      ),
     );
   }
 
@@ -119,40 +120,24 @@ class _TaskListPageState extends State<TaskListPage> {
             child: Consumer<tp.TaskProvider>(
               builder: (context, provider, _) {
                 final tarefas = provider.tarefas;
-                final filtradas =
-                    tarefas.where((t) {
-                      final titulo = t.titulo.toLowerCase();
-                      final descricao = t.descricao.toLowerCase();
-                      return titulo.contains(_filter) ||
-                          descricao.contains(_filter);
-                    }).toList();
+                final filtradas = tarefas.where((t) {
+                  final titulo = t.titulo.toLowerCase();
+                  final descricao = t.descricao.toLowerCase();
+                  return titulo.contains(_filter) || descricao.contains(_filter);
+                }).toList();
 
-                final pendentes =
-                    filtradas
-                        .where((t) => t.status == StatusTarefa.pendente)
-                        .toList();
-                final andamento =
-                    filtradas
-                        .where((t) => t.status == StatusTarefa.emAndamento)
-                        .toList();
-                final concluidas =
-                    filtradas
-                        .where((t) => t.status == StatusTarefa.concluida)
-                        .toList();
-                final expiradas =
-                    filtradas
-                        .where((t) => t.status == StatusTarefa.expirada)
-                        .toList();
+                final andamento = filtradas
+                    .where((t) => t.status == StatusTarefa.emAndamento)
+                    .toList();
+                final concluidas = filtradas
+                    .where((t) => t.status == StatusTarefa.concluida)
+                    .toList();
+                final expiradas = filtradas
+                    .where((t) => t.status == StatusTarefa.expirada)
+                    .toList();
 
                 return ListView(
                   children: [
-                    TaskSection(
-                      title: '📌 Pendentes',
-                      tasks: pendentes,
-                      onToggle: _alternarStatus,
-                      onAlarmeToggle: _alternarAlarme,
-                      onEditar: _abrirFormulario,
-                    ),
                     TaskSection(
                       title: '⏳ Em Andamento',
                       tasks: andamento,
@@ -191,3 +176,4 @@ class _TaskListPageState extends State<TaskListPage> {
     );
   }
 }
+

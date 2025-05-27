@@ -7,7 +7,7 @@ import 'widgets/home_header.dart';
 import 'widgets/welcome_banner.dart';
 import 'widgets/task_overview_widget.dart';
 import 'widgets/points_widget.dart';
-import 'widgets/news_section.dart';
+import 'widgets/hour_widget.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -23,7 +23,6 @@ class HomePage extends StatelessWidget {
           builder: (context, taskProvider, _) {
             final tarefas = taskProvider.tarefas;
 
-            final pendentes = tarefas.where((t) => t.status.name == 'pendente').length;
             final emAndamento = tarefas.where((t) => t.status.name == 'emAndamento').length;
             final concluidas = tarefas.where((t) => t.status.name == 'concluida').length;
             final expiradas = tarefas.where((t) => t.status.name == 'expirada').length;
@@ -36,7 +35,6 @@ class HomePage extends StatelessWidget {
                 const WelcomeBanner(),
                 const SizedBox(height: 20),
                 TaskOverviewWidget(
-                  pendentes: pendentes,
                   emAndamento: emAndamento,
                   concluidas: concluidas,
                   expiradas: expiradas,
@@ -44,7 +42,7 @@ class HomePage extends StatelessWidget {
                 const SizedBox(height: 20),
                 const PointsWidget(),
                 const SizedBox(height: 20),
-                const NewsSection(),
+                const HourWidget(), 
               ],
             );
           },
@@ -53,3 +51,4 @@ class HomePage extends StatelessWidget {
     );
   }
 }
+

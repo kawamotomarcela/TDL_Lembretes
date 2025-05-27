@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'package:grupotdl/models/task_model.dart';
 import 'package:grupotdl/api/api_client.dart';
@@ -7,76 +8,109 @@ class TaskService {
 
   TaskService(this.api);
 
+  /// 🔍 Busca as tarefas vinculadas ao usuário autenticado
   Future<List<TaskModel>> fetchTasks() async {
     try {
-      final response = await api.get('/CriarTarefaPersonalizada');
+      final response = await api.get('/TarefaPersonalizada');
+
       if (response is List) {
         return response.map((json) => TaskModel.fromMap(json)).toList();
       }
+
+      log('⚠️ Resposta inesperada ao buscar tarefas: $response');
       return [];
     } catch (e, stack) {
-      log('Erro ao buscar tarefas', error: e, stackTrace: stack);
+      log('❌ Erro ao buscar tarefas', error: e, stackTrace: stack);
       return [];
     }
   }
 
-Future<TaskModel?> createTask(TaskModel task) async {
-  try {
-    String capitalize(String value) =>
-        value[0].toUpperCase() + value.substring(1).toLowerCase();
+  /// 📝 Cria uma nova tarefa para o usuário autenticado
+  Future<TaskModel?> createTask(TaskModel task) async {
+    try {
+      String formatEnum(String value) =>
+          value[0].toUpperCase() + value.substring(1);
 
-    final payload = {
-      'Id': task.id,
-      'Titulo': task.titulo,
-      'Descricao': task.descricao,
-      'DataCriacao': task.dataCriacao.toIso8601String(),
-      'DataFinalizacao': task.dataFinalizacao.toIso8601String(),
-      'Status': capitalize(task.status.name),
-      'Prioridade': capitalize(task.prioridade.name),
-      'AlarmeAtivado': task.alarmeAtivado,
-    };
+      final payload = {
+        'Titulo': task.titulo,
+        'Descricao': task.descricao,
+        'DataFinalizacao': task.dataFinalizacao.toIso8601String(),
+        'Prioridade': formatEnum(task.prioridade.name),
+      };
 
+      log('📤 POST /TarefaPersonalizada - Payload: ${jsonEncode(payload)}');
 
-    final response = await api.post('/CriarTarefaPersonalizada', payload);
+      final response = await api.post('/TarefaPersonalizada', payload);
 
-    return TaskModel.fromMap(response);
-  } catch (e, stack) {
-    log('Erro ao criar tarefa', error: e, stackTrace: stack);
-    return null;
+      log('✅ Resposta da criação de tarefa: $response');
+
+      if (response is Map<String, dynamic>) {
+        if (response.containsKey('id')) {
+          return TaskModel.fromMap(response);
+        }
+
+        log('⚠️ Resposta parcial ao criar tarefa, mapeando manualmente');
+        return TaskModel(
+          id: response['Id'] ?? '',
+          titulo: task.titulo,
+          descricao: task.descricao,
+          dataCriacao: DateTime.now(),
+          dataFinalizacao: task.dataFinalizacao,
+          status: StatusTarefa.emAndamento,
+          prioridade: task.prioridade,
+          alarmeAtivado: task.alarmeAtivado,
+        );
+      }
+
+      log('❗ Resposta inesperada ao criar tarefa: $response');
+      return null;
+    } catch (e, stack) {
+      log('❌ Erro ao criar tarefa', error: e, stackTrace: stack);
+      return null;
+    }
   }
-}
 
-
+  /// ✏️ Atualiza uma tarefa existente
   Future<bool> updateTask(TaskModel task) async {
     try {
-      await api.put(
-        '/CriarTarefaPersonalizada/${task.id}',
-        task.toMapForDto(),
-      );
+      final payload = task.toMapForDto();
+
+      log('🛠 PUT /TarefaPersonalizada/${task.id} - Payload: ${jsonEncode(payload)}');
+
+      await api.put('/TarefaPersonalizada/${task.id}', payload);
       return true;
     } catch (e, stack) {
-      log('Erro ao atualizar tarefa', error: e, stackTrace: stack);
+      log('❌ Erro ao atualizar tarefa', error: e, stackTrace: stack);
       return false;
     }
   }
 
+  /// ❌ Remove uma tarefa específica
   Future<bool> deleteTask(String id) async {
     try {
-      await api.delete('/CriarTarefaPersonalizada/$id');
+      log('🗑 DELETE /TarefaPersonalizada/$id');
+      await api.delete('/TarefaPersonalizada/$id');
       return true;
     } catch (e, stack) {
-      log('Erro ao excluir tarefa', error: e, stackTrace: stack);
+      log('❌ Erro ao excluir tarefa', error: e, stackTrace: stack);
       return false;
     }
   }
 
-  Future<bool> toggleStatus(String id) async {
+  /// 🔁 Atualiza o status da tarefa
+  Future<bool> toggleStatus(String id, StatusTarefa novoStatus) async {
     try {
-      await api.put('/CriarTarefaPersonalizada/$id/toggle', {});
+      final statusStr = novoStatus.name[0].toUpperCase() + novoStatus.name.substring(1);
+      final payload = { 'Status': statusStr };
+
+      log('🔄 PUT /TarefaPersonalizada/$id/status - Payload: ${jsonEncode(payload)}');
+
+      await api.put('/TarefaPersonalizada/$id/status', payload);
       return true;
     } catch (e, stack) {
-      log('Erro ao alternar status da tarefa', error: e, stackTrace: stack);
+      log('❌ Erro ao alterar status da tarefa', error: e, stackTrace: stack);
       return false;
     }
   }
 }
+

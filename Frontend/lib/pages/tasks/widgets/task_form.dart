@@ -30,7 +30,7 @@ class _TaskFormState extends State<TaskForm> {
 
   DateTime? _selectedDate;
   TimeOfDay? _selectedTime;
-  PrioridadeTarefa _prioridade = PrioridadeTarefa.Media;
+  PrioridadeTarefa _prioridade = PrioridadeTarefa.media;
   bool _alarmeAtivado = false;
 
   @override
@@ -79,7 +79,7 @@ class _TaskFormState extends State<TaskForm> {
       descricao: descricao,
       dataCriacao: widget.tarefaEditavel?.dataCriacao ?? now,
       dataFinalizacao: finalDateTime,
-      status: widget.tarefaEditavel?.status ?? StatusTarefa.pendente,
+      status: widget.tarefaEditavel?.status ?? StatusTarefa.emAndamento,
       prioridade: _prioridade,
       alarmeAtivado: _alarmeAtivado,
     );

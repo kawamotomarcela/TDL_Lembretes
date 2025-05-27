@@ -38,7 +38,7 @@ class TaskProvider extends ChangeNotifier {
     try {
       final novaTarefa = await taskService.createTask(tarefa);
       if (novaTarefa != null) {
-        await carregarTarefas(); 
+        await carregarTarefas();
       } else {
         _erro = 'Erro ao adicionar tarefa';
       }
@@ -76,17 +76,19 @@ class TaskProvider extends ChangeNotifier {
   Future<void> concluir(String id) async {
     _erro = null;
     try {
-      final sucesso = await taskService.toggleStatus(id);
-      if (sucesso) {
-        final index = _tarefas.indexWhere((t) => t.id == id);
-        if (index != -1) {
-          final tarefa = _tarefas[index];
-          _tarefas[index] = tarefa.copyWith(status: tarefa.proximoStatus());
+      final index = _tarefas.indexWhere((t) => t.id == id);
+      if (index != -1) {
+        final tarefa = _tarefas[index];
+        final novoStatus = tarefa.proximoStatus();
+
+        final sucesso = await taskService.toggleStatus(id, novoStatus);
+        if (sucesso) {
+          _tarefas[index] = tarefa.copyWith(status: novoStatus);
+          notifyListeners();
+        } else {
+          _erro = 'Erro ao concluir tarefa';
           notifyListeners();
         }
-      } else {
-        _erro = 'Erro ao concluir tarefa';
-        notifyListeners();
       }
     } catch (e) {
       _erro = 'Erro ao concluir tarefa';
@@ -100,7 +102,9 @@ class TaskProvider extends ChangeNotifier {
       final index = _tarefas.indexWhere((t) => t.id == id);
       if (index != -1) {
         final tarefa = _tarefas[index];
-        final atualizada = tarefa.copyWith(alarmeAtivado: !tarefa.alarmeAtivado);
+        final atualizada = tarefa.copyWith(
+          alarmeAtivado: !tarefa.alarmeAtivado,
+        );
         final sucesso = await taskService.updateTask(atualizada);
         if (sucesso) {
           _tarefas[index] = atualizada;
@@ -141,4 +145,3 @@ class TaskProvider extends ChangeNotifier {
     notifyListeners();
   }
 }
-

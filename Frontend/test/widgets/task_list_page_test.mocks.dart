@@ -80,9 +80,9 @@ class MockTaskService extends _i1.Mock implements _i3.TaskService {
           as _i4.Future<bool>);
 
   @override
-  _i4.Future<bool> toggleStatus(String? id) =>
+  _i4.Future<bool> toggleStatus(String? id, _i5.StatusTarefa? novoStatus) =>
       (super.noSuchMethod(
-            Invocation.method(#toggleStatus, [id]),
+            Invocation.method(#toggleStatus, [id, novoStatus]),
             returnValue: _i4.Future<bool>.value(false),
           )
           as _i4.Future<bool>);
