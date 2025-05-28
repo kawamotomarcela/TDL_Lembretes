@@ -36,6 +36,32 @@ class UsuarioProvider with ChangeNotifier {
     }
   }
 
+  ///  Adiciona pontos e persiste apenas os pontos
+  Future<void> adicionarPontos(int pontos) async {
+    if (_usuario == null) {
+      _erro = 'Usuário não encontrado';
+      notifyListeners();
+      return;
+    }
+
+    final novosPontos = _usuario!.pontos + pontos;
+
+    final sucesso = await _usuarioService.atualizarPontosUsuario(
+      _usuario!.id,
+      novosPontos,
+    );
+
+    if (sucesso) {
+      _usuario = _usuario!.copyWith(pontos: novosPontos);
+      _erro = null;
+      notifyListeners();
+    } else {
+      _erro = 'Erro ao salvar pontos no servidor';
+      notifyListeners();
+    }
+  }
+
+  /// Atualiza nome, email, telefone e opcionalmente senha
   Future<bool> atualizarPerfil({
     required String nome,
     required String telefone,
@@ -72,6 +98,7 @@ class UsuarioProvider with ChangeNotifier {
     }
   }
 
+  /// Desconta pontos ao comprar produto
   Future<bool> comprarProduto(int custo) async {
     if (_usuario == null) return false;
 
@@ -82,15 +109,14 @@ class UsuarioProvider with ChangeNotifier {
     }
 
     final novosPontos = _usuario!.pontos - custo;
-    final atualizado = _usuario!.copyWith(pontos: novosPontos);
 
-    final sucesso = await _usuarioService.atualizarUsuario(
-      atualizado.id,
-      atualizado.toJson(),
+    final sucesso = await _usuarioService.atualizarPontosUsuario(
+      _usuario!.id,
+      novosPontos,
     );
 
     if (sucesso) {
-      _usuario = atualizado;
+      _usuario = _usuario!.copyWith(pontos: novosPontos);
       _erro = null;
       notifyListeners();
     }

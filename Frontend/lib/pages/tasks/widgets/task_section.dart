@@ -18,21 +18,10 @@ class TaskSection extends StatelessWidget {
     this.onEditar,
   });
 
-  String _statusToText(StatusTarefa status) {
-    switch (status) {
-      case StatusTarefa.emAndamento:
-        return 'em andamento';
-      case StatusTarefa.concluida:
-        return 'concluída';
-      case StatusTarefa.expirada:
-        return 'expirada';
-    }
-  }
-
   String _formatDate(DateTime date) {
     return '${date.day.toString().padLeft(2, '0')}/'
         '${date.month.toString().padLeft(2, '0')} '
-        'às ${date.hour.toString().padLeft(2, '0')}:'
+        'às ${date.hour.toString().padLeft(2, '0')}:' 
         '${date.minute.toString().padLeft(2, '0')}';
   }
 
@@ -56,7 +45,7 @@ class TaskSection extends StatelessWidget {
         ...tasks.map((task) => TaskCard(
               title: task.titulo,
               subtitle: task.descricao,
-              status: _statusToText(task.status),
+              status: task.status, 
               dateTime: _formatDate(task.dataFinalizacao),
               priority: task.prioridade.index,
               onChanged: () => onToggle(task),

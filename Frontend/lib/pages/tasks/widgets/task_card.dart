@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../models/task_model.dart';
 
 class TaskCard extends StatelessWidget {
   final String title;
   final String subtitle;
-  final String status;
+  final StatusTarefa status;
   final String? dateTime;
   final int priority;
   final VoidCallback onChanged;
@@ -53,9 +54,8 @@ class TaskCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final statusLower = status.toLowerCase();
-    final isConcluida = statusLower == 'concluida';
-    final isExpirada = statusLower == 'expirada';
+    final isConcluida = status == StatusTarefa.concluida;
+    final isExpirada = status == StatusTarefa.expirada;
 
     return GestureDetector(
       onTap: onTap,
@@ -76,7 +76,10 @@ class TaskCard extends StatelessWidget {
                   height: 24,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    border: Border.all(color: Colors.grey, width: 2),
+                    border: Border.all(
+                      color: isConcluida ? Colors.green : Colors.grey,
+                      width: 2,
+                    ),
                     color: isConcluida ? Colors.green : Colors.transparent,
                   ),
                   child: isConcluida

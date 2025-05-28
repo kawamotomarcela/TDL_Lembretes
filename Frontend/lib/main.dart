@@ -10,22 +10,27 @@ import 'generated/l10n.dart';
 import 'routes/app_routes.dart';
 
 import 'providers/task_provider.dart';
+import 'providers/task_ofc_provider.dart';
 import 'providers/usuario_provider.dart';
 import 'providers/theme_provider.dart';
 import 'providers/locale_provider.dart';
 
 import 'services/task_service.dart';
+import 'services/task_ofc_service.dart';
 import 'services/usuario_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Inicializa formato de data
   await initializeDateFormatting('pt_BR', null);
   _setupLogging();
 
+  // Inicializa client HTTP
   final apiClient = ApiClient();
   await apiClient.init();
 
+  // Define idioma inicial salvo
   final prefs = await SharedPreferences.getInstance();
   final langCode = prefs.getString('language') ?? 'pt';
   final initialLocale =
@@ -36,23 +41,30 @@ void main() async {
       providers: [
         Provider<ApiClient>.value(value: apiClient),
 
+        // Tema
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
 
+        // Tarefas personalizadas
         ChangeNotifierProvider(
-          create:
-              (context) => TaskProvider(taskService: TaskService(apiClient)),
+          create: (_) => TaskProvider(taskService: TaskService(apiClient)),
         ),
 
+        // Tarefas oficiais
+        ChangeNotifierProvider(
+          create: (_) => TaskOfcProvider(TaskOfcService(apiClient)),
+        ),
+
+        // Usuário
         ProxyProvider<ApiClient, UsuarioService>(
           update: (_, api, __) => UsuarioService(api),
         ),
-      ChangeNotifierProxyProvider<UsuarioService, UsuarioProvider>(
-  create: (_) => UsuarioProvider(),
-  update: (_, usuarioService, usuarioProvider) =>
-      usuarioProvider!..setService(usuarioService),
-),
+        ChangeNotifierProxyProvider<UsuarioService, UsuarioProvider>(
+          create: (_) => UsuarioProvider(),
+          update: (_, usuarioService, usuarioProvider) =>
+              usuarioProvider!..setService(usuarioService),
+        ),
 
-
+        // Idioma
         ChangeNotifierProvider(create: (_) => LocaleProvider(initialLocale)),
       ],
       child: const MyApp(),
@@ -63,9 +75,7 @@ void main() async {
 void _setupLogging() {
   Logger.root.level = Level.ALL;
   Logger.root.onRecord.listen((record) {
-    debugPrint(
-      '[${record.level.name}] ${record.loggerName}: ${record.message}',
-    );
+    debugPrint('[${record.level.name}] ${record.loggerName}: ${record.message}');
   });
 }
 
