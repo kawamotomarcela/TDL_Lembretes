@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/usuario_model.dart';
 import '../services/usuario_service.dart';
+import '../providers/produto_provider.dart';
 
 class UsuarioProvider with ChangeNotifier {
   late UsuarioService _usuarioService;
@@ -36,7 +37,6 @@ class UsuarioProvider with ChangeNotifier {
     }
   }
 
-  ///  Adiciona pontos e persiste apenas os pontos
   Future<void> adicionarPontos(int pontos) async {
     if (_usuario == null) {
       _erro = 'Usuário não encontrado';
@@ -54,14 +54,13 @@ class UsuarioProvider with ChangeNotifier {
     if (sucesso) {
       _usuario = _usuario!.copyWith(pontos: novosPontos);
       _erro = null;
-      notifyListeners();
     } else {
       _erro = 'Erro ao salvar pontos no servidor';
-      notifyListeners();
     }
+
+    notifyListeners();
   }
 
-  /// Atualiza nome, email, telefone e opcionalmente senha
   Future<bool> atualizarPerfil({
     required String nome,
     required String telefone,
@@ -89,18 +88,25 @@ class UsuarioProvider with ChangeNotifier {
     if (sucesso) {
       _usuario = atualizado;
       _erro = null;
-      notifyListeners();
-      return true;
     } else {
       _erro = 'Erro ao atualizar perfil';
+    }
+
+    notifyListeners();
+    return sucesso;
+  }
+
+  Future<bool> comprarProdutoComProdutoProvider({
+    required int custo,
+    required String produtoId,
+    required int quantidadeAtual,
+    required ProdutoProvider produtoProvider,
+  }) async {
+    if (_usuario == null) {
+      _erro = 'Usuário não encontrado';
       notifyListeners();
       return false;
     }
-  }
-
-  /// Desconta pontos ao comprar produto
-  Future<bool> comprarProduto(int custo) async {
-    if (_usuario == null) return false;
 
     if (_usuario!.pontos < custo) {
       _erro = 'Pontos insuficientes';
@@ -109,18 +115,38 @@ class UsuarioProvider with ChangeNotifier {
     }
 
     final novosPontos = _usuario!.pontos - custo;
+    final novaQuantidade = quantidadeAtual - 1;
 
-    final sucesso = await _usuarioService.atualizarPontosUsuario(
-      _usuario!.id,
-      novosPontos,
-    );
+    try {
+      // Atualiza pontos do usuário
+      final sucessoPontos = await _usuarioService.atualizarPontosUsuario(
+        _usuario!.id,
+        novosPontos,
+      );
 
-    if (sucesso) {
+      if (!sucessoPontos) {
+        _erro = 'Erro ao salvar pontos no servidor';
+        notifyListeners();
+        return false;
+      }
+
+      // Atualiza quantidade do produto no backend
+      await produtoProvider.produtoService.atualizarQuantidadeProduto(
+        produtoId,
+        novaQuantidade,
+      );
+
+      // Atualiza localmente
       _usuario = _usuario!.copyWith(pontos: novosPontos);
+      produtoProvider.atualizarQuantidadeLocal(produtoId, novaQuantidade);
+
       _erro = null;
       notifyListeners();
+      return true;
+    } catch (e) {
+      _erro = 'Erro ao realizar a compra: $e';
+      notifyListeners();
+      return false;
     }
-
-    return sucesso;
   }
 }

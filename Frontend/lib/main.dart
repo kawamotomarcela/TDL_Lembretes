@@ -9,28 +9,31 @@ import 'api/api_client.dart';
 import 'generated/l10n.dart';
 import 'routes/app_routes.dart';
 
+// Providers
 import 'providers/task_provider.dart';
 import 'providers/task_ofc_provider.dart';
 import 'providers/usuario_provider.dart';
 import 'providers/theme_provider.dart';
 import 'providers/locale_provider.dart';
+import 'providers/produto_provider.dart';
 
+// Services
 import 'services/task_service.dart';
 import 'services/task_ofc_service.dart';
 import 'services/usuario_service.dart';
+import 'services/produto_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Inicializa formato de data
+  // Locale
   await initializeDateFormatting('pt_BR', null);
   _setupLogging();
 
-  // Inicializa client HTTP
+  // HTTP Client
   final apiClient = ApiClient();
   await apiClient.init();
 
-  // Define idioma inicial salvo
   final prefs = await SharedPreferences.getInstance();
   final langCode = prefs.getString('language') ?? 'pt';
   final initialLocale =
@@ -44,14 +47,22 @@ void main() async {
         // Tema
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
 
-        // Tarefas personalizadas
+        // Locale
+        ChangeNotifierProvider(create: (_) => LocaleProvider(initialLocale)),
+
+        // Tarefas Personalizadas
         ChangeNotifierProvider(
           create: (_) => TaskProvider(taskService: TaskService(apiClient)),
         ),
 
-        // Tarefas oficiais
+        // Tarefas Oficiais
         ChangeNotifierProvider(
           create: (_) => TaskOfcProvider(TaskOfcService(apiClient)),
+        ),
+
+        // Produto
+        ChangeNotifierProvider(
+          create: (_) => ProdutoProvider(ProdutoService(apiClient)),
         ),
 
         // Usuário
@@ -63,9 +74,6 @@ void main() async {
           update: (_, usuarioService, usuarioProvider) =>
               usuarioProvider!..setService(usuarioService),
         ),
-
-        // Idioma
-        ChangeNotifierProvider(create: (_) => LocaleProvider(initialLocale)),
       ],
       child: const MyApp(),
     ),
