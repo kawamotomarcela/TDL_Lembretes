@@ -7,7 +7,7 @@ class ProdutoService {
 
   ProdutoService(this.api);
 
-  /// Busca todos os produtos disponíveis
+  /// 🔍 Busca todos os produtos disponíveis na loja
   Future<List<ProdutoModel>> buscarProdutos() async {
     try {
       final response = await api.get('/Produto');
@@ -27,7 +27,7 @@ class ProdutoService {
     }
   }
 
-  /// Busca um único produto pelo ID
+  /// 🔍 Busca um único produto pelo ID
   Future<ProdutoModel> buscarProdutoPorId(String id) async {
     try {
       final response = await api.get('/Produto/$id');
@@ -36,11 +36,33 @@ class ProdutoService {
       if (response is Map<String, dynamic>) {
         return ProdutoModel.fromMap(response);
       } else {
-        throw Exception('Formato de resposta inválido ao buscar produto por ID');
+        throw Exception(
+          'Formato de resposta inválido ao buscar produto por ID',
+        );
       }
     } catch (e, stack) {
       log('❌ Erro ao buscar produto por ID: $e', stackTrace: stack);
       rethrow;
+    }
+  }
+
+  /// Busca os produtos comprados (cupons) por um usuário específico
+  Future<List<ProdutoModel>> buscarProdutosComprados(String usuarioId) async {
+    try {
+      final response = await api.get('/Compra/usuario/$usuarioId');
+      log('🎟️ Cupons recebidos: $response');
+
+      if (response is List) {
+        return response
+            .map((item) => ProdutoModel.fromMap(item as Map<String, dynamic>))
+            .toList();
+      } else {
+        log('❌ Formato inválido ao buscar cupons');
+        return [];
+      }
+    } catch (e) {
+      log('❌ Erro ao buscar cupons: $e');
+      return [];
     }
   }
 }

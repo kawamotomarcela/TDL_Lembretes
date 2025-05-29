@@ -17,13 +17,16 @@ class ProdutoModel {
     required this.imagemUrl,
   });
 
+  /// Cria um ProdutoModel a partir de um [Map], tratando diferentes formatos de chave.
   factory ProdutoModel.fromMap(Map<String, dynamic> map) {
-    if (!map.containsKey('id') || map['id'] == null || map['id'].toString().isEmpty) {
-      log(' Produto recebido sem ID válido: $map');
+    final String id = map['id'] ?? map['Id'] ?? '';
+
+    if (id.isEmpty) {
+      log('⚠️ Produto recebido sem ID válido: $map');
     }
 
     return ProdutoModel(
-      id: map['id'] ?? '',
+      id: id,
       nome: map['nome'] ?? map['Nome'] ?? '',
       descricao: map['descricao'] ?? map['Descricao'] ?? '',
       custoEmPontos: map['custoEmPontos'] ?? map['CustoEmPontos'] ?? 0,
@@ -32,6 +35,7 @@ class ProdutoModel {
     );
   }
 
+  /// Converte o modelo para um JSON.
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -42,5 +46,23 @@ class ProdutoModel {
       'imagemUrl': imagemUrl,
     };
   }
-}
 
+  /// Cria uma cópia modificada do objeto.
+  ProdutoModel copyWith({
+    String? id,
+    String? nome,
+    String? descricao,
+    int? custoEmPontos,
+    int? quantidadeDisponivel,
+    String? imagemUrl,
+  }) {
+    return ProdutoModel(
+      id: id ?? this.id,
+      nome: nome ?? this.nome,
+      descricao: descricao ?? this.descricao,
+      custoEmPontos: custoEmPontos ?? this.custoEmPontos,
+      quantidadeDisponivel: quantidadeDisponivel ?? this.quantidadeDisponivel,
+      imagemUrl: imagemUrl ?? this.imagemUrl,
+    );
+  }
+}

@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import '../models/cupom_model.dart';
 import '../services/cupom_service.dart';
@@ -17,7 +18,14 @@ class CupomProvider with ChangeNotifier {
     _carregando = true;
     notifyListeners();
 
-    _cupons = await cupomService.buscarCuponsUsuario(usuarioId);
+    try {
+      _cupons = await cupomService.buscarCuponsUsuario(usuarioId);
+      log('🎟️ Cupons carregados: ${_cupons.length}');
+    } catch (e, stack) {
+      log('❌ Erro ao carregar cupons: $e', stackTrace: stack);
+      _cupons = [];
+    }
+
     _carregando = false;
     notifyListeners();
   }
