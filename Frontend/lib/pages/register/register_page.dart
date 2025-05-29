@@ -26,20 +26,29 @@ class _RegisterPageState extends State<RegisterPage> {
   bool _obscureConfirmPassword = true;
 
   void _register() async {
-    final username = _usernameController.text;
-    final email = _emailController.text;
+    final username = _usernameController.text.trim();
+    final email = _emailController.text.trim();
     final phone = _phoneController.text.replaceAll(RegExp(r'\D'), '');
-    final password = _passwordController.text;
-    final confirmPassword = _confirmPasswordController.text;
+    final password = _passwordController.text.trim();
+    final confirmPassword = _confirmPasswordController.text.trim();
 
+    // Validações
     final usernameError = Validators.validateRequired(username, "Nome de usuário");
     final emailError = Validators.validateEmail(email);
     final phoneError = Validators.validatePhone(phone);
     final passwordError = Validators.validatePassword(password);
     final confirmPasswordError = Validators.validateConfirmPassword(password, confirmPassword);
 
-    if (usernameError != null || emailError != null || phoneError != null || passwordError != null || confirmPasswordError != null) {
-      showSnackBar(context, usernameError ?? emailError ?? phoneError ?? passwordError ?? confirmPasswordError!, color: Colors.red);
+    if (usernameError != null ||
+        emailError != null ||
+        phoneError != null ||
+        passwordError != null ||
+        confirmPasswordError != null) {
+      showSnackBar(
+        context,
+        usernameError ?? emailError ?? phoneError ?? passwordError ?? confirmPasswordError!,
+        color: Colors.red,
+      );
       return;
     }
 
@@ -47,16 +56,16 @@ class _RegisterPageState extends State<RegisterPage> {
     await apiClient.init();
     final authService = AuthService(apiClient);
 
-    final token = await authService.register(
-      username.trim(),
-      email.trim(),
-      password.trim(),
-      phone.trim(),
+    final sucesso = await authService.register(
+      username,
+      email,
+      password,
+      phone,
     );
 
     if (!mounted) return;
 
-    if (token != null) {
+    if (sucesso) {
       showSnackBar(context, "Conta criada com sucesso!");
       Navigator.pushReplacementNamed(context, AppRoutes.login);
     } else {
