@@ -13,28 +13,28 @@ class CuponsPage extends StatefulWidget {
 }
 
 class _CuponsPageState extends State<CuponsPage> {
-  @override
-  void initState() {
-    super.initState();
-    Future.microtask(() {
-      final usuario = context.read<UsuarioProvider>().usuario;
-      if (usuario != null) {
-        context.read<CupomProvider>().carregarCuponsDoUsuario(usuario.id);
-      }
-    });
-  }
+@override
+void initState() {
+  super.initState();
+
+  Future.microtask(() {
+    if (!mounted) return; 
+
+    final usuario = context.read<UsuarioProvider>().usuario;
+    if (usuario != null) {
+      context.read<CupomProvider>().carregarCuponsDoUsuario(usuario.id);
+    }
+  });
+}
+
 
   @override
   Widget build(BuildContext context) {
-    final usuario = context.watch<UsuarioProvider>().usuario;
     final cupomProvider = context.watch<CupomProvider>();
     final cupons = cupomProvider.cupons;
     final carregando = cupomProvider.carregando;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Meus Cupons"),
-      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: carregando
@@ -55,23 +55,36 @@ class _CuponsPageState extends State<CuponsPage> {
                       return Card(
                         elevation: 3,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(12),
                         ),
                         child: ListTile(
                           contentPadding: const EdgeInsets.symmetric(
                             horizontal: 16,
                             vertical: 12,
                           ),
-                          leading: const Icon(Icons.card_giftcard, color: Colors.indigo),
+                          leading: const Icon(
+                            Icons.card_giftcard,
+                            color: Colors.indigo,
+                            size: 32,
+                          ),
                           title: Text(
                             cupom.nome,
-                            style: const TextStyle(fontWeight: FontWeight.bold),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
                           ),
-                          subtitle: Text(cupom.descricao),
+                          subtitle: Padding(
+                            padding: const EdgeInsets.only(top: 4.0),
+                            child: Text(
+                              cupom.descricao,
+                              style: const TextStyle(fontSize: 14),
+                            ),
+                          ),
                           trailing: Text(
                             "${cupom.custoEmPontos} pts",
                             style: const TextStyle(
-                              fontSize: 13,
+                              fontSize: 14,
                               fontWeight: FontWeight.w600,
                               color: Colors.indigo,
                             ),

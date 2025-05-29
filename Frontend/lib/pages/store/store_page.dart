@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../../providers/usuario_provider.dart';
 import '../../../providers/produto_provider.dart';
+import '../../../providers/cupom_provider.dart';
 
 import 'widgets/product_card.dart';
 import 'widgets/total_points_card.dart';
@@ -20,10 +21,43 @@ class _LojaPageState extends State<LojaPage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        context.read<ProdutoProvider>().carregarProdutos();
-      }
+      if (!mounted) return;
+      context.read<ProdutoProvider>().carregarProdutos();
     });
+  }
+
+  Future<void> _handleCompra({
+    required String produtoId,
+    required int custo,
+    required String nomeProduto,
+  }) async {
+    final usuarioProvider = context.read<UsuarioProvider>();
+    final produtoProvider = context.read<ProdutoProvider>();
+
+    final sucesso = await usuarioProvider.comprarProduto(
+      produtoId: produtoId,
+      custoTotal: custo,
+      produtoProvider: produtoProvider,
+    );
+
+    if (!mounted) return;
+
+    final usuario = usuarioProvider.usuario;
+    if (sucesso && usuario != null) {
+      await context.read<CupomProvider>().carregarCuponsDoUsuario(usuario.id);
+      if (!mounted) return;
+    }
+
+    final mensagem = sucesso
+        ? 'Compra confirmada: $nomeProduto'
+        : usuarioProvider.erro ?? 'Erro ao realizar a compra.';
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(mensagem),
+        backgroundColor: sucesso ? Colors.green : Colors.red,
+      ),
+    );
   }
 
   @override
@@ -75,30 +109,11 @@ class _LojaPageState extends State<LojaPage> {
                       imagem: produto.imagemUrl,
                       descricao: produto.descricao,
                       quantidade: produto.quantidadeDisponivel,
-                      onConfirm: (produtoId) async {
-                        debugPrint(' Confirmar compra de produtoId="$produtoId"');
-
-                        final sucesso = await context
-                            .read<UsuarioProvider>()
-                            .comprarProduto(
-                              produtoId: produtoId,
-                              custoTotal: produto.custoEmPontos,
-                              produtoProvider: context.read<ProdutoProvider>(),
-                            );
-
-                        if (!context.mounted) return;
-
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              sucesso
-                                  ? 'Compra confirmada: ${produto.nome}'
-                                  : context.read<UsuarioProvider>().erro ??
-                                      'Erro ao realizar a compra.',
-                            ),
-                            backgroundColor:
-                                sucesso ? Colors.green : Colors.red,
-                          ),
+                      onConfirm: (produtoId) {
+                        _handleCompra(
+                          produtoId: produtoId,
+                          custo: produto.custoEmPontos,
+                          nomeProduto: produto.nome,
                         );
                       },
                     );

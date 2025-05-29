@@ -42,21 +42,30 @@ class ProductCard extends StatelessWidget {
             onPressed: () => Navigator.pop(context),
             child: const Text('Cancelar'),
           ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              onConfirm(produtoId);
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blue,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+          if (quantidade > 0)
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+                onConfirm(produtoId);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Text('Comprar'),
+            )
+          else
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 12),
+              child: Text(
+                'Produto esgotado',
+                style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
               ),
             ),
-            child: const Text('Comprar'),
-          ),
         ],
       ),
     );
@@ -67,7 +76,16 @@ class ProductCard extends StatelessWidget {
     final imagemValida = imagem.endsWith('.jpg') || imagem.endsWith('.png');
 
     return GestureDetector(
-      onTap: () => _mostrarDetalhes(context),
+      onTap: quantidade > 0
+          ? () => _mostrarDetalhes(context)
+          : () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Produto esgotado.'),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            },
       child: Card(
         elevation: 3,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -108,6 +126,14 @@ class ProductCard extends StatelessWidget {
                       color: Colors.green[700],
                     ),
                   ),
+                  if (quantidade <= 0)
+                    const Padding(
+                      padding: EdgeInsets.only(top: 4),
+                      child: Text(
+                        'Esgotado',
+                        style: TextStyle(color: Colors.red, fontSize: 12),
+                      ),
+                    ),
                 ],
               ),
             ),
@@ -117,3 +143,4 @@ class ProductCard extends StatelessWidget {
     );
   }
 }
+
