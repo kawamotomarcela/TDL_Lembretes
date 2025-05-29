@@ -215,6 +215,11 @@ class S {
     );
   }
 
+  /// `My Coupons`
+  String get couponsTitle {
+    return Intl.message('My Coupons', name: 'couponsTitle', desc: '', args: []);
+  }
+
   /// `Você ainda não comprou nenhum cupom.`
   String get noCouponsAvailable {
     return Intl.message(

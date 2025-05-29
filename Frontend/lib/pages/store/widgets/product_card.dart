@@ -2,15 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ProductCard extends StatelessWidget {
+  final String produtoId;
   final String nome;
   final String preco;
   final String imagem;
   final String descricao;
   final int quantidade;
-  final VoidCallback onConfirm;
+  final void Function(String produtoId) onConfirm;
 
   const ProductCard({
     super.key,
+    required this.produtoId,
     required this.nome,
     required this.preco,
     required this.imagem,
@@ -28,11 +30,11 @@ class ProductCard extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('📄 Descrição: $descricao'),
+            Text('Descrição: $descricao'),
             const SizedBox(height: 8),
-            Text('📦 Quantidade disponível: $quantidade'),
+            Text('Quantidade disponível: $quantidade'),
             const SizedBox(height: 8),
-            Text('💰 Preço: $preco'),
+            Text('Preço: $preco'),
           ],
         ),
         actions: [
@@ -43,7 +45,7 @@ class ProductCard extends StatelessWidget {
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
-              onConfirm();
+              onConfirm(produtoId);
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.blue,

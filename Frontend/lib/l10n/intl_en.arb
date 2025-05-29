@@ -27,6 +27,8 @@
   "profilePageTitle": "Profile",
   "coupons": "Cupons",
   "couponsPageTitle": "Coupons",
+  "couponsTitle": "My Coupons",
+  "noCouponsAvailable": "No coupons available at the moment.",
   "noCouponsAvailable": "Você ainda não comprou nenhum cupom.",
   "logoutConfirmation": "Do you want to logout?",
   "cancel": "Cancel",

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../../../providers/usuario_provider.dart';
 import '../../../providers/produto_provider.dart';
-import '../../../models/produto_model.dart';
+
 import 'widgets/product_card.dart';
 import 'widgets/total_points_card.dart';
 import 'widgets/info_store.dart';
@@ -18,9 +19,10 @@ class _LojaPageState extends State<LojaPage> {
   @override
   void initState() {
     super.initState();
-    Future.microtask(() {
-      final produtoProvider = context.read<ProdutoProvider>();
-      produtoProvider.carregarProdutos();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        context.read<ProdutoProvider>().carregarProdutos();
+      }
     });
   }
 
@@ -44,7 +46,6 @@ class _LojaPageState extends State<LojaPage> {
               TotalPointsCard(total: usuario?.pontos ?? 0),
               const SizedBox(height: 20),
 
-              // Produtos
               if (produtoProvider.carregando)
                 const Center(child: CircularProgressIndicator())
               else if (produtoProvider.produtos.isEmpty)
@@ -65,21 +66,25 @@ class _LojaPageState extends State<LojaPage> {
                     childAspectRatio: 0.75,
                   ),
                   itemBuilder: (context, index) {
-                    final ProdutoModel produto = produtoProvider.produtos[index];
+                    final produto = produtoProvider.produtos[index];
 
                     return ProductCard(
+                      produtoId: produto.id,
                       nome: produto.nome,
                       preco: '${produto.custoEmPontos} Tokens',
                       imagem: produto.imagemUrl,
                       descricao: produto.descricao,
                       quantidade: produto.quantidadeDisponivel,
-                      onConfirm: () async {
-                        final sucesso = await context.read<UsuarioProvider>().comprarProdutoComProdutoProvider(
-                          custo: produto.custoEmPontos,
-                          produtoId: produto.id,
-                          quantidadeAtual: produto.quantidadeDisponivel,
-                          produtoProvider: context.read<ProdutoProvider>(),
-                        );
+                      onConfirm: (produtoId) async {
+                        debugPrint(' Confirmar compra de produtoId="$produtoId"');
+
+                        final sucesso = await context
+                            .read<UsuarioProvider>()
+                            .comprarProduto(
+                              produtoId: produtoId,
+                              custoTotal: produto.custoEmPontos,
+                              produtoProvider: context.read<ProdutoProvider>(),
+                            );
 
                         if (!context.mounted) return;
 
@@ -88,9 +93,11 @@ class _LojaPageState extends State<LojaPage> {
                             content: Text(
                               sucesso
                                   ? 'Compra confirmada: ${produto.nome}'
-                                  : 'Você não tem pontos suficientes.',
+                                  : context.read<UsuarioProvider>().erro ??
+                                      'Erro ao realizar a compra.',
                             ),
-                            backgroundColor: sucesso ? Colors.green : Colors.red,
+                            backgroundColor:
+                                sucesso ? Colors.green : Colors.red,
                           ),
                         );
                       },

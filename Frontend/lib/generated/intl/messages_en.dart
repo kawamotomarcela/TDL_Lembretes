@@ -27,6 +27,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "calendarPageTitle": MessageLookupByLibrary.simpleMessage("Calendar"),
     "cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
     "coupons": MessageLookupByLibrary.simpleMessage("Cupons"),
+    "couponsPageTitle": MessageLookupByLibrary.simpleMessage("Coupons"),
+    "couponsTitle": MessageLookupByLibrary.simpleMessage("My Coupons"),
     "dark": MessageLookupByLibrary.simpleMessage("Dark"),
     "english": MessageLookupByLibrary.simpleMessage("English"),
     "exampleIp": MessageLookupByLibrary.simpleMessage("Ex: 192.168.0.1"),

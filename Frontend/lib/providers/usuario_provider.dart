@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import '../models/usuario_model.dart';
 import '../services/usuario_service.dart';
+import '../api/api_client.dart';
 import '../providers/produto_provider.dart';
+import 'dart:developer';
 
 class UsuarioProvider with ChangeNotifier {
   late UsuarioService _usuarioService;
+  late ApiClient _apiClient;
 
   Usuario? _usuario;
   String? _erro;
@@ -12,8 +15,9 @@ class UsuarioProvider with ChangeNotifier {
   Usuario? get usuario => _usuario;
   String? get erro => _erro;
 
-  void setService(UsuarioService service) {
+  void setService(UsuarioService service, ApiClient apiClient) {
     _usuarioService = service;
+    _apiClient = apiClient;
   }
 
   void setUsuario(Usuario novoUsuario) {
@@ -31,9 +35,6 @@ class UsuarioProvider with ChangeNotifier {
     if (_usuario != null) {
       _usuario = _usuario!.copyWith(pontos: novosPontos);
       notifyListeners();
-    } else {
-      _erro = 'Usuário não encontrado';
-      notifyListeners();
     }
   }
 
@@ -45,7 +46,6 @@ class UsuarioProvider with ChangeNotifier {
     }
 
     final novosPontos = _usuario!.pontos + pontos;
-
     final sucesso = await _usuarioService.atualizarPontosUsuario(
       _usuario!.id,
       novosPontos,
@@ -55,7 +55,7 @@ class UsuarioProvider with ChangeNotifier {
       _usuario = _usuario!.copyWith(pontos: novosPontos);
       _erro = null;
     } else {
-      _erro = 'Erro ao salvar pontos no servidor';
+      _erro = 'Erro ao salvar pontos';
     }
 
     notifyListeners();
@@ -67,11 +67,7 @@ class UsuarioProvider with ChangeNotifier {
     required String email,
     String? senha,
   }) async {
-    if (_usuario == null) {
-      _erro = 'Usuário não carregado';
-      notifyListeners();
-      return false;
-    }
+    if (_usuario == null) return false;
 
     final atualizado = _usuario!.copyWith(
       nome: nome,
@@ -96,53 +92,43 @@ class UsuarioProvider with ChangeNotifier {
     return sucesso;
   }
 
-  Future<bool> comprarProdutoComProdutoProvider({
-    required int custo,
+  Future<bool> comprarProduto({
     required String produtoId,
-    required int quantidadeAtual,
+    required int custoTotal,
     required ProdutoProvider produtoProvider,
+    int quantidade = 1,
   }) async {
-    if (_usuario == null) {
-      _erro = 'Usuário não encontrado';
-      notifyListeners();
-      return false;
-    }
+    log(
+      'Iniciando compra - produtoId="$produtoId", custoTotal=$custoTotal, quantidade=$quantidade',
+    );
 
-    if (_usuario!.pontos < custo) {
+    if (_usuario == null || _usuario!.pontos < custoTotal) {
       _erro = 'Pontos insuficientes';
       notifyListeners();
       return false;
     }
 
-    final novosPontos = _usuario!.pontos - custo;
-    final novaQuantidade = quantidadeAtual - 1;
-
     try {
-      // Atualiza pontos do usuário
-      final sucessoPontos = await _usuarioService.atualizarPontosUsuario(
-        _usuario!.id,
-        novosPontos,
-      );
+      final payload = {
+        'usuarioId': _usuario!.id,
+        'produtoId': produtoId,
+        'quantidade': quantidade,
+      };
 
-      if (!sucessoPontos) {
-        _erro = 'Erro ao salvar pontos no servidor';
+      log('📤 POST /Compra - Payload enviado: $payload');
+
+      final response = await _apiClient.post('/Compra', payload);
+
+      if (response['sucesso'] == true) {
+        _usuario = _usuario!.copyWith(pontos: _usuario!.pontos - custoTotal);
+        await produtoProvider.atualizarProdutoLocal(produtoId);
+        notifyListeners();
+        return true;
+      } else {
+        _erro = response['mensagem'] ?? 'Erro ao realizar a compra';
         notifyListeners();
         return false;
       }
-
-      // Atualiza quantidade do produto no backend
-      await produtoProvider.produtoService.atualizarQuantidadeProduto(
-        produtoId,
-        novaQuantidade,
-      );
-
-      // Atualiza localmente
-      _usuario = _usuario!.copyWith(pontos: novosPontos);
-      produtoProvider.atualizarQuantidadeLocal(produtoId, novaQuantidade);
-
-      _erro = null;
-      notifyListeners();
-      return true;
     } catch (e) {
       _erro = 'Erro ao realizar a compra: $e';
       notifyListeners();

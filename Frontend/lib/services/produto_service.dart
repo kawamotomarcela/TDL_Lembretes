@@ -43,17 +43,4 @@ class ProdutoService {
       rethrow;
     }
   }
-
-  /// Atualiza apenas a quantidade disponível de um produto
-  Future<void> atualizarQuantidadeProduto(String id, int novaQuantidade) async {
-    try {
-      await api.put('/Produto/$id/quantidade', {
-        'novaQuantidade': novaQuantidade,
-      });
-      log('✅ Quantidade atualizada para produto $id: $novaQuantidade');
-    } catch (e, stack) {
-      log('❌ Erro ao atualizar quantidade do produto $id: $e', stackTrace: stack);
-      rethrow;
-    }
-  }
 }

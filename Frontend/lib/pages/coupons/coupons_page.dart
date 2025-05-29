@@ -1,68 +1,76 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:grupotdl/generated/l10n.dart';
+import '../../../providers/usuario_provider.dart';
+import '../../../providers/cupom_provider.dart';
+import '../../../models/cupom_model.dart';
 
-class CouponsPage extends StatelessWidget {
-  const CouponsPage({super.key});
+class CuponsPage extends StatelessWidget {
+  const CuponsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     final local = S.of(context);
+    final usuario = context.watch<UsuarioProvider>().usuario;
+    final cupomProvider = context.watch<CupomProvider>();
 
-    final List<Map<String, String>> coupons = [
-      {
-        'title': 'Desconto de 10%',
-        'description': 'Válido em qualquer produto da loja.',
-        'code': 'TDL10',
-      },
-      {
-        'title': 'Frete Grátis',
-        'description': 'Frete grátis para compras acima de R\$100.',
-        'code': 'FRETEGRATIS',
-      },
-    ];
+    final cupons = cupomProvider.cupons;
+    final carregando = cupomProvider.carregando;
 
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      appBar: AppBar(
+        title: Text(local.couponsTitle),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: coupons.isEmpty
-            ? Center(
-                child: Text(
-                  local.noCouponsAvailable, 
-                  style: const TextStyle(fontSize: 16),
-                ),
-              )
-            : ListView.builder(
-                itemCount: coupons.length,
-                itemBuilder: (context, index) {
-                  final coupon = coupons[index];
-                  return Card(
-                    elevation: 4,
-                    margin: const EdgeInsets.symmetric(vertical: 8),
-                    child: ListTile(
-                      title: Text(
-                        coupon['title'] ?? '',
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      subtitle: Text(coupon['description'] ?? ''),
-                      trailing: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.card_giftcard, color: Colors.indigo),
-                          Text(
-                            coupon['code'] ?? '',
-                            style: const TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.indigo,
-                            ),
-                          ),
-                        ],
-                      ),
+        child: carregando
+            ? const Center(child: CircularProgressIndicator())
+            : cupons.isEmpty
+                ? Center(
+                    child: Text(
+                      local.noCouponsAvailable,
+                      style: const TextStyle(fontSize: 16),
                     ),
-                  );
-                },
-              ),
+                  )
+                : ListView.separated(
+                    itemCount: cupons.length,
+                    separatorBuilder: (_, __) => const SizedBox(height: 12),
+                    itemBuilder: (context, index) {
+                      final CupomModel cupom = cupons[index];
+
+                      return Card(
+                        elevation: 3,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: ListTile(
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 10,
+                          ),
+                          leading: const Icon(Icons.card_giftcard, color: Colors.indigo),
+                          title: Text(
+                            cupom.titulo,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          subtitle: Text(cupom.descricao),
+                          trailing: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                cupom.codigo,
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.indigo,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
       ),
     );
   }

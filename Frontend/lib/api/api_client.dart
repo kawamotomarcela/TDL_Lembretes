@@ -12,13 +12,12 @@ class ApiClient {
   late String _baseUrl;
   final _retryOptions = RetryOptions(maxAttempts: 3);
 
-  /// Inicializa a base da URL com base na plataforma
   Future<void> init() async {
     if (kIsWeb) {
       _baseUrl = 'https://localhost:7008/api';
     } else if (Platform.isAndroid || Platform.isIOS) {
       final prefs = await SharedPreferences.getInstance();
-      final ip = prefs.getString('ipAddress') ?? '10.0.2.2'; // IP padrão Android emulador
+      final ip = prefs.getString('ipAddress') ?? '10.0.2.2'; 
       _baseUrl = 'http://$ip:7008/api';
     } else {
       _baseUrl = 'https://localhost:7008/api';
@@ -27,7 +26,7 @@ class ApiClient {
 
   Uri _buildUri(String endpoint) => Uri.parse('$_baseUrl$endpoint');
 
-  /// Gera os headers com token JWT, se presente
+  /// Headers com Authorization (JWT) se existir
   Future<Map<String, String>> _getHeaders() async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('auth_token');
@@ -38,7 +37,7 @@ class ApiClient {
     };
   }
 
-  /// GET request com retry e timeout
+  /// GET
   Future<dynamic> get(String endpoint) async {
     return _retryOptions.retry(
       () async {
@@ -51,13 +50,12 @@ class ApiClient {
     );
   }
 
-  /// POST request
+  /// POST
   Future<dynamic> post(String endpoint, Map<String, dynamic> data) async {
     return _retryOptions.retry(
       () async {
-        if (kDebugMode) {
-          log('POST $endpoint - Payload: $data');
-        }
+        if (kDebugMode) log('📤 POST $endpoint\nPayload: $data');
+
         final response = await http
             .post(
               _buildUri(endpoint),
@@ -71,13 +69,12 @@ class ApiClient {
     );
   }
 
-  /// PUT request
+  /// PUT
   Future<dynamic> put(String endpoint, Map<String, dynamic> data) async {
     return _retryOptions.retry(
       () async {
-        if (kDebugMode) {
-          log('PUT $endpoint - Payload: $data');
-        }
+        if (kDebugMode) log('📤 PUT $endpoint\nPayload: $data');
+
         final response = await http
             .put(
               _buildUri(endpoint),
@@ -91,7 +88,7 @@ class ApiClient {
     );
   }
 
-  /// DELETE request
+  /// DELETE
   Future<void> delete(String endpoint) async {
     return _retryOptions.retry(
       () async {
@@ -104,24 +101,23 @@ class ApiClient {
     );
   }
 
-  /// Trata respostas HTTP
+  /// Tratamento padrão das respostas HTTP
   dynamic _handleResponse(http.Response response) {
     final statusCode = response.statusCode;
     final body = response.body;
 
     if (statusCode >= 200 && statusCode < 300) {
       if (kDebugMode && body.isNotEmpty) {
-        log('✅ Response $statusCode: $body');
+        log(' [$statusCode] ${response.request?.url}\nResposta: $body');
       }
       return body.isNotEmpty ? jsonDecode(body) : {};
     } else {
-      log('❌ Erro HTTP $statusCode: $body');
-      // Exibe mensagem de erro detalhada (como erro 400 de validação)
+      log(' [$statusCode] ${response.request?.url}\nErro: $body');
       throw HttpException('Erro $statusCode: $body');
     }
   }
 
-  /// Salva o token JWT
+  /// Salva o token JWT localmente
   static Future<void> salvarToken(String token) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('auth_token', token);
@@ -133,7 +129,7 @@ class ApiClient {
     await prefs.remove('auth_token');
   }
 
-  /// Verifica se o token está presente
+  /// Verifica se está autenticado
   static Future<bool> isAutenticado() async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('auth_token');

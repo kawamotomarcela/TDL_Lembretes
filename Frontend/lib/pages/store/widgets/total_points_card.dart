@@ -9,28 +9,33 @@ class TotalPointsCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      elevation: 2,
-      color: const Color.fromARGB(255, 135, 164, 212),
+      color: const Color.fromARGB(255, 93, 104, 168),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              "Total: ",
-              style: GoogleFonts.poppins(
-                fontSize: 16,
-                color: Colors.white,
-              ),
-            ),
-            Text(
-              " $total Tokens",
-              style: GoogleFonts.poppins(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
+            const Icon(Icons.token, size: 32, color: Colors.white),
+            const SizedBox(width: 12),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Seus pontos',
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                    color: Colors.white70,
+                  ),
+                ),
+                Text(
+                  '$total Tokens',
+                  style: GoogleFonts.poppins(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
             ),
           ],
         ),

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 class ProdutoModel {
   final String id;
   final String nome;
@@ -16,6 +18,10 @@ class ProdutoModel {
   });
 
   factory ProdutoModel.fromMap(Map<String, dynamic> map) {
+    if (!map.containsKey('id') || map['id'] == null || map['id'].toString().isEmpty) {
+      log(' Produto recebido sem ID válido: $map');
+    }
+
     return ProdutoModel(
       id: map['id'] ?? '',
       nome: map['nome'] ?? map['Nome'] ?? '',
@@ -36,24 +42,5 @@ class ProdutoModel {
       'imagemUrl': imagemUrl,
     };
   }
-
-  ProdutoModel copyWith({
-    String? id,
-    String? nome,
-    String? descricao,
-    int? custoEmPontos,
-    int? quantidadeDisponivel,
-    String? imagemUrl,
-  }) {
-    return ProdutoModel(
-      id: id ?? this.id,
-      nome: nome ?? this.nome,
-      descricao: descricao ?? this.descricao,
-      custoEmPontos: custoEmPontos ?? this.custoEmPontos,
-      quantidadeDisponivel: quantidadeDisponivel ?? this.quantidadeDisponivel,
-      imagemUrl: imagemUrl ?? this.imagemUrl,
-    );
-  }
 }
-
 

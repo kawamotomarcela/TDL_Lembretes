@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:logging/logging.dart';
 
+// API & Util
 import 'api/api_client.dart';
 import 'generated/l10n.dart';
 import 'routes/app_routes.dart';
@@ -16,21 +17,20 @@ import 'providers/usuario_provider.dart';
 import 'providers/theme_provider.dart';
 import 'providers/locale_provider.dart';
 import 'providers/produto_provider.dart';
+import 'providers/cupom_provider.dart';
 
-// Services
 import 'services/task_service.dart';
 import 'services/task_ofc_service.dart';
 import 'services/usuario_service.dart';
 import 'services/produto_service.dart';
+import 'services/cupom_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Locale
   await initializeDateFormatting('pt_BR', null);
   _setupLogging();
 
-  // HTTP Client
   final apiClient = ApiClient();
   await apiClient.init();
 
@@ -42,37 +42,39 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
+        /// API Client base
         Provider<ApiClient>.value(value: apiClient),
 
-        // Tema
+        /// Temas e localização
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
-
-        // Locale
         ChangeNotifierProvider(create: (_) => LocaleProvider(initialLocale)),
 
-        // Tarefas Personalizadas
+        /// Providers de funcionalidades
         ChangeNotifierProvider(
           create: (_) => TaskProvider(taskService: TaskService(apiClient)),
         ),
-
-        // Tarefas Oficiais
         ChangeNotifierProvider(
           create: (_) => TaskOfcProvider(TaskOfcService(apiClient)),
         ),
-
-        // Produto
         ChangeNotifierProvider(
           create: (_) => ProdutoProvider(ProdutoService(apiClient)),
         ),
+        ChangeNotifierProvider(
+          create: (_) => CupomProvider(CupomService(apiClient)),
+        ),
 
-        // Usuário
+        /// Serviços e dependências compostas
         ProxyProvider<ApiClient, UsuarioService>(
           update: (_, api, __) => UsuarioService(api),
         ),
+
+        /// UsuarioProvider precisa do UsuarioService E do ApiClient para funcionar
         ChangeNotifierProxyProvider<UsuarioService, UsuarioProvider>(
           create: (_) => UsuarioProvider(),
-          update: (_, usuarioService, usuarioProvider) =>
-              usuarioProvider!..setService(usuarioService),
+          update: (context, usuarioService, usuarioProvider) {
+            final apiClient = Provider.of<ApiClient>(context, listen: false);
+            return usuarioProvider!..setService(usuarioService, apiClient);
+          },
         ),
       ],
       child: const MyApp(),
@@ -83,7 +85,9 @@ void main() async {
 void _setupLogging() {
   Logger.root.level = Level.ALL;
   Logger.root.onRecord.listen((record) {
-    debugPrint('[${record.level.name}] ${record.loggerName}: ${record.message}');
+    debugPrint(
+      '[${record.level.name}] ${record.loggerName}: ${record.message}',
+    );
   });
 }
 
@@ -92,8 +96,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final themeProvider = Provider.of<ThemeProvider>(context);
-    final localeProvider = Provider.of<LocaleProvider>(context);
+    final themeProvider = context.watch<ThemeProvider>();
+    final localeProvider = context.watch<LocaleProvider>();
 
     return MaterialApp(
       title: 'TDL Lembretes',

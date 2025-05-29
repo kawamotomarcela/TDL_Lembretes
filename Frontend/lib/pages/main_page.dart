@@ -7,7 +7,7 @@ import 'store/store_page.dart';
 import 'profile/profile_page.dart';
 import 'about/about_page.dart';
 import 'settings/settings_page.dart';
-import 'coupons/coupons_page.dart';
+import 'coupons/coupons_page.dart'; 
 import '../routes/app_routes.dart';
 import 'home/home_page.dart';
 
@@ -30,8 +30,8 @@ class _MainPageState extends State<MainPage> {
       const HomePage(),
       const TaskListPage(),
       const CalendarPage(),
-      LojaPage(),
-      const CouponsPage(), // Nova página de Cupons
+      LojaPage(),         
+      const CuponsPage(),  
     ];
   }
 
@@ -60,17 +60,17 @@ class _MainPageState extends State<MainPage> {
     if (value == 'meu_perfil') {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const ProfilePage()),
+        MaterialPageRoute(builder: (_) => const ProfilePage()),
       );
     } else if (value == 'config') {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const SettingsPage()),
+        MaterialPageRoute(builder: (_) => const SettingsPage()),
       );
     } else if (value == 'sobre') {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const AboutPage()),
+        MaterialPageRoute(builder: (_) => const AboutPage()),
       );
     } else if (value == 'sair') {
       _logout();
@@ -86,7 +86,7 @@ class _MainPageState extends State<MainPage> {
       local.tasksPageTitle,
       local.calendarPageTitle,
       local.storePageTitle,
-      local.couponsPageTitle, 
+      local.couponsPageTitle,
     ];
 
     return Scaffold(
@@ -104,7 +104,7 @@ class _MainPageState extends State<MainPage> {
           PopupMenuButton<String>(
             icon: const Icon(Icons.settings),
             onSelected: _onSettingsSelected,
-            itemBuilder: (context) => [
+            itemBuilder: (_) => [
               PopupMenuItem(
                 value: 'meu_perfil',
                 child: ListTile(
@@ -145,16 +145,17 @@ class _MainPageState extends State<MainPage> {
         currentIndex: _currentIndex,
         onTap: (index) => setState(() => _currentIndex = index),
         type: BottomNavigationBarType.fixed,
-        selectedItemColor: const Color.fromARGB(255, 0, 92, 250),
-        unselectedItemColor: const Color.fromARGB(255, 80, 80, 80),
+        selectedItemColor: Colors.blueAccent,
+        unselectedItemColor: Colors.grey,
         items: [
           BottomNavigationBarItem(icon: const Icon(Icons.home_outlined), label: local.home),
           BottomNavigationBarItem(icon: const Icon(Icons.check_circle_outline), label: local.tasks),
           BottomNavigationBarItem(icon: const Icon(Icons.calendar_today), label: local.calendar),
           BottomNavigationBarItem(icon: const Icon(Icons.storefront_outlined), label: local.store),
-          BottomNavigationBarItem(icon: const Icon(Icons.card_giftcard), label: local.coupons), 
+          BottomNavigationBarItem(icon: const Icon(Icons.card_giftcard), label: local.coupons),
         ],
       ),
     );
   }
 }
+

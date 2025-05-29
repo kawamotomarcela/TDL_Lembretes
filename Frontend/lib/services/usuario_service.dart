@@ -21,23 +21,25 @@ class UsuarioService {
         payload['Senha'] = senha;
       }
 
-      log('📤 Atualizando perfil do usuário $id: $payload');
+      log('Atualizando perfil do usuário $id: $payload');
       await api.put('/Usuario/$id', payload);
 
       return true;
     } catch (e, stack) {
-      log('❌ Erro ao atualizar usuário', error: e, stackTrace: stack);
+      log('Erro ao atualizar usuário', error: e, stackTrace: stack);
       return false;
     }
   }
 
   Future<bool> atualizarPontosUsuario(String id, int pontos) async {
     try {
-      log('📤 Atualizando pontos do usuário $id: $pontos');
-      await api.put('/Usuario/$id/pontos', {'pontos': pontos});
+      log('Atualizando pontos do usuário $id: $pontos');
+      await api.put('/Usuario/$id/pontos', {
+        'pontos': pontos,
+      });
       return true;
     } catch (e, stack) {
-      log('❌ Erro ao atualizar pontos', error: e, stackTrace: stack);
+      log('Erro ao atualizar pontos do usuário $id', error: e, stackTrace: stack);
       return false;
     }
   }
