@@ -58,15 +58,16 @@ class _MainPageState extends State<MainPage> {
             onPressed: () async {
               Navigator.pop(context); // fecha o dialog
 
-              // Resetar o tema para o padrão (ThemeMode.system)
-              final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+              // Resetar tema e limpar usuário de forma segura após await
+              final themeProvider = context.read<ThemeProvider>();
+              final usuarioProvider = context.read<UsuarioProvider>();
+
               await themeProvider.resetThemeToDefault();
+              if (!mounted) return;
 
-              // Limpar usuário, tokens ou outras informações se necessário
-              final usuarioProvider = Provider.of<UsuarioProvider>(context, listen: false);
               await usuarioProvider.logout();
+              if (!mounted) return;
 
-              // Navegar para tela de login
               Navigator.pushReplacementNamed(context, AppRoutes.login);
             },
             child: Text(local.exit),
@@ -79,13 +80,22 @@ class _MainPageState extends State<MainPage> {
   void _onSettingsSelected(String value) {
     switch (value) {
       case 'meu_perfil':
-        Navigator.push(context, MaterialPageRoute(builder: (_) => const ProfilePage()));
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const ProfilePage()),
+        );
         break;
       case 'config':
-        Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsPage()));
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const SettingsPage()),
+        );
         break;
       case 'sobre':
-        Navigator.push(context, MaterialPageRoute(builder: (_) => const AboutPage()));
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const AboutPage()),
+        );
         break;
       case 'sair':
         _logout();
