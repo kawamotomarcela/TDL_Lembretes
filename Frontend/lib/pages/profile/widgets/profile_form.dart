@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../providers/usuario_provider.dart';
@@ -19,6 +20,8 @@ class _ProfileFormState extends State<ProfileForm> {
   final _senhaAtualController = TextEditingController();
   final _novaSenhaController = TextEditingController();
 
+  bool _camposPreenchidos = false;
+
   @override
   void dispose() {
     _nomeController.dispose();
@@ -29,11 +32,26 @@ class _ProfileFormState extends State<ProfileForm> {
     super.dispose();
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_camposPreenchidos) {
+      final usuario = context.read<UsuarioProvider>().usuario;
+      _nomeController.text = usuario?.nome ?? '';
+      _telefoneController.text = usuario?.telefone ?? '';
+      _emailController.text = usuario?.email ?? '';
+      _camposPreenchidos = true;
+    }
+  }
+
   Future<void> _saveProfile() async {
     final usuarioProvider = context.read<UsuarioProvider>();
     final usuario = usuarioProvider.usuario;
 
-    if (usuario == null) return;
+    if (usuario == null) {
+      log('Usuário não encontrado no provider');
+      return;
+    }
 
     final nome = _nomeController.text.trim();
     final telefone = _telefoneController.text.trim();
@@ -41,42 +59,42 @@ class _ProfileFormState extends State<ProfileForm> {
     final senhaAtual = _senhaAtualController.text.trim();
     final novaSenha = _novaSenhaController.text.trim();
 
-    String? senhaParaEnviar;
-    if (senhaAtual.isNotEmpty && novaSenha.isNotEmpty) {
-      senhaParaEnviar = novaSenha;
-    }
+    // Logs de debug antes de enviar
+    log(' Salvando perfil:');
+    log('   Nome: $nome');
+    log('   Email: $email');
+    log('   Telefone: $telefone');
+    log('   Senha atual: ${senhaAtual.isNotEmpty ? "preenchida" : "vazia"}');
+    log('   Nova senha: ${novaSenha.isNotEmpty ? "preenchida" : "vazia"}');
 
     final sucesso = await usuarioProvider.atualizarPerfil(
       nome: nome,
       telefone: telefone,
       email: email,
-      senha: senhaParaEnviar,
+      senhaAtual: senhaAtual.isNotEmpty ? senhaAtual : null,
+      novaSenha: novaSenha.isNotEmpty ? novaSenha : null,
     );
 
     if (!mounted) return;
 
     if (sucesso) {
       showSnackBar(context, 'Perfil atualizado com sucesso');
+      _senhaAtualController.clear();
+      _novaSenhaController.clear();
     } else {
       showSnackBar(context, 'Erro ao atualizar perfil', color: Colors.red);
     }
   }
 
+  InputDecoration inputDecoration(String label) {
+    return InputDecoration(
+      labelText: label,
+      border: const OutlineInputBorder(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final usuario = context.watch<UsuarioProvider>().usuario;
-
-    _nomeController.text = usuario?.nome ?? '';
-    _telefoneController.text = usuario?.telefone ?? '';
-    _emailController.text = usuario?.email ?? '';
-
-    InputDecoration inputDecoration(String label) {
-      return InputDecoration(
-        labelText: label,
-        border: const OutlineInputBorder(),
-      );
-    }
-
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       child: Form(

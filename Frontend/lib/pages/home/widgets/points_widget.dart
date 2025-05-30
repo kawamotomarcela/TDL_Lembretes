@@ -8,25 +8,38 @@ class PointsWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final usuario = context.watch<UsuarioProvider>().usuario;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    // Cores ajustadas para dark/light mode
+    final backgroundColor = isDark ? const Color.fromARGB(255, 218, 192, 99) : Colors.amber.shade100;
+    final textColor = isDark ? Colors.black : Colors.black87;
+
     if (usuario == null) {
-      return const Text("Carregando pontos...");
+      return Text(
+        "Carregando pontos...",
+        style: TextStyle(color: textColor),
+      );
     }
 
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.amber.shade100,
+        color: backgroundColor,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
         children: [
-          const Icon(Icons.stars, size: 40),
+          Icon(Icons.stars, size: 40, color: textColor),
           const SizedBox(width: 16),
           Expanded(
             child: Text(
               'Você tem ${usuario.pontos} pontos!',
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: textColor,
+              ),
             ),
           ),
         ],

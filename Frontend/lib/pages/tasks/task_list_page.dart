@@ -69,9 +69,9 @@ class _TaskListPageState extends State<TaskListPage> {
     showSnackBar(
       context,
       tarefaAtualizada.alarmeAtivado
-          ? 'Alarme ativado com sucesso!'
-          : 'Alarme desativado com sucesso!',
-      color: tarefaAtualizada.alarmeAtivado ? Colors.green : Colors.red,
+          ? 'Alarme desativado com sucesso!'
+          : 'Alarme ativado com sucesso!',
+      color: tarefaAtualizada.alarmeAtivado ? Colors.red : Colors.green,
     );
   }
 

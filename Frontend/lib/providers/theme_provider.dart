@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
+import '../../../services/preference_service.dart'; 
 
 class ThemeProvider extends ChangeNotifier {
-  ThemeMode _themeMode = ThemeMode.system; 
+  final PreferenceService _preferenceService = PreferenceService();
+
+  ThemeMode _themeMode = ThemeMode.system;
 
   ThemeMode get themeMode => _themeMode;
 
   ThemeProvider() {
-    _loadTheme();
+    loadTheme();
   }
 
-  void _loadTheme() async {
-    final prefs = await SharedPreferences.getInstance();
-    final themeString = prefs.getString('themeMode') ?? 'system'; 
+  Future<void> loadTheme() async {
+    final themeString = await _preferenceService.getThemeMode() ?? 'system';
 
     switch (themeString) {
       case 'light':
@@ -26,12 +26,11 @@ class ThemeProvider extends ChangeNotifier {
         _themeMode = ThemeMode.system;
     }
 
-    notifyListeners(); 
+    notifyListeners();
   }
 
-  void setTheme(String mode) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('themeMode', mode); 
+  Future<void> setTheme(String mode) async {
+    await _preferenceService.setThemeMode(mode);
 
     switch (mode) {
       case 'light':
@@ -44,6 +43,12 @@ class ThemeProvider extends ChangeNotifier {
         _themeMode = ThemeMode.system;
     }
 
-    notifyListeners(); 
+    notifyListeners();
+  }
+
+  Future<void> resetThemeToDefault() async {
+    await _preferenceService.resetThemeMode();
+    _themeMode = ThemeMode.system;
+    notifyListeners();
   }
 }

@@ -1,15 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:grupotdl/generated/l10n.dart';
 
+// Rotas
+import '../routes/app_routes.dart';
+
+// Páginas
 import 'calendar/calendar_page.dart';
 import 'tasks/task_list_page.dart';
 import 'store/store_page.dart';
 import 'profile/profile_page.dart';
 import 'about/about_page.dart';
 import 'settings/settings_page.dart';
-import 'coupons/coupons_page.dart'; 
-import '../routes/app_routes.dart';
+import 'coupons/coupons_page.dart';
 import 'home/home_page.dart';
+
+// Providers
+import '../providers/theme_provider.dart';
+import '../providers/usuario_provider.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -20,36 +28,48 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   int _currentIndex = 0;
-
   late final List<Widget> _pages;
 
   @override
   void initState() {
     super.initState();
-    _pages = [
-      const HomePage(),
-      const TaskListPage(),
-      const CalendarPage(),
-      LojaPage(),         
-      const CuponsPage(),  
+    _pages = const [
+      HomePage(),
+      TaskListPage(),
+      CalendarPage(),
+      LojaPage(),
+      CuponsPage(),
     ];
   }
 
-  void _logout() {
+  Future<void> _logout() async {
+    final local = S.of(context);
+
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: Text(S.of(context).logoutConfirmation),
+        title: Text(local.logoutConfirmation),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(S.of(context).cancel),
+            child: Text(local.cancel),
           ),
           TextButton(
-            onPressed: () {
+            onPressed: () async {
+              Navigator.pop(context); // fecha o dialog
+
+              // Resetar o tema para o padrão (ThemeMode.system)
+              final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+              await themeProvider.resetThemeToDefault();
+
+              // Limpar usuário, tokens ou outras informações se necessário
+              final usuarioProvider = Provider.of<UsuarioProvider>(context, listen: false);
+              await usuarioProvider.logout();
+
+              // Navegar para tela de login
               Navigator.pushReplacementNamed(context, AppRoutes.login);
             },
-            child: Text(S.of(context).exit),
+            child: Text(local.exit),
           ),
         ],
       ),
@@ -57,23 +77,19 @@ class _MainPageState extends State<MainPage> {
   }
 
   void _onSettingsSelected(String value) {
-    if (value == 'meu_perfil') {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => const ProfilePage()),
-      );
-    } else if (value == 'config') {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => const SettingsPage()),
-      );
-    } else if (value == 'sobre') {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => const AboutPage()),
-      );
-    } else if (value == 'sair') {
-      _logout();
+    switch (value) {
+      case 'meu_perfil':
+        Navigator.push(context, MaterialPageRoute(builder: (_) => const ProfilePage()));
+        break;
+      case 'config':
+        Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsPage()));
+        break;
+      case 'sobre':
+        Navigator.push(context, MaterialPageRoute(builder: (_) => const AboutPage()));
+        break;
+      case 'sair':
+        _logout();
+        break;
     }
   }
 
@@ -158,4 +174,3 @@ class _MainPageState extends State<MainPage> {
     );
   }
 }
-

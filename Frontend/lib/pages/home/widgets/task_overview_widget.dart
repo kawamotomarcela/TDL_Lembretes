@@ -15,10 +15,13 @@ class TaskOverviewWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDark ? Colors.white : Colors.black;
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.blue.shade50,
+        color: isDark ? Colors.grey.shade800 : Colors.blue.shade50,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -34,7 +37,7 @@ class TaskOverviewWidget extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          _buildLegend(),
+          _buildLegend(textColor),
         ],
       ),
     );
@@ -66,14 +69,14 @@ class TaskOverviewWidget extends StatelessWidget {
     ];
   }
 
-  Widget _buildLegend() {
+  Widget _buildLegend(Color textColor) {
     return Wrap(
       spacing: 16,
       runSpacing: 8,
-      children: const [
-        _LegendItem(color: Colors.amber, text: 'Em Andamento'),
-        _LegendItem(color: Colors.green, text: 'Concluídas'),
-        _LegendItem(color: Colors.redAccent, text: 'Expiradas'),
+      children: [
+        _LegendItem(color: Colors.amber, text: 'Em Andamento', textColor: textColor),
+        _LegendItem(color: Colors.green, text: 'Concluídas', textColor: textColor),
+        _LegendItem(color: Colors.redAccent, text: 'Expiradas', textColor: textColor),
       ],
     );
   }
@@ -82,8 +85,13 @@ class TaskOverviewWidget extends StatelessWidget {
 class _LegendItem extends StatelessWidget {
   final Color color;
   final String text;
+  final Color textColor;
 
-  const _LegendItem({required this.color, required this.text});
+  const _LegendItem({
+    required this.color,
+    required this.text,
+    required this.textColor,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -92,8 +100,12 @@ class _LegendItem extends StatelessWidget {
       children: [
         CircleAvatar(radius: 6, backgroundColor: color),
         const SizedBox(width: 6),
-        Text(text),
+        Text(
+          text,
+          style: TextStyle(color: textColor),
+        ),
       ],
     );
   }
 }
+

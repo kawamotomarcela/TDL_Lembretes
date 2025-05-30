@@ -5,9 +5,14 @@ class WelcomeBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final backgroundColor = isDark ? const Color.fromARGB(255, 114, 89, 173) : Colors.deepPurple.shade50;
+    final textColor = isDark ? Colors.white : Colors.deepPurple.shade900;
+
     return Container(
       decoration: BoxDecoration(
-        color: Colors.deepPurple.shade50,
+        color: backgroundColor,
         borderRadius: BorderRadius.circular(16),
       ),
       padding: const EdgeInsets.all(16),
@@ -15,17 +20,17 @@ class WelcomeBanner extends StatelessWidget {
         children: [
           Expanded(
             child: Text(
-              'Bem-vindo de volta ao TDLembretes =) ',
+              'Bem-vindo de volta ao TDLembretes =)',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: Colors.deepPurple.shade900,
+                color: textColor,
               ),
             ),
           ),
           const SizedBox(width: 10),
           Image.asset(
-            'assets/testAgenda.png', 
+            'assets/testAgenda.png',
             width: 80,
             height: 80,
           ),

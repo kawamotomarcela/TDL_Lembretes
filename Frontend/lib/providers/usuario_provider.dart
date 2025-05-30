@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'dart:developer';
 import '../models/usuario_model.dart';
 import '../services/usuario_service.dart';
 import '../api/api_client.dart';
 import '../providers/produto_provider.dart';
-import 'dart:developer';
 
 class UsuarioProvider with ChangeNotifier {
   late UsuarioService _usuarioService;
@@ -46,6 +46,7 @@ class UsuarioProvider with ChangeNotifier {
     }
 
     final novosPontos = _usuario!.pontos + pontos;
+
     final sucesso = await _usuarioService.atualizarPontosUsuario(
       _usuario!.id,
       novosPontos,
@@ -65,7 +66,8 @@ class UsuarioProvider with ChangeNotifier {
     required String nome,
     required String telefone,
     required String email,
-    String? senha,
+    String? senhaAtual,
+    String? novaSenha,
   }) async {
     if (_usuario == null) return false;
 
@@ -75,21 +77,31 @@ class UsuarioProvider with ChangeNotifier {
       email: email,
     );
 
-    final sucesso = await _usuarioService.atualizarUsuario(
-      atualizado.id,
-      atualizado.toJson(),
-      senha: senha,
-    );
+    try {
+      await _usuarioService.atualizarUsuario(
+        atualizado.id,
+        atualizado.toJson(),
+      );
 
-    if (sucesso) {
+      if (senhaAtual != null &&
+          senhaAtual.isNotEmpty &&
+          novaSenha != null &&
+          novaSenha.isNotEmpty) {
+        await _apiClient.put('/Usuario/senha?id=${_usuario!.id}', {
+          'senhaAtual': senhaAtual,
+          'novaSenha': novaSenha,
+        });
+      }
+
       _usuario = atualizado;
       _erro = null;
-    } else {
+      notifyListeners();
+      return true;
+    } catch (e) {
       _erro = 'Erro ao atualizar perfil';
+      notifyListeners();
+      return false;
     }
-
-    notifyListeners();
-    return sucesso;
   }
 
   Future<bool> comprarProduto({
@@ -115,13 +127,14 @@ class UsuarioProvider with ChangeNotifier {
         'quantidade': quantidade,
       };
 
-      log('📤 POST /Compra - Payload enviado: $payload');
+      log(' POST /Compra - Payload enviado: $payload');
 
       final response = await _apiClient.post('/Compra', payload);
 
       if (response['sucesso'] == true) {
         _usuario = _usuario!.copyWith(pontos: _usuario!.pontos - custoTotal);
         await produtoProvider.atualizarProdutoLocal(produtoId);
+        _erro = null;
         notifyListeners();
         return true;
       } else {
@@ -134,5 +147,11 @@ class UsuarioProvider with ChangeNotifier {
       notifyListeners();
       return false;
     }
+  }
+
+  Future<void> logout() async {
+    _usuario = null;
+    _erro = null;
+    notifyListeners();
   }
 }
