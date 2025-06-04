@@ -7,8 +7,8 @@ class WelcomeBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    final backgroundColor = isDark ? const Color.fromARGB(255, 114, 89, 173) : Colors.deepPurple.shade50;
-    final textColor = isDark ? Colors.white : Colors.deepPurple.shade900;
+    final backgroundColor = isDark ? const Color.fromARGB(255, 90, 119, 176) : Colors.deepPurple.shade50;
+    final textColor = isDark ? Colors.white : const Color.fromARGB(255, 57, 25, 197);
 
     return Container(
       decoration: BoxDecoration(
@@ -31,8 +31,8 @@ class WelcomeBanner extends StatelessWidget {
           const SizedBox(width: 10),
           Image.asset(
             'assets/testAgenda.png',
-            width: 80,
-            height: 80,
+            width: 85,
+            height: 85,
           ),
         ],
       ),

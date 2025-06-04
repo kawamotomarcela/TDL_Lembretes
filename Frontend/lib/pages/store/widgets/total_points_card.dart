@@ -9,7 +9,7 @@ class TotalPointsCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: const Color.fromARGB(255, 93, 104, 168),
+      color: const Color.fromARGB(255, 54, 121, 221), 
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),

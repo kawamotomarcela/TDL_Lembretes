@@ -24,50 +24,125 @@ class ProductCard extends StatelessWidget {
   void _mostrarDetalhes(BuildContext context) {
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        title: Text(nome),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Descrição: $descricao'),
-            const SizedBox(height: 8),
-            Text('Quantidade disponível: $quantidade'),
-            const SizedBox(height: 8),
-            Text('Preço: $preco'),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar'),
-          ),
-          if (quantidade > 0)
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-                onConfirm(produtoId);
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              child: const Text('Comprar'),
-            )
-          else
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 12),
-              child: Text(
-                'Produto esgotado',
-                style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+      builder:
+          (_) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            title: Text(
+              nome,
+              style: GoogleFonts.poppins(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
               ),
             ),
-        ],
-      ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Descrição:',
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(descricao, style: GoogleFonts.poppins(fontSize: 14)),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    Text(
+                      'Quantidade disponível: ',
+                      style: GoogleFonts.poppins(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                    ),
+                    Text(
+                      '$quantidade',
+                      style: GoogleFonts.poppins(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Text(
+                      'Preço: ',
+                      style: GoogleFonts.poppins(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                    ),
+                    Text(
+                      preco,
+                      style: GoogleFonts.poppins(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            actions: [
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red, 
+                  foregroundColor: Colors.white, 
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 12,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: Text(
+                  'Cancelar',
+                  style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+                ),
+              ),
+              if (quantidade > 0)
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    onConfirm(produtoId);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 12,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: Text(
+                    'Comprar',
+                    style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+                  ),
+                )
+              else
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: Text(
+                    'Produto esgotado',
+                    style: GoogleFonts.poppins(
+                      color: Colors.red,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+            ],
+          ),
     );
   }
 
@@ -76,32 +151,40 @@ class ProductCard extends StatelessWidget {
     final imagemValida = imagem.endsWith('.jpg') || imagem.endsWith('.png');
 
     return GestureDetector(
-      onTap: quantidade > 0
-          ? () => _mostrarDetalhes(context)
-          : () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Produto esgotado.'),
-                  backgroundColor: Colors.red,
-                ),
-              );
-            },
+      onTap:
+          quantidade > 0
+              ? () => _mostrarDetalhes(context)
+              : () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Produto esgotado.'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              },
       child: Card(
-        elevation: 3,
+        elevation: 4,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Expanded(
               child: ClipRRect(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(16),
+                ),
                 child: Image.asset(
                   imagemValida ? imagem : 'assets/giftcard.jpg',
                   fit: BoxFit.cover,
                   width: double.infinity,
-                  errorBuilder: (_, __, ___) => const Center(
-                    child: Icon(Icons.broken_image, size: 48, color: Colors.grey),
-                  ),
+                  errorBuilder:
+                      (_, __, ___) => const Center(
+                        child: Icon(
+                          Icons.broken_image,
+                          size: 48,
+                          color: Colors.grey,
+                        ),
+                      ),
                 ),
               ),
             ),
@@ -127,11 +210,15 @@ class ProductCard extends StatelessWidget {
                     ),
                   ),
                   if (quantidade <= 0)
-                    const Padding(
-                      padding: EdgeInsets.only(top: 4),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4),
                       child: Text(
                         'Esgotado',
-                        style: TextStyle(color: Colors.red, fontSize: 12),
+                        style: GoogleFonts.poppins(
+                          color: Colors.red,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                 ],
@@ -143,4 +230,3 @@ class ProductCard extends StatelessWidget {
     );
   }
 }
-

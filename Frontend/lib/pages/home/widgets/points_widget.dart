@@ -10,8 +10,7 @@ class PointsWidget extends StatelessWidget {
     final usuario = context.watch<UsuarioProvider>().usuario;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    // Cores ajustadas para dark/light mode
-    final backgroundColor = isDark ? const Color.fromARGB(255, 218, 192, 99) : Colors.amber.shade100;
+    final backgroundColor = isDark ? const Color.fromARGB(255, 224, 204, 128) : Colors.amber.shade100;
     final textColor = isDark ? Colors.black : Colors.black87;
 
     if (usuario == null) {

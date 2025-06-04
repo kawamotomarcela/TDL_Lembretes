@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 import 'package:grupotdl/models/task_ofc_model.dart';
 import 'package:grupotdl/providers/task_ofc_provider.dart';
 import 'package:grupotdl/providers/usuario_provider.dart';
@@ -17,7 +18,7 @@ class _OfficialTasksWidgetState extends State<OfficialTasksWidget> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        Provider.of<TaskOfcProvider>(context, listen: false).carregarTarefas();
+        context.read<TaskOfcProvider>().carregarTarefas();
       }
     });
   }
@@ -28,24 +29,40 @@ class _OfficialTasksWidgetState extends State<OfficialTasksWidget> {
     required void Function(String url) onConfirmar,
   }) async {
     final controller = TextEditingController();
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
     await showDialog(
       context: context,
       builder: (_) => AlertDialog(
+        backgroundColor: isDark ? Colors.grey[900] : Colors.white,
+        title: Text(
+          'Enviar Comprovação',
+          style: TextStyle(
+            color: theme.colorScheme.onSurface,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Descrição',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: theme.colorScheme.onSurface,
+              ),
             ),
             const SizedBox(height: 6),
-            Text(tarefa.descricao, style: const TextStyle(fontSize: 14)),
+            Text(tarefa.descricao, style: TextStyle(color: theme.colorScheme.onSurface)),
             const SizedBox(height: 16),
-            const Text(
+            Text(
               'URL da imagem de comprovação',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: theme.colorScheme.onSurface,
+              ),
             ),
             const SizedBox(height: 6),
             TextField(
@@ -59,8 +76,12 @@ class _OfficialTasksWidgetState extends State<OfficialTasksWidget> {
           ],
         ),
         actions: [
-          TextButton(
+          ElevatedButton(
             onPressed: () => Navigator.pop(context),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+            ),
             child: const Text('Cancelar'),
           ),
           ElevatedButton(
@@ -84,19 +105,30 @@ class _OfficialTasksWidgetState extends State<OfficialTasksWidget> {
     final usuarioProvider = context.read<UsuarioProvider>();
     final tarefas = provider.tarefas;
     final loading = provider.loading;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final textColor = theme.colorScheme.onSurface;
+    final cardColor = isDark ? Colors.grey[850] : Colors.white;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           '📌 Tarefas Oficiais',
-          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            color: textColor,
+          ),
         ),
         const SizedBox(height: 12),
         if (loading)
           const Center(child: CircularProgressIndicator())
         else if (tarefas.isEmpty)
-          const Text('Nenhuma tarefa oficial disponível no momento.')
+          Text(
+            'Nenhuma tarefa oficial disponível no momento.',
+            style: TextStyle(color: textColor),
+          )
         else
           ListView.separated(
             shrinkWrap: true,
@@ -107,25 +139,22 @@ class _OfficialTasksWidgetState extends State<OfficialTasksWidget> {
               final tarefa = tarefas[index];
 
               return Card(
-                margin: const EdgeInsets.symmetric(horizontal: 4),
+                color: cardColor,
                 elevation: 3,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 10,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         tarefa.titulo,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w900,
-                          color: Colors.black,
+                          color: textColor,
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -135,30 +164,17 @@ class _OfficialTasksWidgetState extends State<OfficialTasksWidget> {
                           const SizedBox(width: 4),
                           Text(
                             'Pontos: ${tarefa.pontos}',
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
-                          ),
-                          const Spacer(),
-                          const Text(
-                            'Venc: ',
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
-                              color: Colors.red,
+                              color: textColor,
                             ),
                           ),
-                          const Icon(
-                            Icons.calendar_today,
-                            size: 14,
-                            color: Colors.red,
-                          ),
+                          const Spacer(),
+                          const Icon(Icons.calendar_today, size: 14, color: Colors.red),
                           const SizedBox(width: 4),
                           Text(
-                            '${tarefa.dataFinalizacao.day.toString().padLeft(2, '0')}/'
-                            '${tarefa.dataFinalizacao.month.toString().padLeft(2, '0')}',
+                            'Venc: ${DateFormat('dd/MM').format(tarefa.dataFinalizacao)}',
                             style: const TextStyle(
                               fontSize: 14,
                               color: Colors.red,
@@ -177,8 +193,7 @@ class _OfficialTasksWidgetState extends State<OfficialTasksWidget> {
                               if (!mounted) return;
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
-                                  content: Text(
-                                      'Erro: usuário não identificado'),
+                                  content: Text('Erro: usuário não identificado'),
                                 ),
                               );
                               return;
@@ -208,9 +223,8 @@ class _OfficialTasksWidgetState extends State<OfficialTasksWidget> {
 
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
-                                        content: Text(
-                                          '🎉 Você ganhou ${tarefa.pontos} pontos!',
-                                        ),
+                                        content: Text('🎉 Você ganhou ${tarefa.pontos} pontos!'),
+                                        backgroundColor: Colors.green,
                                       ),
                                     );
                                   }
@@ -221,20 +235,14 @@ class _OfficialTasksWidgetState extends State<OfficialTasksWidget> {
                           style: TextButton.styleFrom(
                             foregroundColor: Colors.white,
                             backgroundColor: Colors.blue,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 20,
-                              vertical: 6,
-                            ),
+                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(6),
                             ),
                           ),
                           child: const Text(
                             'Saiba mais',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                            ),
+                            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                           ),
                         ),
                       ),
@@ -248,3 +256,4 @@ class _OfficialTasksWidgetState extends State<OfficialTasksWidget> {
     );
   }
 }
+

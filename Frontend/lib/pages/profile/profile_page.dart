@@ -105,10 +105,10 @@ class _ProfilePageState extends State<ProfilePage> {
             const SizedBox(height: 8), 
             TextButton(
               onPressed: _changeImage,
-              child: const Text(
+              child: Text(
                 'Alterar imagem de perfil',
                 style: TextStyle(
-                  color: Colors.indigo,
+                  color: Colors.blue[800],
                   fontWeight: FontWeight.w600,
                 ),
               ),
