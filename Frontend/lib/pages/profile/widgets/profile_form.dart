@@ -59,7 +59,6 @@ class _ProfileFormState extends State<ProfileForm> {
     final senhaAtual = _senhaAtualController.text.trim();
     final novaSenha = _novaSenhaController.text.trim();
 
-    // Logs de debug antes de enviar
     log(' Salvando perfil:');
     log('   Nome: $nome');
     log('   Email: $email');
@@ -86,64 +85,137 @@ class _ProfileFormState extends State<ProfileForm> {
     }
   }
 
-  InputDecoration inputDecoration(String label) {
+  InputDecoration _inputDecoration(BuildContext context, String label) {
+    final theme = Theme.of(context);
+    final primary = theme.colorScheme.primary;
+
     return InputDecoration(
       labelText: label,
-      border: const OutlineInputBorder(),
+      filled: true,
+      fillColor: theme.colorScheme.surfaceContainerHigh.withValues(alpha: 0.35),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: BorderSide(color: primary.withValues(alpha: 0.3)),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: BorderSide(color: primary.withValues(alpha: 0.25)),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: BorderSide(color: primary, width: 1.8),
+      ),
+      contentPadding:
+          const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final primary = theme.colorScheme.primary;
+    final textColor = theme.colorScheme.onSurface;
+
     return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       child: Form(
         key: _formKey,
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 16),
+                decoration: BoxDecoration(
+                  color: Colors.grey.withValues(alpha: 0.35),
+                  borderRadius: BorderRadius.circular(999),
+                ),
+              ),
+            ),
+            Text(
+              'Dados pessoais',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w800,
+                color: textColor,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              'Atualize seu nome, contato e e-mail.',
+              style: TextStyle(
+                fontSize: 13,
+                color: textColor.withValues(alpha: 0.7),
+              ),
+            ),
+            const SizedBox(height: 18),
             TextFormField(
               controller: _nomeController,
-              decoration: inputDecoration('Nome'),
+              decoration: _inputDecoration(context, 'Nome'),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 14),
             TextFormField(
               controller: _emailController,
-              decoration: inputDecoration('E-mail'),
+              decoration: _inputDecoration(context, 'E-mail'),
               keyboardType: TextInputType.emailAddress,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 14),
             TextFormField(
               controller: _telefoneController,
-              decoration: inputDecoration('Telefone'),
+              decoration: _inputDecoration(context, 'Telefone'),
               keyboardType: TextInputType.phone,
             ),
             const SizedBox(height: 24),
-            TextFormField(
-              controller: _senhaAtualController,
-              decoration: inputDecoration('Senha atual'),
-              obscureText: true,
+            Text(
+              'Segurança',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w800,
+                color: textColor,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              'Altere sua senha se desejar.',
+              style: TextStyle(
+                fontSize: 13,
+                color: textColor.withValues(alpha: 0.7),
+              ),
             ),
             const SizedBox(height: 16),
             TextFormField(
+              controller: _senhaAtualController,
+              decoration: _inputDecoration(context, 'Senha atual'),
+              obscureText: true,
+            ),
+            const SizedBox(height: 14),
+            TextFormField(
               controller: _novaSenhaController,
-              decoration: inputDecoration('Nova senha (opcional)'),
+              decoration:
+                  _inputDecoration(context, 'Nova senha (opcional)'),
               obscureText: true,
             ),
             const SizedBox(height: 24),
             SizedBox(
               width: double.infinity,
-              child: ElevatedButton(
+              child: FilledButton(
                 onPressed: _saveProfile,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
+                style: FilledButton.styleFrom(
+                  backgroundColor: primary,
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 14, horizontal: 18),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  elevation: 2,
                 ),
                 child: const Text(
-                  'Salvar',
+                  'Salvar alterações',
                   style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ),
@@ -154,4 +226,5 @@ class _ProfileFormState extends State<ProfileForm> {
     );
   }
 }
+
 

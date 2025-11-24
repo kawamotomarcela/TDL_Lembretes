@@ -12,28 +12,76 @@ class _ProfilePageState extends State<ProfilePage> {
   String _imageUrl = 'assets/tdl.png';
 
   void _changeImage() {
+    final theme = Theme.of(context);
+    final primary = theme.colorScheme.primary;
+
     showDialog(
       context: context,
       builder: (context) {
         final urlController = TextEditingController();
         return AlertDialog(
-          title: const Text('Nova imagem de perfil'),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(18),
+          ),
+          title: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: primary.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(
+                  Icons.image_rounded,
+                  color: primary,
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  'Nova imagem de perfil',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    color: theme.colorScheme.onSurface,
+                  ),
+                ),
+              ),
+            ],
+          ),
           content: TextField(
             controller: urlController,
-            decoration: const InputDecoration(hintText: 'Cole a URL da imagem'),
+            decoration: InputDecoration(
+              hintText: 'Cole a URL da imagem',
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              isDense: true,
+            ),
           ),
+          actionsPadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Cancelar'),
+              child: Text(
+                'Cancelar',
+                style: TextStyle(color: primary),
+              ),
             ),
-            TextButton(
+            FilledButton(
               onPressed: () {
                 if (urlController.text.isNotEmpty) {
-                  setState(() => _imageUrl = urlController.text);
+                  setState(() => _imageUrl = urlController.text.trim());
                 }
                 Navigator.pop(context);
               },
+              style: FilledButton.styleFrom(
+                backgroundColor: primary,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(999),
+                ),
+              ),
               child: const Text('Atualizar'),
             ),
           ],
@@ -44,81 +92,83 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final primary = theme.colorScheme.primary;
     final isNetwork = _imageUrl.startsWith('http');
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Meu Perfil'),
         centerTitle: true,
+        elevation: 0,
+        backgroundColor: theme.colorScheme.surface,
+        title: Text(
+          'Meu Perfil',
+          style: TextStyle(
+            fontWeight: FontWeight.w700,
+            color: theme.colorScheme.onSurface,
+          ),
+        ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: Icon(Icons.arrow_back, color: theme.colorScheme.onSurface),
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
         child: Column(
           children: [
-            Stack(
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                      color: Colors.black.withAlpha(25),
-                        blurRadius: 8,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: CircleAvatar(
-                    radius: 40, 
+            const SizedBox(height: 24),
+            Center(
+              child: Stack(
+                children: [
+                  CircleAvatar(
+                    radius: 48,
+                    backgroundColor: Colors.grey.withValues(alpha: 0.15),
                     backgroundImage: isNetwork
                         ? NetworkImage(_imageUrl) as ImageProvider
                         : AssetImage(_imageUrl),
                   ),
-                ),
-                Positioned(
-                  bottom: 0,
-                  right: 4,
-                  child: GestureDetector(
-                    onTap: _changeImage,
-                    child: Container(
-                      padding: const EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: const Color.fromARGB(255, 153, 155, 170),
-                        border: Border.all(color: Colors.white, width: 2),
-                      ),
-                      child: const Icon(
-                        Icons.edit,
-                        color: Colors.white,
-                        size: 18,
+                  Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: GestureDetector(
+                      onTap: _changeImage,
+                      child: Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: primary,
+                          border: Border.all(color: Colors.white, width: 2),
+                        ),
+                        child: const Icon(
+                          Icons.edit_rounded,
+                          color: Colors.white,
+                          size: 18,
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-            const SizedBox(height: 8), 
+            const SizedBox(height: 8),
             TextButton(
               onPressed: _changeImage,
               child: Text(
                 'Alterar imagem de perfil',
                 style: TextStyle(
-                  color: Colors.blue[800],
+                  color: primary,
                   fontWeight: FontWeight.w600,
+                  fontSize: 13,
                 ),
               ),
             ),
-            const SizedBox(height: 16), 
-            const ProfileForm(),
+            const SizedBox(height: 8),
+            const SizedBox(height: 8),
+            const ProfileForm(), 
           ],
         ),
       ),
     );
   }
 }
-

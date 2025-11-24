@@ -25,7 +25,8 @@ class _LoginPageState extends State<LoginPage> {
   bool _rememberMe = false;
 
   void _login() async {
-    if (_emailController.text.isNotEmpty && _passwordController.text.isNotEmpty) {
+    if (_emailController.text.isNotEmpty &&
+        _passwordController.text.isNotEmpty) {
       try {
         final apiClient = ApiClient();
         await apiClient.init();
@@ -40,19 +41,30 @@ class _LoginPageState extends State<LoginPage> {
         if (!mounted) return;
 
         if (response != null) {
-          final usuario = Usuario.fromMap(response); 
+          final usuario = Usuario.fromMap(response);
           context.read<UsuarioProvider>().setUsuario(usuario);
-
           Navigator.pushReplacementNamed(context, AppRoutes.main);
         } else {
-          showSnackBar(context, "Login inválido ou dados incorretos!", color: Colors.red);
+          showSnackBar(
+            context,
+            "Login inválido ou dados incorretos!",
+            color: Colors.red,
+          );
         }
       } catch (e, stack) {
         debugPrint('Erro inesperado: $e\n$stack');
-        showSnackBar(context, "Erro inesperado no login!", color: Colors.red);
+        showSnackBar(
+          context,
+          "Erro inesperado no login!",
+          color: Colors.red,
+        );
       }
     } else {
-      showSnackBar(context, "Preencha todos os campos!", color: Colors.red);
+      showSnackBar(
+        context,
+        "Preencha todos os campos!",
+        color: Colors.red,
+      );
     }
   }
 
@@ -65,81 +77,146 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    const primaryBlue = Color(0xFF2563EB);
+
     return Scaffold(
-      backgroundColor: Colors.blue[700],
+      backgroundColor: primaryBlue,
       appBar: AppBar(
-        backgroundColor: Colors.blue[700],
+        backgroundColor: Colors.transparent,
         elevation: 0,
         actions: [
           IconButton(
             icon: const Icon(Icons.settings_ethernet, color: Colors.white),
             tooltip: "Configurar IP",
             onPressed: _openIpDialog,
-          )
+          ),
         ],
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 32),
-          child: Column(
-            children: [
-              const SizedBox(height: 50),
-              const LogoWidget(title: "TDL-Lembretes"),
-              const SizedBox(height: 20),
-              CustomTextField(
-                controller: _emailController,
-                hintText: "Email",
-                icon: Icons.email,
-              ),
-              const SizedBox(height: 16),
-              CustomTextField(
-                controller: _passwordController,
-                hintText: "Senha",
-                icon: Icons.lock,
-                obscure: _obscureText,
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    _obscureText ? Icons.visibility_off : Icons.visibility,
-                    color: Colors.white,
-                  ),
-                  onPressed: () => setState(() => _obscureText = !_obscureText),
-                ),
-              ),
-              const SizedBox(height: 8),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Checkbox(
-                        value: _rememberMe,
-                        onChanged: (value) => setState(() => _rememberMe = value!),
-                        checkColor: Colors.indigo,
-                        activeColor: Colors.white,
-                      ),
-                      const Text("Lembrar-me", style: TextStyle(color: Colors.white70)),
-                    ],
-                  ),
-                  TextButton(
-                    onPressed: () {},
-                    child: const Text(
-                      "Esqueceu a senha?",
-                      style: TextStyle(color: Colors.white70, decoration: TextDecoration.underline),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              CustomButton(text: "Login", onPressed: _login),
-              const SizedBox(height: 24),
-              TextButton(
-                onPressed: () => Navigator.pushNamed(context, AppRoutes.register),
-                child: const Text(
-                  "Não tem uma conta? Registre-se",
-                  style: TextStyle(color: Colors.white70, decoration: TextDecoration.underline),
-                ),
-              ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Color(0xFF2563EB),
+              Color(0xFF1D4ED8),
             ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: SafeArea(
+          child: Align(
+            alignment: Alignment.topCenter,
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 420),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const LogoWidget(title: "TDLembretes"),
+                    const SizedBox(height: 8),
+                    Text(
+                      "Organize sua rotina com facilidade",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.97),
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    CustomTextField(
+                      controller: _emailController,
+                      hintText: "Email",
+                      icon: Icons.email_outlined,
+                    ),
+                    const SizedBox(height: 24),
+                    CustomTextField(
+                      controller: _passwordController,
+                      hintText: "Senha",
+                      icon: Icons.lock_outline_rounded,
+                      obscure: _obscureText,
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscureText
+                              ? Icons.visibility_off_rounded
+                              : Icons.visibility_rounded,
+                          color: Colors.white,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _obscureText = !_obscureText;
+                          });
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            Checkbox(
+                              value: _rememberMe,
+                              onChanged: (value) {
+                                setState(() {
+                                  _rememberMe = value ?? false;
+                                });
+                              },
+                              activeColor: Colors.white,
+                              checkColor: primaryBlue,
+                              side: BorderSide(
+                                color: Colors.white.withValues(alpha: 0.9),
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              "Lembrar-me",
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: Colors.white.withValues(alpha: 0.97),
+                              ),
+                            ),
+                          ],
+                        ),
+                        TextButton(
+                          onPressed: () {},
+                          child: Text(
+                            "Esqueceu a senha?",
+                            style: TextStyle(
+                              fontSize: 15,
+                              color: Colors.white.withValues(alpha: 0.97),
+                              decoration: TextDecoration.underline,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 18),
+                    CustomButton(
+                      text: "Entrar",
+                      onPressed: _login,
+                    ),
+                    const SizedBox(height: 18),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, AppRoutes.register);
+                      },
+                      child: const Text(
+                        "Não tem uma conta? Registre-se",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 15,
+                          decoration: TextDecoration.underline,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                  ],
+                ),
+              ),
+            ),
           ),
         ),
       ),

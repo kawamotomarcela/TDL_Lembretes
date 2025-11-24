@@ -9,6 +9,7 @@ class HourWidget extends StatefulWidget {
 }
 
 class _HourWidgetState extends State<HourWidget> {
+  static const Color primaryBlue = Color(0xFF1976D2);
   late DateTime _agora;
 
   @override
@@ -20,56 +21,132 @@ class _HourWidgetState extends State<HourWidget> {
 
   void _atualizarHoraPeriodicamente() {
     Future.delayed(const Duration(seconds: 1), () {
-      if (mounted) {
-        setState(() {
-          _agora = DateTime.now();
-        });
-        _atualizarHoraPeriodicamente();
-      }
+      if (!mounted) return;
+      setState(() {
+        _agora = DateTime.now();
+      });
+      _atualizarHoraPeriodicamente();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final horaFormatada = DateFormat('dd/MM/yyyy - HH:mm:ss').format(_agora);
-
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final backgroundColor = isDark ? Colors.grey.shade800 : Colors.white;
-    final primaryTextColor = theme.colorScheme.onSurface;
 
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      elevation: 4,
-      color: backgroundColor,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            Icon(Icons.access_time, color: primaryTextColor, size: 28),
-            const SizedBox(width: 12),
-            Column(
+    final timeFormatted = DateFormat('HH:mm:ss').format(_agora);
+    final dateFormatted = DateFormat('dd/MM/yyyy').format(_agora);
+
+    final bgGradient = LinearGradient(
+      colors: isDark
+          ? const [
+              Color(0xFF0B1120),
+              Color(0xFF1D4ED8),
+            ]
+          : const [
+              Color(0xFFE0F2FE),
+              Color(0xFFBFDBFE),
+            ],
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+    );
+
+    final primaryTextColor =
+        isDark ? Colors.white : const Color(0xFF0F172A);
+    final secondaryTextColor =
+        isDark ? Colors.white70 : const Color(0xFF6B7280);
+
+    return Container(
+      decoration: BoxDecoration(
+        gradient: bgGradient,
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.08),
+            blurRadius: 12,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      child: Row(
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: primaryBlue.withValues(
+                alpha: isDark ? 0.35 : 0.18,
+              ),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.access_time_rounded,
+              color: Colors.white,
+              size: 24,
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Hora atual',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: primaryTextColor,
-                  ),
+                Row(
+                  children: [
+                    Text(
+                      'Hora atual',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: secondaryTextColor,
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: primaryBlue.withValues(alpha: 0.18),
+                        borderRadius: BorderRadius.circular(999),
+                      ),
+                      child: const Text(
+                        'ao vivo',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: primaryBlue,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  horaFormatada,
-                  style: TextStyle(fontSize: 16, color: primaryTextColor),
+                  timeFormatted,
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1,
+                    color: primaryTextColor,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  dateFormatted,
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: secondaryTextColor,
+                  ),
                 ),
               ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 }
+
 

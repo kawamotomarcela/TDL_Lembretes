@@ -5,34 +5,73 @@ class WelcomeBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
-    final backgroundColor = isDark ? const Color.fromARGB(255, 90, 119, 176) : Colors.deepPurple.shade50;
-    final textColor = isDark ? Colors.white : const Color.fromARGB(255, 57, 25, 197);
+    final gradient = LinearGradient(
+      colors:
+          isDark
+              ? const [Color(0xFF3B5998), Color(0xFF1D3557)]
+              : const [Color(0xFFEEF0FF), Color(0xFFD8E4FF)],
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+    );
+
+    final titleColor = isDark ? Colors.white : const Color(0xFF1F2933);
 
     return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
       decoration: BoxDecoration(
-        color: backgroundColor,
-        borderRadius: BorderRadius.circular(16),
+        gradient: gradient,
+        borderRadius: BorderRadius.circular(22),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.06),
+            blurRadius: 12,
+            offset: const Offset(0, 6),
+          ),
+        ],
       ),
-      padding: const EdgeInsets.all(16),
       child: Row(
         children: [
           Expanded(
-            child: Text(
-              'Bem-vindo de volta ao TDLembretes =)',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: textColor,
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Bem-vindo! 👋',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w900,
+                    color: titleColor,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  'Organize seu dia com praticidade.',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: titleColor.withValues(alpha: 0.85),
+                  ),
+                ),
+              ],
             ),
           ),
-          const SizedBox(width: 10),
-          Image.asset(
-            'assets/testAgenda.png',
-            width: 85,
-            height: 85,
+
+          const SizedBox(width: 12),
+
+          Container(
+            width: 120,
+            height: 120,
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: isDark ? 0.12 : 0.9),
+              borderRadius: BorderRadius.circular(26),
+            ),
+            padding: const EdgeInsets.all(8),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: Image.asset('assets/testAgenda.png', fit: BoxFit.cover),
+            ),
           ),
         ],
       ),

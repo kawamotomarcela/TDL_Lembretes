@@ -32,12 +32,13 @@ class _RegisterPageState extends State<RegisterPage> {
     final password = _passwordController.text.trim();
     final confirmPassword = _confirmPasswordController.text.trim();
 
-    // Validações
-    final usernameError = Validators.validateRequired(username, "Nome de usuário");
+    final usernameError =
+        Validators.validateRequired(username, "Nome de usuário");
     final emailError = Validators.validateEmail(email);
     final phoneError = Validators.validatePhone(phone);
     final passwordError = Validators.validatePassword(password);
-    final confirmPasswordError = Validators.validateConfirmPassword(password, confirmPassword);
+    final confirmPasswordError =
+        Validators.validateConfirmPassword(password, confirmPassword);
 
     if (usernameError != null ||
         emailError != null ||
@@ -46,7 +47,11 @@ class _RegisterPageState extends State<RegisterPage> {
         confirmPasswordError != null) {
       showSnackBar(
         context,
-        usernameError ?? emailError ?? phoneError ?? passwordError ?? confirmPasswordError!,
+        usernameError ??
+            emailError ??
+            phoneError ??
+            passwordError ??
+            confirmPasswordError!,
         color: Colors.red,
       );
       return;
@@ -75,71 +80,125 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
+    const primaryBlue = Color(0xFF2563EB);
+
     return Scaffold(
-      body: Container(
-        color: Colors.indigo,
-        padding: const EdgeInsets.symmetric(horizontal: 40),
+      backgroundColor: primaryBlue,
+      body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            child: Column(
-              children: [
-                const Text(
-                  'Criar Conta',
-                  style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.white),
-                ),
-                const SizedBox(height: 30),
-                CustomTextField(
-                  controller: _usernameController,
-                  hintText: "Nome de usuário",
-                  icon: Icons.person,
-                ),
-                const SizedBox(height: 20),
-                CustomTextField(
-                  controller: _emailController,
-                  hintText: "Email",
-                  icon: Icons.email,
-                ),
-                const SizedBox(height: 20),
-                CustomTextField(
-                  controller: _phoneController,
-                  hintText: "Telefone",
-                  icon: Icons.phone,
-                  keyboardType: TextInputType.phone,
-                  inputFormatters: [PhoneInputFormatter()],
-                ),
-                const SizedBox(height: 20),
-                CustomTextField(
-                  controller: _passwordController,
-                  hintText: "Senha",
-                  icon: Icons.lock,
-                  obscure: _obscurePassword,
-                  suffixIcon: IconButton(
-                    icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility, color: Colors.white),
-                    onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 420),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 8),
+                  const Text(
+                    "Crie sua conta",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 26,
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 20),
-                CustomTextField(
-                  controller: _confirmPasswordController,
-                  hintText: "Confirmar senha",
-                  icon: Icons.lock_outline,
-                  obscure: _obscureConfirmPassword,
-                  suffixIcon: IconButton(
-                    icon: Icon(_obscureConfirmPassword ? Icons.visibility_off : Icons.visibility, color: Colors.white),
-                    onPressed: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
+                  const SizedBox(height: 6),
+                  Text(
+                    "Leve seus lembretes com você em qualquer lugar.",
+                    style: TextStyle(
+                      color: Colors.white.withValues(alpha: 0.95),
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 30),
-                CustomButton(text: "Criar Conta", onPressed: _register),
-                const SizedBox(height: 20),
-                TextButton(
-                  onPressed: () => Navigator.pushReplacementNamed(context, AppRoutes.login),
-                  child: const Text(
-                    "Já tem uma conta? Fazer login",
-                    style: TextStyle(color: Colors.white70, decoration: TextDecoration.underline),
+                  const SizedBox(height: 24),
+                  CustomTextField(
+                    controller: _usernameController,
+                    hintText: "Nome de usuário",
+                    icon: Icons.person_outline_rounded,
                   ),
-                ),
-              ],
+                  const SizedBox(height: 14),
+                  CustomTextField(
+                    controller: _emailController,
+                    hintText: "Email",
+                    icon: Icons.email_outlined,
+                  ),
+                  const SizedBox(height: 14),
+                  CustomTextField(
+                    controller: _phoneController,
+                    hintText: "Telefone",
+                    icon: Icons.phone_outlined,
+                    keyboardType: TextInputType.phone,
+                    inputFormatters: [PhoneInputFormatter()],
+                  ),
+                  const SizedBox(height: 14),
+                  CustomTextField(
+                    controller: _passwordController,
+                    hintText: "Senha",
+                    icon: Icons.lock_outline_rounded,
+                    obscure: _obscurePassword,
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscurePassword
+                            ? Icons.visibility_off_rounded
+                            : Icons.visibility_rounded,
+                        color: Colors.white,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _obscurePassword = !_obscurePassword;
+                        });
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  CustomTextField(
+                    controller: _confirmPasswordController,
+                    hintText: "Confirmar senha",
+                    icon: Icons.lock_person_outlined,
+                    obscure: _obscureConfirmPassword,
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscureConfirmPassword
+                            ? Icons.visibility_off_rounded
+                            : Icons.visibility_rounded,
+                        color: Colors.white,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _obscureConfirmPassword = !_obscureConfirmPassword;
+                        });
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  CustomButton(
+                    text: "Criar conta",
+                    onPressed: _register,
+                  ),
+                  const SizedBox(height: 18),
+                  Center(
+                    child: TextButton(
+                      onPressed: () {
+                        Navigator.pushReplacementNamed(
+                          context,
+                          AppRoutes.login,
+                        );
+                      },
+                      child: const Text(
+                        "Já tem uma conta? Entrar",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          decoration: TextDecoration.underline,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                ],
+              ),
             ),
           ),
         ),
@@ -147,3 +206,4 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 }
+

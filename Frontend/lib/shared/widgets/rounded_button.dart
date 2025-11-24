@@ -10,7 +10,7 @@ class RoundedButton extends StatelessWidget {
     super.key,
     required this.text,
     required this.onPressed,
-    this.backgroundColor = Colors.indigo,
+    this.backgroundColor = const Color.fromARGB(255, 69, 147, 219),
     this.textColor = Colors.white,
   });
 

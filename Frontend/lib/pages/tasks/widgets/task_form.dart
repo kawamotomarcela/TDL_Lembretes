@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
+import 'package:provider/provider.dart';
+
 import '../../../shared/widgets/rounded_button.dart';
 import '../../../models/task_model.dart';
 import 'date_picker_button.dart';
 import 'time_picker_button.dart';
 import '../../../utils/show_snackbar.dart';
-import 'package:provider/provider.dart';
 import '../../../providers/task_provider.dart' as tp;
 
 class TaskForm extends StatefulWidget {
@@ -62,16 +63,15 @@ class _TaskFormState extends State<TaskForm> {
 
     final now = DateTime.now();
     final selectedDate = _selectedDate ?? now;
-    final finalDateTime =
-        _selectedTime != null
-            ? DateTime(
-              selectedDate.year,
-              selectedDate.month,
-              selectedDate.day,
-              _selectedTime!.hour,
-              _selectedTime!.minute,
-            )
-            : selectedDate;
+    final finalDateTime = _selectedTime != null
+        ? DateTime(
+            selectedDate.year,
+            selectedDate.month,
+            selectedDate.day,
+            _selectedTime!.hour,
+            _selectedTime!.minute,
+          )
+        : selectedDate;
 
     final novaTarefa = TaskModel(
       id: widget.tarefaEditavel?.id ?? const Uuid().v4(),
@@ -85,21 +85,20 @@ class _TaskFormState extends State<TaskForm> {
     );
 
     try {
-      final provider = Provider.of<tp.TaskProvider>(context, listen: false);
+      final provider =
+          Provider.of<tp.TaskProvider>(context, listen: false);
 
       if (widget.tarefaEditavel == null) {
         await provider.adicionar(novaTarefa);
-
         if (!mounted) return;
         showSnackBar(context, 'Tarefa criada com sucesso!');
       } else {
         await provider.editar(novaTarefa);
-
         if (!mounted) return;
         showSnackBar(context, 'Tarefa atualizada!');
       }
 
-      if (mounted) Navigator.pop(context); 
+      if (mounted) Navigator.pop(context);
     } catch (e) {
       if (mounted) {
         debugPrint('Erro ao salvar tarefa: $e');
@@ -111,24 +110,25 @@ class _TaskFormState extends State<TaskForm> {
   void _confirmarExclusao() async {
     final confirmado = await showDialog<bool>(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            title: const Text('Excluir Tarefa'),
-            content: const Text('Tem certeza que deseja excluir esta tarefa?'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: const Text('Cancelar'),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(context, true),
-                child: const Text(
-                  'Excluir',
-                  style: TextStyle(color: Colors.red),
-                ),
-              ),
-            ],
+      builder: (context) => AlertDialog(
+        title: const Text('Excluir Tarefa'),
+        content: const Text(
+          'Tem certeza que deseja excluir esta tarefa?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancelar'),
           ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text(
+              'Excluir',
+              style: TextStyle(color: Colors.red),
+            ),
+          ),
+        ],
+      ),
     );
 
     if (confirmado == true && widget.tarefaEditavel != null) {
@@ -136,8 +136,34 @@ class _TaskFormState extends State<TaskForm> {
     }
   }
 
+  InputDecoration _inputDecoration(
+    BuildContext context,
+    String label,
+  ) {
+    final theme = Theme.of(context);
+    final primary = theme.colorScheme.primary;
+
+    return InputDecoration(
+      labelText: label,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(
+          color: primary,
+          width: 1.8,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final primary = theme.colorScheme.primary;
+    final textColor = theme.colorScheme.onSurface;
+
     return Padding(
       padding: EdgeInsets.only(
         bottom: MediaQuery.of(context).viewInsets.bottom,
@@ -148,23 +174,58 @@ class _TaskFormState extends State<TaskForm> {
       child: ListView(
         shrinkWrap: true,
         children: [
-          Text(
-            widget.tarefaEditavel == null ? 'Nova Tarefa' : 'Editar Tarefa',
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 16),
-          TextField(
-            controller: _titleController,
-            decoration: InputDecoration(
-              labelText: 'Título da Tarefa',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
+          Center(
+            child: Container(
+              width: 40,
+              height: 4,
+              margin: const EdgeInsets.only(bottom: 14),
+              decoration: BoxDecoration(
+                color: Colors.grey.withValues(alpha: 0.3),
+                borderRadius: BorderRadius.circular(999),
               ),
             ),
           ),
+          Text(
+            widget.tarefaEditavel == null
+                ? 'Nova Tarefa'
+                : 'Editar Tarefa',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w800,
+              color: primary,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            widget.tarefaEditavel == null
+                ? 'Defina um título, prazo e prioridade.'
+                : 'Atualize os dados da sua tarefa.',
+            style: TextStyle(
+              fontSize: 13,
+              color: textColor.withValues(alpha: 0.7),
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 20),
+
+          TextField(
+            controller: _titleController,
+            decoration: _inputDecoration(
+              context,
+              'Título da Tarefa',
+            ),
+          ),
           const SizedBox(height: 16),
-          const Text('Data de Vencimento'),
+
+          Text(
+            'Data de vencimento',
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: textColor.withValues(alpha: 0.9),
+            ),
+          ),
           const SizedBox(height: 8),
           DatePickerButton(
             selectedDate: _selectedDate,
@@ -175,11 +236,21 @@ class _TaskFormState extends State<TaskForm> {
                 firstDate: DateTime(2000),
                 lastDate: DateTime(2100),
               );
-              if (picked != null) setState(() => _selectedDate = picked);
+              if (picked != null) {
+                setState(() => _selectedDate = picked);
+              }
             },
           ),
           const SizedBox(height: 16),
-          const Text('Hora de Vencimento'),
+
+          Text(
+            'Hora de vencimento',
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: textColor.withValues(alpha: 0.9),
+            ),
+          ),
           const SizedBox(height: 8),
           TimePickerButton(
             selectedTime: _selectedTime,
@@ -188,40 +259,49 @@ class _TaskFormState extends State<TaskForm> {
                 context: context,
                 initialTime: _selectedTime ?? TimeOfDay.now(),
               );
-              if (picked != null) setState(() => _selectedTime = picked);
+              if (picked != null) {
+                setState(() => _selectedTime = picked);
+              }
             },
           ),
           const SizedBox(height: 16),
+
           TextField(
             controller: _descricaoController,
             maxLines: 3,
-            decoration: InputDecoration(
-              labelText: 'Descrição da Tarefa',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
+            decoration: _inputDecoration(
+              context,
+              'Descrição da Tarefa',
             ),
           ),
           const SizedBox(height: 16),
+
           DropdownButtonFormField<PrioridadeTarefa>(
-            value: _prioridade,
-            decoration: InputDecoration(
-              labelText: 'Prioridade',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
+            initialValue: _prioridade,
+            decoration: _inputDecoration(
+              context,
+              'Prioridade',
             ),
-            items:
-                PrioridadeTarefa.values.map((p) {
-                  final label = p.name[0].toUpperCase() + p.name.substring(1);
-                  return DropdownMenuItem(value: p, child: Text(label));
-                }).toList(),
-            onChanged: (value) => setState(() => _prioridade = value!),
+            items: PrioridadeTarefa.values.map((p) {
+              final label =
+                  p.name[0].toUpperCase() + p.name.substring(1);
+              return DropdownMenuItem(
+                value: p,
+                child: Text(label),
+              );
+            }).toList(),
+            onChanged: (value) {
+              if (value != null) {
+                setState(() => _prioridade = value);
+              }
+            },
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 8),
+
           SwitchListTile(
-            title: const Text('Ativar Alarme'),
+            title: const Text('Ativar alarme'),
             value: _alarmeAtivado,
+            activeThumbColor: primary,
             onChanged: (value) {
               setState(() => _alarmeAtivado = value);
               showSnackBar(
@@ -230,12 +310,16 @@ class _TaskFormState extends State<TaskForm> {
               );
             },
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 20),
+
           RoundedButton(
-            text: widget.tarefaEditavel == null ? 'Salvar' : 'Atualizar',
+            text: widget.tarefaEditavel == null
+                ? 'Salvar'
+                : 'Atualizar',
             onPressed: _save,
           ),
           const SizedBox(height: 12),
+
           if (widget.tarefaEditavel != null)
             ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
@@ -246,7 +330,7 @@ class _TaskFormState extends State<TaskForm> {
                 ),
               ),
               icon: const Icon(Icons.delete),
-              label: const Text('Excluir Tarefa'),
+              label: const Text('Excluir tarefa'),
               onPressed: _confirmarExclusao,
             ),
         ],
@@ -254,3 +338,4 @@ class _TaskFormState extends State<TaskForm> {
     );
   }
 }
+

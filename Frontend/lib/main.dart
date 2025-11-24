@@ -94,6 +94,8 @@ void _setupLogging() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
+  static const Color primaryBlue = Color(0xFF1976D2);
+
   @override
   Widget build(BuildContext context) {
     final themeProvider = context.watch<ThemeProvider>();
@@ -102,10 +104,27 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'TDL Lembretes',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData.light(),
-      darkTheme: ThemeData.dark(),
       themeMode: themeProvider.themeMode,
       locale: localeProvider.locale,
+
+      // TEMA CLARO
+      theme: ThemeData(
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: primaryBlue,
+          brightness: Brightness.light,
+        ),
+      ),
+
+      // TEMA ESCURO
+      darkTheme: ThemeData(
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: primaryBlue,
+          brightness: Brightness.dark,
+        ),
+      ),
+
       localizationsDelegates: const [
         S.delegate,
         GlobalMaterialLocalizations.delegate,
@@ -118,3 +137,4 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
