@@ -8,62 +8,69 @@
 ## 👥 Nomes - Grupo:
 - Carlos Eduardo Colombo (1976794)  
 - Hugo Yudy Hiraishi (1961997)  
-- Lucca Moreno Correa de Moura (1965412)  
+- Larah Valentini Mallavazi (1964244)  
 - Marcela Kawamoto Fernandes (1965868)  
 - José Vittor Raymundo Guarido (1963254)  
 - Thiago Silvério Pereira (1969855)  
 
-## 💻 Tecnologias Utilizadas:
-- Flutter  
+## 📋 Sobre o Projeto
+
+O **TDLembretes** é um aplicativo de **gerenciamento de tarefas com sistema de bonificação**, permitindo que o usuário organize suas rotinas diárias, semanais ou mensais de forma simples e motivadora.
+
+A ideia é ir além de uma simples *to-do list*: o usuário acumula **pontos ao cumprir tarefas**, que podem ser usados em uma **loja interna**, estimulando a produtividade com um sistema de recompensas.
+
+### ✅ Funcionalidades atuais
+
+1. **Criação e organização de tarefas**
+   - Cadastro de tarefas com **título, descrição, data e hora**.  
+   - Definição de **prioridade** (baixa, média, alta).  
+   - Tarefas personalizadas por usuário.
+
+2. **Sistema de bonificação**
+   - Cada tarefa possui uma **pontuação**.  
+   - Ao concluir tarefas, o usuário **ganha pontos**.  
+   - Pontos podem ser usados na **loja de recompensas/cupons**.
+
+3. **Temas e idiomas**
+   - Suporte a **modo claro** e **modo escuro**.  
+   - Ajuste de **idioma** (Português / Inglês).  
+   - Preferências salvas localmente.
+
+4. **Integração com backend**
+   - Comunicação via **API REST** em ASP.NET Core.  
+   - Validação de usuário, tarefas oficiais, pontos e histórico.
+
+---
+
+# 🚀 Tecnologias utilizadas
+
+- Flutter SDK (3.x ou superior)  
 - Dart  
+- Provider (gerenciamento de estado)  
+- Shared Preferences (armazenamento local)  
+- HTTP Client (integração com API REST)  
+- Google Fonts  
+- Sqflite (SQLite local)  
+- Image Picker (seleção/envio de imagens)  
+- fl_chart (gráficos)  
+- table_calendar (componente de calendário)  
 
 ---
 
-## 📋 Sobre o Projeto - Sistema de Gerenciamento de Rotina com Alarmes e Bonificação
+# 📂 Estrutura do projeto
 
-### 🎯 Proposta
-
-O **Projeto_TDL Lembretes** tem como objetivo desenvolver um **aplicativo de gerenciamento de tarefas** utilizando **Flutter**, que permita ao usuário organizar suas rotinas diárias, semanais ou mensais de forma simples, intuitiva e motivadora.
-
-A proposta é oferecer uma solução semelhante a ferramentas como **To-Do Lists** e **Trello**, mas com o diferencial de implementar um **sistema de bonificação** por tarefas cumpridas, além de **recursos de personalização visual e de idioma**.
-
----
-
-## ✅ Funcionalidades Atuais
-
-1. **Criação e Organização de Tarefas**  
-   - Criação de tarefas com título, descrição, data e hora.  
-   - Definição de **nível de prioridade** (baixa, média, alta).  
-
-2. **Sistema de Bonificação e Motivação**  
-   - Pontuação atribuída conforme a complexidade das tarefas.   
-   - Estímulo à produtividade com recompensas simbólicas.  
-
-3. **Temas e Idiomas**  
-   - Suporte ao **modo claro** e **modo escuro** para personalização da interface.  
-   - Interface multilíngue com suporte inicial para **português** e **inglês**.  
-
----
-
-## 🔜 Funcionalidades em Backlog (Planejadas)
-
-4. **Alarmes e Notificações** *(planejado)*  
-   - Permitir configuração de alarmes para tarefas específicas.  
-   - Envio de notificações no horário agendado.  
-
-5. **Histórico de Tarefas** *(planejado)*  
-   - Registro de tarefas finalizadas com data e hora de conclusão.  
-   - Exibição de histórico e métricas de desempenho.  
-
----
-
-## ⭐ Diferenciais do Projeto
-
-- **Foco em motivação e produtividade do usuário** com gamificação e feedback visual.  
-- **Interface moderna e responsiva**, ideal para dispositivos móveis.  
-- **Personalização de temas e idiomas**, promovendo acessibilidade.  
-- Construído com **Flutter e Dart**, garantindo multiplataforma (Android, iOS e Web).  
-
----
-
-> *Este projeto ainda está em desenvolvimento e novas funcionalidades estão sendo implementadas conforme o planejamento do grupo.*
+```text
+Frontend/
+  ├── lib/
+  │   ├── models/        # Modelos de dados (usuário, tarefas, produtos, etc.)
+  │   ├── pages/         # Telas principais (home, tarefas, loja, perfil, premium...)
+  │   ├── components/    # Widgets reutilizáveis
+  │   ├── services/      # Acesso à API, persistência, helpers
+  │   ├── utils/         # Funções auxiliares, formatadores, temas
+  │   └── main.dart      # Ponto de entrada do app
+  ├── assets/            # Imagens, ícones, fontes
+  ├── android/
+  ├── ios/
+  ├── web/
+  ├── pubspec.yaml
+  └── analysis_options.yaml
