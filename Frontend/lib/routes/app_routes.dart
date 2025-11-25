@@ -8,7 +8,8 @@ import '../pages/profile/profile_page.dart';
 import '../pages/about/about_page.dart';
 import '../pages/tasks/task_list_page.dart';
 import '../pages/main_page.dart';
-import '../pages/settings/settings_page.dart'; 
+import '../pages/settings/settings_page.dart';
+import '../pages/premium/premium_page.dart';
 
 class AppRoutes {
   static const String login = '/';
@@ -19,7 +20,8 @@ class AppRoutes {
   static const String store = '/store';
   static const String profile = '/profile';
   static const String about = '/about';
-  static const String settings = '/settings'; 
+  static const String settings = '/settings';
+  static const String premium = '/premium';
 
   static final Map<String, WidgetBuilder> routes = {
     login: (context) => const LoginPage(),
@@ -30,6 +32,7 @@ class AppRoutes {
     store: (context) => LojaPage(),
     profile: (context) => const ProfilePage(),
     about: (context) => const AboutPage(),
-    settings: (context) => const SettingsPage(), 
+    settings: (context) => const SettingsPage(),
+    premium: (context) => const PremiumPage(),
   };
 }

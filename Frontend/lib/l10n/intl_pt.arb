@@ -12,13 +12,17 @@
   "exampleIp": "Ex: 192.168.0.1",
   "save": "Salvar",
   "preferencesSaved": "Preferências salvas",
+
   "home": "Início",
   "tasks": "Tarefas",
   "calendar": "Calendário",
   "store": "Loja",
   "profile": "Perfil",
+  "coupons": "Cupons",
+  "premium": "Premium",
   "logout": "Sair",
   "about": "Sobre",
+
   "homePageTitle": "Página Inicial",
   "tasksPageTitle": "Tarefas",
   "calendarPageTitle": "Calendário",
@@ -26,8 +30,8 @@
   "profilePageTitle": "Perfil",
   "couponsPageTitle": "Cupons",
   "couponsTitle": "Meus Cupons",
-  "noCouponsAvailable": "Nenhum cupom disponível no momento.",
   "noCouponsAvailable": "Você ainda não comprou nenhum cupom.",
+
   "logoutConfirmation": "Deseja sair?",
   "cancel": "Cancelar",
   "exit": "Sair"

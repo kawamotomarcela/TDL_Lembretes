@@ -12,25 +12,27 @@
   "exampleIp": "Ex: 192.168.0.1",
   "save": "Save",
   "preferencesSaved": "Preferences saved",
-   "home": "Home",
+  "home": "Home",
   "tasks": "Tasks",
   "calendar": "Calendar",
   "store": "Store",
   "profile": "Profile",
   "logout": "Logout",
   "about": "About",
-  "settings": "Settings",
   "homePageTitle": "Home",
   "tasksPageTitle": "Tasks",
   "calendarPageTitle": "Calendar",
   "storePageTitle": "Store",
   "profilePageTitle": "Profile",
-  "coupons": "Cupons",
+
+  "coupons": "Coupons",
   "couponsPageTitle": "Coupons",
   "couponsTitle": "My Coupons",
   "noCouponsAvailable": "No coupons available at the moment.",
-  "noCouponsAvailable": "Você ainda não comprou nenhum cupom.",
+
   "logoutConfirmation": "Do you want to logout?",
   "cancel": "Cancel",
-  "exit": "Exit"
+  "exit": "Exit",
+
+  "premium": "Premium"
 }

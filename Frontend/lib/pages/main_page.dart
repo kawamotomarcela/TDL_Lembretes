@@ -2,20 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:grupotdl/generated/l10n.dart';
 
-// Rotas
 import '../routes/app_routes.dart';
 
-// Páginas
 import 'calendar/calendar_page.dart';
 import 'tasks/task_list_page.dart';
 import 'store/store_page.dart';
 import 'profile/profile_page.dart';
 import 'about/about_page.dart';
+import 'premium/premium_page.dart';
 import 'settings/settings_page.dart';
 import 'coupons/coupons_page.dart';
 import 'home/home_page.dart';
 
-// Providers
 import '../providers/theme_provider.dart';
 import '../providers/usuario_provider.dart';
 
@@ -47,33 +45,32 @@ class _MainPageState extends State<MainPage> {
 
     showDialog(
       context: context,
-      builder:
-          (_) => AlertDialog(
-            title: Text(local.logoutConfirmation),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text(local.cancel),
-              ),
-              TextButton(
-                onPressed: () async {
-                  Navigator.pop(context); 
-
-                  final themeProvider = context.read<ThemeProvider>();
-                  final usuarioProvider = context.read<UsuarioProvider>();
-
-                  await themeProvider.resetThemeToDefault();
-                  if (!mounted) return;
-
-                  await usuarioProvider.logout();
-                  if (!mounted) return;
-
-                  Navigator.pushReplacementNamed(context, AppRoutes.login);
-                },
-                child: Text(local.exit),
-              ),
-            ],
+      builder: (_) => AlertDialog(
+        title: Text(local.logoutConfirmation),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(local.cancel),
           ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(context);
+
+              final themeProvider = context.read<ThemeProvider>();
+              final usuarioProvider = context.read<UsuarioProvider>();
+
+              await themeProvider.resetThemeToDefault();
+              if (!mounted) return;
+
+              await usuarioProvider.logout();
+              if (!mounted) return;
+
+              Navigator.pushReplacementNamed(context, AppRoutes.login);
+            },
+            child: Text(local.exit),
+          ),
+        ],
+      ),
     );
   }
 
@@ -83,6 +80,12 @@ class _MainPageState extends State<MainPage> {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const ProfilePage()),
+        );
+        break;
+      case 'premium':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const PremiumPage()),
         );
         break;
       case 'config':
@@ -122,47 +125,58 @@ class _MainPageState extends State<MainPage> {
         backgroundColor: Colors.blue[700],
         leading: const Padding(
           padding: EdgeInsets.all(8.0),
-          child: CircleAvatar(backgroundImage: AssetImage('assets/tdl.png')),
+          child: CircleAvatar(
+            backgroundImage: AssetImage('assets/tdl.png'),
+          ),
         ),
         actions: [
           PopupMenuButton<String>(
             icon: const Icon(Icons.settings),
             onSelected: _onSettingsSelected,
-            itemBuilder:
-                (_) => [
-                  PopupMenuItem(
-                    value: 'meu_perfil',
-                    child: ListTile(
-                      leading: const Icon(Icons.account_circle),
-                      title: Text(local.profile),
-                    ),
-                  ),
-                  PopupMenuItem(
-                    value: 'config',
-                    child: ListTile(
-                      leading: const Icon(Icons.settings),
-                      title: Text(local.settings),
-                    ),
-                  ),
-                  PopupMenuItem(
-                    value: 'sobre',
-                    child: ListTile(
-                      leading: const Icon(Icons.info_outline),
-                      title: Text(local.about),
-                    ),
-                  ),
-                  PopupMenuItem(
-                    value: 'sair',
-                    child: ListTile(
-                      leading: const Icon(Icons.logout),
-                      title: Text(local.logout),
-                    ),
-                  ),
-                ],
+            itemBuilder: (_) => [
+              PopupMenuItem(
+                value: 'meu_perfil',
+                child: ListTile(
+                  leading: const Icon(Icons.account_circle),
+                  title: Text(local.profile),
+                ),
+              ),
+              PopupMenuItem(
+                value: 'premium',
+                child: ListTile(
+                  leading: const Icon(Icons.star),
+                  title: Text(local.premium),
+                ),
+              ),
+              PopupMenuItem(
+                value: 'config',
+                child: ListTile(
+                  leading: const Icon(Icons.settings),
+                  title: Text(local.settings),
+                ),
+              ),
+              PopupMenuItem(
+                value: 'sobre',
+                child: ListTile(
+                  leading: const Icon(Icons.info_outline),
+                  title: Text(local.about),
+                ),
+              ),
+              PopupMenuItem(
+                value: 'sair',
+                child: ListTile(
+                  leading: const Icon(Icons.logout),
+                  title: Text(local.logout),
+                ),
+              ),
+            ],
           ),
         ],
       ),
-      body: IndexedStack(index: _currentIndex, children: _pages),
+      body: IndexedStack(
+        index: _currentIndex,
+        children: _pages,
+      ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) => setState(() => _currentIndex = index),
